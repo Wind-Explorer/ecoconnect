@@ -1,0 +1,17 @@
+{
+  "name": "ecoconnect-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Backend server for ecoconnect.",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "keywords": [],
+  "author": "Wind_Explorer",
+  "dependencies": {
+    "express": "^4.19.2",
+    "nodemon": "^3.1.3"
+  }
+}
