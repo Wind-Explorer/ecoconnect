@@ -1,35 +1,62 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Button, Checkbox, Input, Link } from "@nextui-org/react";
+import { useState } from "react";
 
-function App() {
-  const [count, setCount] = useState(0)
-
+export default function App() {
+  const [userAgreedToTermsAndServices, setUserAgreedToTermsAndServices] =
+    useState(false);
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div>
+      <div className="flex flex-col p-4 gap-8 relative *:w-max">
+        <h1 className="text-3xl font-bold ">ecoconnect</h1>
+        <div className="flex flex-col gap-4">
+          <Input
+            label="First Name"
+            labelPlacement="outside"
+            placeholder="John"
+          ></Input>
+          <Input
+            label="Last Name"
+            labelPlacement="outside"
+            placeholder="Doe"
+          ></Input>
+          <Input
+            label="Email"
+            labelPlacement="outside"
+            placeholder="johndoe@email.com"
+            type="email"
+          ></Input>
+          <Input
+            label="Phone number"
+            labelPlacement="outside"
+            placeholder="XXXXXXXX"
+            startContent={
+              <p className="text-sm pr-2 border-r-2 border-neutral-700">+65</p>
+            }
+          ></Input>
+          <Input
+            label="New Password"
+            labelPlacement="outside"
+            placeholder=" "
+            type="password"
+          ></Input>
+        </div>
+        <Checkbox
+          isSelected={userAgreedToTermsAndServices}
+          onValueChange={setUserAgreedToTermsAndServices}
+          aria-label="Terms and services agreement checkbox"
+        >
+          I have read and agreed to the <Link href="#">Terms and Services</Link>
+        </Checkbox>
+        <Button
+          onSubmit={() => {
+            console.log("Submitting...");
+          }}
+          color="primary"
+          isDisabled={!userAgreedToTermsAndServices}
+        >
+          Sign up
+        </Button>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
-
-export default App

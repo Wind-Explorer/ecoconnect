@@ -1,12 +1,26 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React + TS</title>
+    <title>ecoconnect</title>
   </head>
-  <body>
+  <body class="text-foreground bg-background absolute inset-0">
+    <script type="module">
+      const prefersDarkMode = window.matchMedia("(prefers-color-scheme: dark)");
+      const body = document.querySelector("body");
+
+      function updateTheme() {
+        if (prefersDarkMode.matches) {
+          body.classList.add("dark");
+        } else {
+          body.classList.remove("dark");
+        }
+      }
+
+      updateTheme();
+      prefersDarkMode.addEventListener("change", updateTheme);
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
