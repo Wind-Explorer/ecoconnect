@@ -1,9 +1,10 @@
-import express from "express";
-import dotenv from "dotenv";
-import cors from "cors";
+const express = require("express");
+const dotenv = require("dotenv");
+const cors = require("cors");
+const db = require("./models");
 
 // Routes
-import usersRoute from "./routes/users.js";
+const usersRoute = require("./routes/users.js");
 
 dotenv.config();
 
@@ -24,6 +25,13 @@ app.get("/", (req, res) => {
 
 app.use("/users", usersRoute);
 
-app.listen(PORT, () => {
-  console.log(`ecoconnect server running at http://localhost:${PORT}/`);
-});
+db.sequelize
+  .sync({ alter: true })
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`ecoconnect server running at http://localhost:${PORT}/`);
+    });
+  })
+  .catch((err) => {
+    console.log(err);
+  });
