@@ -3,7 +3,7 @@ module.exports = (sequelize, DataTypes) => {
     "User",
     {
       id: {
-        type: DataTypes.INTEGER(),
+        type: DataTypes.STRING(36),
         allowNull: false,
         primaryKey: true,
       },
@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(8),
         allowNull: false,
       },
-      passwordHash: {
+      password: {
         type: DataTypes.STRING(255),
         allowNull: false,
       },

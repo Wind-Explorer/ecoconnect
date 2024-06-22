@@ -2,25 +2,39 @@ const express = require("express");
 const yup = require("yup");
 const { Op } = require("sequelize");
 const { User } = require("../models");
+const argon2 = require("argon2");
 const router = express.Router();
+const { v4: uuidV4 } = require("uuid");
 
 let validationSchema = yup.object({
-  id: yup.number().min(0).required(),
+  id: yup.string().trim().min(36).max(36).required(),
   firstName: yup.string().trim().min(1).max(100).required(),
   lastName: yup.string().trim().min(1).max(100).required(),
   email: yup.string().trim().min(5).max(69).email().required(),
-  phoneNumber: yup.string().trim().length(8).required(),
-  passwordHash: yup.string().trim().min(128).max(255).required(),
+  phoneNumber: yup
+    .string()
+    .trim()
+    .matches(/^[0-9]+$/)
+    .length(8)
+    .required(),
+  password: yup.string().trim().max(255).required(),
 });
 
 router.post("/", async (req, res) => {
   let data = req.body;
   try {
+    data.id = uuidV4();
+    data.password = await argon2.hash(data.password);
+
+    console.log("Validating schema...");
     data = await validationSchema.validate(data, { abortEarly: false });
-    // Process valid data
+
+    console.log("Creating user...");
     let result = await User.create(data);
     res.json(result);
+    console.log("Success!");
   } catch (err) {
+    console.log("Error caught! Info: " + err);
     res.status(400).json({ errors: err.errors });
   }
 });
