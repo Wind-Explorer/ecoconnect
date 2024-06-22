@@ -86,6 +86,13 @@ router.put("/:id", async (req, res) => {
 
 router.delete("/:id", async (req, res) => {
   let id = req.params.id;
+  let user = await User.findByPk(id);
+
+  if (!user) {
+    res.sendStatus(404);
+    return;
+  }
+
   let num = await User.destroy({
     where: { id: id },
   });
