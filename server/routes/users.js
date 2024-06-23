@@ -2,6 +2,7 @@ const express = require("express");
 const yup = require("yup");
 const { Op } = require("sequelize");
 const { User } = require("../models");
+const { validateToken } = require("../middlewares/auth");
 const argon2 = require("argon2");
 const router = express.Router();
 const { v4: uuidV4 } = require("uuid");
@@ -165,7 +166,12 @@ router.post("/login", async (req, res) => {
 
   res.json({
     accessToken: accessToken,
-    user: userInfo,
+  });
+});
+
+router.get("/auth", validateToken, (req, res) => {
+  res.json({
+    id: req.user.id,
   });
 });
 
