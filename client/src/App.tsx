@@ -18,6 +18,7 @@ const validationSchema = Yup.object({
     .required("Last Name is required"),
   email: Yup.string()
     .trim()
+    .lowercase()
     .min(5)
     .max(69)
     .email("Invalid email format")
@@ -31,6 +32,10 @@ const validationSchema = Yup.object({
     .trim()
     .min(8, "Password must be at least 8 characters")
     .max(69, "Password must be at most 69 characters")
+    .matches(
+      /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$/,
+      "Password needs to contain both letters and numbers"
+    )
     .required("Password is required"),
   terms: Yup.boolean().oneOf(
     [true],
@@ -51,7 +56,7 @@ export default function App() {
   const handleSubmit = async (values: any) => {
     try {
       const response = await axios.post(
-        config.serverAddress + "/users",
+        config.serverAddress + "/users/register",
         values
       );
       console.log("User created successfully:", response.data);

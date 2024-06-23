@@ -20,8 +20,15 @@ let validationSchema = yup.object({
   password: yup.string().trim().max(100).required(),
 });
 
-router.post("/", async (req, res) => {
+router.post("/register", async (req, res) => {
   let data = req.body;
+  let user = await User.findOne({
+    where: { email: data.email },
+  });
+  if (user) {
+    res.status(400).json({ message: "Email already exists." });
+    return;
+  }
   try {
     data.id = uuidV4();
     data.password = await argon2.hash(data.password);
@@ -39,7 +46,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.get("/", async (req, res) => {
+router.get("/all", async (req, res) => {
   let condition = {};
   let search = req.query.search;
   if (search) {
@@ -56,7 +63,7 @@ router.get("/", async (req, res) => {
   res.json(list);
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/individual/:id", async (req, res) => {
   let id = req.params.id;
   let user = await User.findByPk(id);
   if (!user) {
@@ -66,7 +73,7 @@ router.get("/:id", async (req, res) => {
   res.json(user);
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/individual/:id", async (req, res) => {
   let id = req.params.id;
   let user = await User.findByPk(id);
 
@@ -98,7 +105,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/individual/:id", async (req, res) => {
   let id = req.params.id;
   let user = await User.findByPk(id);
 
