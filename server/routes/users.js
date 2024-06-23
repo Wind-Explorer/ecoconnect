@@ -5,6 +5,9 @@ const { User } = require("../models");
 const argon2 = require("argon2");
 const router = express.Router();
 const { v4: uuidV4 } = require("uuid");
+const { sign } = require("jsonwebtoken");
+
+require("dotenv").config();
 
 let validationSchema = yup.object({
   id: yup.string().trim().min(36).max(36).required(),
@@ -126,6 +129,44 @@ router.delete("/individual/:id", async (req, res) => {
       message: `Cannot delete user with id ${id}.`,
     });
   }
+});
+
+router.post("/login", async (req, res) => {
+  let data = req.body;
+  let errorMessage = "Email or password is not correct.";
+
+  let user = await User.findOne({
+    where: { email: data.email },
+  });
+
+  if (!user) {
+    res.status(400).json({ message: errorMessage });
+    return;
+  }
+
+  let match = await argon2.verify(user.password, data.password);
+  if (!match) {
+    res.status(400).json({ message: errorMessage });
+    return;
+  }
+
+  let userInfo = {
+    id: user.id,
+    email: user.email,
+    name: {
+      firstName: user.firstName,
+      lastName: user.lastName,
+    },
+  };
+
+  let accessToken = sign(userInfo, process.env.APP_SECRET, {
+    expiresIn: process.env.TOKEN_EXPIRES_IN,
+  });
+
+  res.json({
+    accessToken: accessToken,
+    user: userInfo,
+  });
 });
 
 module.exports = router;
