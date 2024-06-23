@@ -17,7 +17,7 @@ let validationSchema = yup.object({
     .matches(/^[0-9]+$/)
     .length(8)
     .required(),
-  password: yup.string().trim().max(255).required(),
+  password: yup.string().trim().max(100).required(),
 });
 
 router.post("/", async (req, res) => {
