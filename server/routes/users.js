@@ -67,7 +67,7 @@ router.get("/all", async (req, res) => {
   res.json(list);
 });
 
-router.get("/individual/:id", async (req, res) => {
+router.get("/individual/:id", validateToken, async (req, res) => {
   let id = req.params.id;
   let user = await User.findByPk(id);
   if (!user) {
@@ -77,7 +77,7 @@ router.get("/individual/:id", async (req, res) => {
   res.json(user);
 });
 
-router.put("/individual/:id", async (req, res) => {
+router.put("/individual/:id", validateToken, async (req, res) => {
   let id = req.params.id;
   let user = await User.findByPk(id);
 
@@ -109,7 +109,7 @@ router.put("/individual/:id", async (req, res) => {
   }
 });
 
-router.delete("/individual/:id", async (req, res) => {
+router.delete("/individual/:id", validateToken, async (req, res) => {
   let id = req.params.id;
   let user = await User.findByPk(id);
 

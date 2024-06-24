@@ -39,7 +39,7 @@ export default function SignInModule() {
         config.serverAddress + "/users/login",
         values
       );
-      console.log(response.data.accessToken);
+      navigate("/springboard/" + response.data.accessToken);
     } catch (error) {
       console.error("Error logging in:", error);
     }
