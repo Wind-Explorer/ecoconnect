@@ -1,7 +1,7 @@
-import SignUpModule from "../components/SignUpModule";
+import SignInModule from "../components/SignInModule";
 import DefaultLayout from "../layouts/default";
 
-export default function SignUpPage() {
+export default function SignInPage() {
   return (
     <DefaultLayout>
       <div className="flex flex-col h-full">
@@ -10,16 +10,16 @@ export default function SignUpPage() {
             <div className="absolute inset-0">
               <div className="w-full h-full relative">
                 <img
-                  src="../assets/SignupScreenBG.png"
+                  src="../assets/SigninScreenBG.png"
                   alt="HDB flat"
                   className="w-full h-full object-cover -z-10"
                 />
                 <div className="absolute inset-0 z-10 flex flex-col justify-center">
                   <div className="w-full text-right text-white flex flex-col gap-6 p-16">
-                    <p className="text-7xl font-semibold">Welcome!</p>
+                    <p className="text-7xl font-semibold">Welcome back!</p>
                     <p className="text-3xl">
-                      Register a new account to access all of HDB Residence
-                      services.
+                      Good to have you here again. Tell us who you are, and wel
+                      will let you in.
                     </p>
                   </div>
                 </div>
@@ -27,7 +27,7 @@ export default function SignUpPage() {
             </div>
           </div>
           <div className="w-2/5 p-8">
-            <SignUpModule></SignUpModule>
+            <SignInModule />
           </div>
         </div>
       </div>

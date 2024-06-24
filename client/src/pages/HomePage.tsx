@@ -1,10 +1,11 @@
 import { Button } from "@nextui-org/react";
 import { useNavigate } from "react-router-dom";
+import DefaultLayout from "../layouts/default";
 
 export default function HomePage() {
   const navigate = useNavigate();
   return (
-    <div>
+    <DefaultLayout>
       <p>Home</p>
       <Button
         onPress={() => {
@@ -13,6 +14,6 @@ export default function HomePage() {
       >
         Sign up!
       </Button>
-    </div>
+    </DefaultLayout>
   );
 }

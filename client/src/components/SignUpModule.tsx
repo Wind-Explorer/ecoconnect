@@ -4,6 +4,7 @@ import * as Yup from "yup";
 import axios from "axios";
 import config from "../config";
 import NextUIFormikInput from "./NextUIFormikInput";
+import { useNavigate } from "react-router-dom";
 
 const validationSchema = Yup.object({
   firstName: Yup.string()
@@ -44,6 +45,8 @@ const validationSchema = Yup.object({
 });
 
 export default function SignUpModule() {
+  const navigate = useNavigate();
+
   const initialValues = {
     firstName: "",
     lastName: "",
@@ -66,7 +69,7 @@ export default function SignUpModule() {
   };
 
   return (
-    <div>
+    <div className="flex flex-col gap-16">
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
@@ -140,6 +143,16 @@ export default function SignUpModule() {
           </Form>
         )}
       </Formik>
+      <div className="w-full flex flex-col gap-2 *:mx-auto">
+        <p>Already here before?</p>
+        <Link
+          onPress={() => {
+            navigate("/signin");
+          }}
+        >
+          Sign in
+        </Link>
+      </div>
     </div>
   );
 }
