@@ -27,6 +27,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(100),
         allowNull: false,
       },
+      isArchived: {
+        type: DataTypes.BOOLEAN(),
+        allowNull: false,
+      },
     },
     {
       tableName: "users",

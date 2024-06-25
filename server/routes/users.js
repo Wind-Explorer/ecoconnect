@@ -39,11 +39,16 @@ let optionalValidationSchema = yup.object({
 
 router.post("/register", async (req, res) => {
   let data = req.body;
-  let user = await User.findOne({
+
+  let userByEmail = await User.findOne({
     where: { email: data.email },
   });
-  if (user) {
-    res.status(400).json({ message: "Email already exists." });
+  let userByNumber = await User.findOne({
+    where: { phoneNumber: data.phoneNumber },
+  });
+
+  if (userByEmail || userByNumber) {
+    res.status(400).json({ message: "Email or phone number already exists." });
     return;
   }
   try {
@@ -83,11 +88,19 @@ router.get("/all", async (req, res) => {
 router.get("/individual/:id", validateToken, async (req, res) => {
   let id = req.params.id;
   let user = await User.findByPk(id);
+
   if (!user) {
     res.sendStatus(404);
     return;
   }
-  res.json(user);
+
+  if (user.isArchived) {
+    res.status(400).json({
+      message: `Account ${id} is archived.`,
+    });
+  } else {
+    res.json(user);
+  }
 });
 
 router.put("/individual/:id", validateToken, async (req, res) => {
@@ -186,6 +199,30 @@ router.get("/auth", validateToken, (req, res) => {
   res.json({
     id: req.user.id,
   });
+});
+
+router.put("/archive/:id", validateToken, async (req, res) => {
+  let id = req.params.id;
+  let user = await User.findByPk(id);
+
+  if (!user) {
+    res.sendStatus(404);
+    return;
+  }
+
+  try {
+    await User.update(
+      { isArchived: true },
+      {
+        where: { id: id },
+      }
+    );
+    res.json({
+      message: "User archived successfully.",
+    });
+  } catch (err) {
+    res.status(400).json({ errors: err.errors });
+  }
 });
 
 module.exports = router;
