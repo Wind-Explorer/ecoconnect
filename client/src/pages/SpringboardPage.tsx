@@ -1,17 +1,18 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import DefaultLayout from "../layouts/default";
 import { useEffect, useState } from "react";
-import axios from "axios";
-import config from "../config";
 import { Button, Link } from "@nextui-org/react";
 import { PencilSquareIcon } from "../icons";
 import SpringboardButton from "../components/SpringboardButton";
 import { getTimeOfDay } from "../utilities";
+import { retrieveUserInformation } from "../security/users";
 
 export default function SpringboardPage() {
-  let { accessToken } = useParams(); // TODO: Replace AT from props with AT from localstorage
+  let { accessToken } = useParams<string>(); // TODO: Replace AT from props with AT from localstorage
   let [userInformation, setUserInformation] = useState<any>();
   let timeOfDay = getTimeOfDay();
+
+  const navigate = useNavigate();
 
   let greeting = "";
   if (timeOfDay === 0) {
@@ -22,35 +23,10 @@ export default function SpringboardPage() {
     greeting = "Good evening";
   }
 
-  const retrieveUserInformation = () => {
-    axios
-      .get(`${config.serverAddress}/users/auth`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-      .then((response) => {
-        axios
-          .get(`${config.serverAddress}/users/individual/${response.data.id}`, {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          })
-          .then((response) => {
-            setUserInformation(response.data);
-          })
-          .catch((error) => {
-            console.error("Error retrieving user information:", error);
-          });
-      })
-      .catch((error) => {
-        console.error("Error retrieving user ID:", error);
-      });
-  };
-
-  useEffect(() => {
-    retrieveUserInformation();
-  }, []);
+  useEffect(
+    () => retrieveUserInformation(accessToken!, setUserInformation),
+    []
+  );
 
   return (
     <DefaultLayout>
@@ -74,6 +50,9 @@ export default function SpringboardPage() {
                     <PencilSquareIcon />
                   </div>
                 }
+                onPress={() => {
+                  navigate("/manage-account/" + accessToken);
+                }}
               >
                 Manage your account
               </Button>

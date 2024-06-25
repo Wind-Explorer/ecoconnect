@@ -24,6 +24,19 @@ let validationSchema = yup.object({
   password: yup.string().trim().max(100).required(),
 });
 
+let optionalValidationSchema = yup.object({
+  id: yup.string().trim().min(36).max(36).required(),
+  firstName: yup.string().trim().min(1).max(100),
+  lastName: yup.string().trim().min(1).max(100),
+  email: yup.string().trim().min(5).max(69).email(),
+  phoneNumber: yup
+    .string()
+    .trim()
+    .matches(/^[0-9]+$/)
+    .length(8),
+  password: yup.string().trim().max(100),
+});
+
 router.post("/register", async (req, res) => {
   let data = req.body;
   let user = await User.findOne({
@@ -89,7 +102,7 @@ router.put("/individual/:id", validateToken, async (req, res) => {
   let data = req.body;
 
   try {
-    data = await validationSchema.validate(data, { abortEarly: false });
+    data = await optionalValidationSchema.validate(data, { abortEarly: false });
 
     let num = await User.update(data, {
       where: { id: id },
