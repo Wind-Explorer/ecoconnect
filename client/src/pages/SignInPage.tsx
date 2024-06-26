@@ -18,8 +18,8 @@ export default function SignInPage() {
                   <div className="w-full text-right text-white flex flex-col gap-6 p-16">
                     <p className="text-7xl font-semibold">Welcome back!</p>
                     <p className="text-3xl">
-                      Good to have you here again. Tell us who you are, and wel
-                      will let you in.
+                      Good to have you here again. Tell us who you are, and
+                      we'll will let you in.
                     </p>
                   </div>
                 </div>
