@@ -3,7 +3,17 @@ import * as Yup from "yup";
 import config from "../config";
 import { useEffect, useState } from "react";
 import { retrieveUserInformation } from "../security/users";
-import { Accordion, AccordionItem, Button } from "@nextui-org/react";
+import {
+  Accordion,
+  AccordionItem,
+  Button,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  useDisclosure,
+} from "@nextui-org/react";
 import { Form, Formik } from "formik";
 import NextUIFormikInput from "./NextUIFormikInput";
 import { PencilSquareIcon } from "../icons";
@@ -16,6 +26,8 @@ export default function UpdateAccountModule({
 }) {
   const navigate = useNavigate();
   let [userInformation, setUserInformation] = useState<any>();
+
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   useEffect(() => {
     retrieveUserInformation(accessToken!)
@@ -111,131 +123,165 @@ export default function UpdateAccountModule({
   return (
     <div>
       {userInformation && (
-        <div className="flex flex-col gap-16">
-          <div>
-            <Formik
-              initialValues={initialValues}
-              validationSchema={validationSchema}
-              onSubmit={handleSubmit}
-              enableReinitialize
-            >
-              {({ isValid, dirty }) => (
-                <Form className="flex flex-col gap-16">
-                  <div className="flex flex-row justify-between">
-                    <p className="text-4xl font-bold">
-                      Update your information
-                    </p>
-                    <div className="flex flex-row gap-4">
-                      <Button
-                        variant="light"
-                        onPress={() => {
-                          navigate("/springboard/" + accessToken);
-                        }}
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        type="submit"
-                        color="primary"
-                        isDisabled={!isValid || !dirty}
-                      >
-                        Save
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="flex flex-row gap-8">
-                    <div className="flex-grow flex sm:flex-row flex-col gap-4 *:w-full *:flex *:flex-col *:gap-4">
-                      <div>
-                        <NextUIFormikInput
-                          label="First Name"
-                          name="firstName"
-                          type="text"
-                          placeholder="John"
-                          labelPlacement="outside"
-                        />
-                        <NextUIFormikInput
-                          label="Last Name"
-                          name="lastName"
-                          type="text"
-                          placeholder="Doe"
-                          labelPlacement="outside"
-                        />
-                      </div>
-                      <div>
-                        <NextUIFormikInput
-                          label="Email"
-                          name="email"
-                          type="email"
-                          placeholder="johndoe@email.com"
-                          labelPlacement="outside"
-                        />
-                        <NextUIFormikInput
-                          label="Phone number"
-                          name="phoneNumber"
-                          type="text"
-                          placeholder="XXXXXXXX"
-                          labelPlacement="outside"
-                          startContent={
-                            <p className="text-sm pr-2 border-r-2 border-neutral-300 dark:border-neutral-700">
-                              +65
-                            </p>
-                          }
-                        />
+        <div>
+          <div className="flex flex-col gap-16">
+            <div>
+              <Formik
+                initialValues={initialValues}
+                validationSchema={validationSchema}
+                onSubmit={handleSubmit}
+                enableReinitialize
+              >
+                {({ isValid, dirty }) => (
+                  <Form className="flex flex-col gap-16">
+                    <div className="flex flex-row justify-between">
+                      <p className="text-4xl font-bold">
+                        Update your information
+                      </p>
+                      <div className="flex flex-row gap-4">
+                        <Button
+                          variant="light"
+                          onPress={() => {
+                            navigate("/springboard/" + accessToken);
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          type="submit"
+                          color="primary"
+                          isDisabled={!isValid || !dirty}
+                        >
+                          Save
+                        </Button>
                       </div>
                     </div>
-                    <div className="w-40 h-40 bg-red-500 hover:bg-red-700 transition-colors rounded-full relative">
-                      <div className="transition-opacity opacity-0 hover:opacity-100 absolute w-full h-full text-white flex flex-col justify-center rounded-full">
-                        <div className=" w-min h-min mx-auto scale-150">
-                          <PencilSquareIcon />
+                    <div className="flex flex-row gap-8">
+                      <div className="flex-grow flex sm:flex-row flex-col gap-4 *:w-full *:flex *:flex-col *:gap-4">
+                        <div>
+                          <NextUIFormikInput
+                            label="First Name"
+                            name="firstName"
+                            type="text"
+                            placeholder="John"
+                            labelPlacement="outside"
+                          />
+                          <NextUIFormikInput
+                            label="Last Name"
+                            name="lastName"
+                            type="text"
+                            placeholder="Doe"
+                            labelPlacement="outside"
+                          />
+                        </div>
+                        <div>
+                          <NextUIFormikInput
+                            label="Email"
+                            name="email"
+                            type="email"
+                            placeholder="johndoe@email.com"
+                            labelPlacement="outside"
+                          />
+                          <NextUIFormikInput
+                            label="Phone number"
+                            name="phoneNumber"
+                            type="text"
+                            placeholder="XXXXXXXX"
+                            labelPlacement="outside"
+                            startContent={
+                              <p className="text-sm pr-2 border-r-2 border-neutral-300 dark:border-neutral-700">
+                                +65
+                              </p>
+                            }
+                          />
+                        </div>
+                      </div>
+                      <div className="w-40 h-40 bg-red-500 hover:bg-red-700 transition-colors rounded-full relative">
+                        <div className="transition-opacity opacity-0 hover:opacity-100 absolute w-full h-full text-white flex flex-col justify-center rounded-full">
+                          <div className=" w-min h-min mx-auto scale-150">
+                            <PencilSquareIcon />
+                          </div>
                         </div>
                       </div>
                     </div>
+                  </Form>
+                )}
+              </Formik>
+            </div>
+            <div>
+              <Accordion>
+                <AccordionItem
+                  key="1"
+                  aria-label="Account danger zone"
+                  title={
+                    <div className="flex flex-col -my-2">
+                      <p className="text-lg">More actions</p>
+                      <p className="opacity-50">
+                        Click to show more options collapsed for security
+                        purposes.
+                      </p>
+                    </div>
+                  }
+                  className="rounded-xl -m-2 px-4 py-2 bg-neutral-100 dark:bg-neutral-800 border-2 border-transparent hover:border-neutral-200 dark:hover:border-neutral-700 transition-colors"
+                >
+                  <div className="flex flex-row justify-between *:my-auto bg-red-100 dark:bg-red-950 p-4 rounded-xl">
+                    <div className="flex flex-col">
+                      <p className="text-lg">Danger zone</p>
+                      <p className="opacity-50">
+                        These actions may be destructive. Proceed with caution.
+                      </p>
+                    </div>
+                    <div className="flex flex-row gap-4">
+                      <Button color="danger" variant="light">
+                        Reset your password
+                      </Button>
+                      <Button color="danger" variant="flat" onPress={onOpen}>
+                        Archive this account
+                      </Button>
+                    </div>
                   </div>
-                </Form>
-              )}
-            </Formik>
+                </AccordionItem>
+              </Accordion>
+            </div>
           </div>
-          <div>
-            <Accordion>
-              <AccordionItem
-                key="1"
-                aria-label="Account danger zone"
-                title={
-                  <div className="flex flex-col -my-2">
-                    <p className="text-lg">More actions</p>
-                    <p className="opacity-50">
-                      Click to show more options collapsed for security
-                      purposes.
-                    </p>
-                  </div>
-                }
-                className="rounded-xl -m-2 px-4 py-2 bg-neutral-100 dark:bg-neutral-800 border-2 border-transparent hover:border-neutral-200 dark:hover:border-neutral-700 transition-colors"
-              >
-                <div className="flex flex-row justify-between *:my-auto bg-red-100 dark:bg-red-950 p-4 rounded-xl">
-                  <div className="flex flex-col">
-                    <p className="text-lg">Danger zone</p>
-                    <p className="opacity-50">
-                      These actions may be destructive. Proceed with caution.
-                    </p>
-                  </div>
-                  <div className="flex flex-row gap-4">
-                    <Button color="danger" variant="light">
-                      Reset your password
-                    </Button>
-                    <Button
-                      color="danger"
-                      variant="flat"
-                      onPress={() => {
-                        archiveAccount();
-                      }}
-                    >
-                      Archive this account
-                    </Button>
-                  </div>
-                </div>
-              </AccordionItem>
-            </Accordion>
-          </div>
+          <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+            <ModalContent>
+              {(onClose) => {
+                return (
+                  <>
+                    <ModalHeader className="flex flex-col gap-1">
+                      Are you sure?
+                    </ModalHeader>
+                    <ModalBody>
+                      <p>
+                        By archiving, the account will be immediately locked to
+                        prevent further matters related to this account.
+                      </p>
+                      <p>
+                        Only archive the account if you do not intend for this
+                        account to be active again in the future.
+                      </p>
+                    </ModalBody>
+                    <ModalFooter>
+                      <Button
+                        color="danger"
+                        variant="light"
+                        onPress={() => {
+                          archiveAccount();
+                          onClose();
+                        }}
+                      >
+                        Archive
+                      </Button>
+                      <Button color="primary" onPress={onClose}>
+                        Cancel
+                      </Button>
+                    </ModalFooter>
+                  </>
+                );
+              }}
+            </ModalContent>
+          </Modal>
         </div>
       )}
     </div>
