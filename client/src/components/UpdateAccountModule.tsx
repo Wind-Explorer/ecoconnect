@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import * as Yup from "yup";
 import config from "../config";
 import { useEffect, useState } from "react";
@@ -18,7 +18,13 @@ export default function UpdateAccountModule({
   let [userInformation, setUserInformation] = useState<any>();
 
   useEffect(() => {
-    retrieveUserInformation(accessToken!, setUserInformation);
+    retrieveUserInformation(accessToken!)
+      .then((response) => {
+        setUserInformation(response);
+      })
+      .catch(() => {
+        navigate("/springboard/" + accessToken);
+      });
   }, [accessToken]);
 
   const validationSchema = Yup.object({
@@ -63,7 +69,7 @@ export default function UpdateAccountModule({
       console.log("User updated successfully:", response.data);
       navigate("/springboard/" + accessToken);
     } catch (error) {
-      console.error("Error updating user:", error);
+      throw ((error as AxiosError).response?.data as any).message;
     }
   };
 
@@ -95,7 +101,7 @@ export default function UpdateAccountModule({
         }
       )
       .then(() => {
-        navigate("/login");
+        navigate("/signin");
       })
       .catch((err) => {
         console.log("Archive failed: " + err);

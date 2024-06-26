@@ -1,7 +1,7 @@
 import { Button, Checkbox, Link } from "@nextui-org/react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import config from "../config";
 import NextUIFormikInput from "./NextUIFormikInput";
 import { useNavigate } from "react-router-dom";
@@ -64,7 +64,7 @@ export default function SignUpModule() {
       );
       console.log("User created successfully:", response.data);
     } catch (error) {
-      console.error("Error creating user:", error);
+      throw ((error as AxiosError).response?.data as any).message;
     }
   };
 

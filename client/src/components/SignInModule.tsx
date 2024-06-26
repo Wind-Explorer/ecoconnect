@@ -1,7 +1,7 @@
 import { Button, Link } from "@nextui-org/react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import config from "../config";
 import NextUIFormikInput from "./NextUIFormikInput";
 import { useNavigate } from "react-router-dom";
@@ -33,16 +33,15 @@ export default function SignInModule() {
     password: "",
   };
 
-  const handleSubmit = async (values: any) => {
-    try {
-      const response = await axios.post(
-        config.serverAddress + "/users/login",
-        values
-      );
-      navigate("/springboard/" + response.data.accessToken);
-    } catch (error) {
-      console.error("Error logging in:", error);
-    }
+  const handleSubmit = (values: any) => {
+    axios
+      .post(config.serverAddress + "/users/login", values)
+      .then((response) => {
+        navigate("/springboard/" + response.data.accessToken);
+      })
+      .catch((error) => {
+        throw ((error as AxiosError).response?.data as any).message;
+      });
   };
 
   return (

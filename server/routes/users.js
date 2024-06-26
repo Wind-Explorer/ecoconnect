@@ -96,7 +96,7 @@ router.get("/individual/:id", validateToken, async (req, res) => {
 
   if (user.isArchived) {
     res.status(400).json({
-      message: `Account ${id} is archived.`,
+      message: `ERR_ACC_IS_ARCHIVED`,
     });
   } else {
     res.json(user);
