@@ -1,9 +1,12 @@
-module.exports = (sequelize, DataTypes) => {
+const { DataTypes } = require("sequelize");
+
+module.exports = (sequelize) => {
   const User = sequelize.define(
     "User",
     {
       id: {
-        type: DataTypes.STRING(36),
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         allowNull: false,
         primaryKey: true,
       },
@@ -18,23 +21,36 @@ module.exports = (sequelize, DataTypes) => {
       email: {
         type: DataTypes.STRING(69),
         allowNull: false,
+        validate: {
+          isEmail: true,
+        },
       },
       phoneNumber: {
         type: DataTypes.STRING(8),
         allowNull: false,
+        validate: {
+          len: [8, 8],
+        },
       },
       password: {
         type: DataTypes.STRING(100),
         allowNull: false,
       },
+      profilePicture: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
       isArchived: {
-        type: DataTypes.BOOLEAN(),
+        type: DataTypes.BOOLEAN,
         allowNull: false,
+        defaultValue: false,
       },
     },
     {
       tableName: "users",
+      timestamps: true,
     }
   );
+
   return User;
 };

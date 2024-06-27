@@ -11,30 +11,28 @@ const { sign } = require("jsonwebtoken");
 require("dotenv").config();
 
 let validationSchema = yup.object({
-  id: yup.string().trim().min(36).max(36).required(),
   firstName: yup.string().trim().min(1).max(100).required(),
   lastName: yup.string().trim().min(1).max(100).required(),
-  email: yup.string().trim().min(5).max(69).email().required(),
+  email: yup.string().trim().email().max(69).required(),
   phoneNumber: yup
     .string()
     .trim()
-    .matches(/^[0-9]+$/)
-    .length(8)
+    .matches(/^[0-9]{8}$/, "Must be exactly 8 digits")
     .required(),
   password: yup.string().trim().max(100).required(),
+  profilePicture: yup.string().trim().max(255),
 });
 
 let optionalValidationSchema = yup.object({
-  id: yup.string().trim().min(36).max(36).required(),
   firstName: yup.string().trim().min(1).max(100),
   lastName: yup.string().trim().min(1).max(100),
-  email: yup.string().trim().min(5).max(69).email(),
+  email: yup.string().trim().email().max(69),
   phoneNumber: yup
     .string()
     .trim()
-    .matches(/^[0-9]+$/)
-    .length(8),
+    .matches(/^[0-9]{8}$/, "Must be exactly 8 digits"),
   password: yup.string().trim().max(100),
+  profilePicture: yup.string().trim().max(255),
 });
 
 router.post("/register", async (req, res) => {
@@ -52,7 +50,6 @@ router.post("/register", async (req, res) => {
     return;
   }
   try {
-    data.id = uuidV4();
     data.password = await argon2.hash(data.password);
 
     console.log("Validating schema...");
