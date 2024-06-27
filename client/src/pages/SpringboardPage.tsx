@@ -6,6 +6,7 @@ import { LockClosedIcon, PencilSquareIcon } from "../icons";
 import SpringboardButton from "../components/SpringboardButton";
 import { getTimeOfDay } from "../utilities";
 import { retrieveUserInformation } from "../security/users";
+import UserProfilePicture from "../components/UserProfilePicture";
 
 export default function SpringboardPage() {
   let { accessToken } = useParams<string>(); // TODO: Replace AT from props with AT from localstorage
@@ -65,7 +66,11 @@ export default function SpringboardPage() {
                   Manage your account
                 </Button>
               </div>
-              <div className="bg-red-500 w-40 h-40 rounded-full"></div>
+              <UserProfilePicture
+                userId={userInformation.id}
+                token={accessToken!}
+                editable={false}
+              />
             </div>
             <div className="flex flex-row justify-stretch *:w-full *:h-56 w-full p-4 pt-0 gap-4">
               <SpringboardButton

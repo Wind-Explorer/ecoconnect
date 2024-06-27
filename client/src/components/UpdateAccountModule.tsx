@@ -16,8 +16,8 @@ import {
 } from "@nextui-org/react";
 import { Form, Formik } from "formik";
 import NextUIFormikInput from "./NextUIFormikInput";
-import { PencilSquareIcon } from "../icons";
 import { useNavigate } from "react-router-dom";
+import UserProfilePicture from "./UserProfilePicture";
 
 export default function UpdateAccountModule({
   accessToken,
@@ -157,7 +157,7 @@ export default function UpdateAccountModule({
                       </div>
                     </div>
                     <div className="flex flex-row gap-8">
-                      <div className="flex-grow flex sm:flex-row flex-col gap-4 *:w-full *:flex *:flex-col *:gap-4">
+                      <div className="flex-grow flex sm:flex-row flex-col gap-4 *:w-full *:flex *:flex-col *:gap-4 *:my-auto">
                         <div>
                           <NextUIFormikInput
                             label="First Name"
@@ -196,12 +196,12 @@ export default function UpdateAccountModule({
                           />
                         </div>
                       </div>
-                      <div className="w-40 h-40 bg-red-500 hover:bg-red-700 transition-colors rounded-full relative">
-                        <div className="transition-opacity opacity-0 hover:opacity-100 absolute w-full h-full text-white flex flex-col justify-center rounded-full">
-                          <div className=" w-min h-min mx-auto scale-150">
-                            <PencilSquareIcon />
-                          </div>
-                        </div>
+                      <div>
+                        <UserProfilePicture
+                          userId={userInformation.id}
+                          token={accessToken}
+                          editable={true}
+                        />
                       </div>
                     </div>
                   </Form>

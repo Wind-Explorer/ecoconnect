@@ -37,7 +37,7 @@ module.exports = (sequelize) => {
         allowNull: false,
       },
       profilePicture: {
-        type: DataTypes.TEXT,
+        type: DataTypes.BLOB("long"),
         allowNull: true,
       },
       isArchived: {

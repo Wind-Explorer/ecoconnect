@@ -5,8 +5,9 @@ const { User } = require("../models");
 const { validateToken } = require("../middlewares/auth");
 const argon2 = require("argon2");
 const router = express.Router();
-const { v4: uuidV4 } = require("uuid");
 const { sign } = require("jsonwebtoken");
+const multer = require("multer");
+const sharp = require("sharp");
 
 require("dotenv").config();
 
@@ -221,5 +222,79 @@ router.put("/archive/:id", validateToken, async (req, res) => {
     res.status(400).json({ errors: err.errors });
   }
 });
+
+router.get("/profile-image/:id", async (req, res) => {
+  let id = req.params.id;
+  let user = await User.findByPk(id);
+
+  if (!user || !user.profilePicture) {
+    res.sendStatus(404);
+    return;
+  }
+
+  try {
+    res.set("Content-Type", "image/jpeg"); // Adjust the content type as necessary
+    res.send(user.profilePicture);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error retrieving profile image", error: err });
+  }
+});
+
+const upload = multer({ storage: multer.memoryStorage() });
+
+router.put(
+  "/profile-image/:id",
+  validateToken,
+  upload.single("image"),
+  async (req, res) => {
+    const id = req.params.id;
+
+    // Check if user exists
+    const user = await User.findByPk(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Check if file is uploaded
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    try {
+      const { buffer, mimetype, size } = req.file;
+
+      // Validate file type and size (example: max 5MB, only images)
+      const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+      const maxSize = 5 * 1024 * 1024; // 5MB
+
+      if (!allowedTypes.includes(mimetype)) {
+        return res.status(400).json({ message: "Invalid file type" });
+      }
+
+      if (size > maxSize) {
+        return res.status(400).json({ message: "File too large" });
+      }
+
+      // Crop the image to a square
+      const croppedBuffer = await sharp(buffer)
+        .resize({ width: 512, height: 512, fit: sharp.fit.cover }) // Adjust size as necessary
+        .toBuffer();
+
+      // Update user's profile picture
+      await User.update(
+        { profilePicture: croppedBuffer },
+        { where: { id: id } }
+      );
+
+      res.json({ message: "Profile image uploaded and cropped successfully." });
+    } catch (err) {
+      res
+        .status(500)
+        .json({ message: "Internal server error", errors: err.errors });
+    }
+  }
+);
 
 module.exports = router;
