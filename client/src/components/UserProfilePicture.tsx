@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useRef, useState } from "react";
 import config from "../config";
 import { Button, Image } from "@nextui-org/react";
+import { popErrorToast } from "../utilities";
 
 export default function UserProfilePicture({
   userId,
@@ -36,7 +37,7 @@ export default function UserProfilePicture({
       );
       return response.data;
     } catch (error) {
-      throw error;
+      popErrorToast(error);
     }
   };
 

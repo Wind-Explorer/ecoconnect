@@ -1,3 +1,4 @@
+import { Toaster } from "react-hot-toast";
 import SingaporeAgencyStrip from "../components/SingaporeAgencyStrip";
 
 export default function DefaultLayout({
@@ -9,6 +10,7 @@ export default function DefaultLayout({
     <div className="relative flex flex-col h-screen">
       <SingaporeAgencyStrip />
       <main className=" flex-grow">{children}</main>
+      <Toaster />
     </div>
   );
 }

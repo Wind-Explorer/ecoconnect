@@ -1,11 +1,12 @@
 import { Button, Link } from "@nextui-org/react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import config from "../config";
 import NextUIFormikInput from "./NextUIFormikInput";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeftIcon } from "../icons";
+import { popErrorToast } from "../utilities";
 
 const validationSchema = Yup.object({
   email: Yup.string()
@@ -33,14 +34,14 @@ export default function SignInModule() {
     password: "",
   };
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: any): void => {
     axios
       .post(config.serverAddress + "/users/login", values)
       .then((response) => {
         navigate("/springboard/" + response.data.accessToken);
       })
       .catch((error) => {
-        throw ((error as AxiosError).response?.data as any).message;
+        popErrorToast(error);
       });
   };
 

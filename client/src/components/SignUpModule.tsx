@@ -1,10 +1,11 @@
 import { Button, Checkbox, Link } from "@nextui-org/react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import config from "../config";
 import NextUIFormikInput from "./NextUIFormikInput";
 import { useNavigate } from "react-router-dom";
+import { popErrorToast } from "../utilities";
 
 const validationSchema = Yup.object({
   firstName: Yup.string()
@@ -64,7 +65,7 @@ export default function SignUpModule() {
       );
       console.log("User created successfully:", response.data);
     } catch (error) {
-      throw ((error as AxiosError).response?.data as any).message;
+      popErrorToast(error);
     }
   };
 

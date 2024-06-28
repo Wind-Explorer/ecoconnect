@@ -1,4 +1,4 @@
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import * as Yup from "yup";
 import config from "../config";
 import { useEffect, useState } from "react";
@@ -18,6 +18,7 @@ import { Form, Formik } from "formik";
 import NextUIFormikInput from "./NextUIFormikInput";
 import { useNavigate } from "react-router-dom";
 import UserProfilePicture from "./UserProfilePicture";
+import { popErrorToast } from "../utilities";
 
 export default function UpdateAccountModule({
   accessToken,
@@ -81,7 +82,7 @@ export default function UpdateAccountModule({
       console.log("User updated successfully:", response.data);
       navigate("/springboard/" + accessToken);
     } catch (error) {
-      throw ((error as AxiosError).response?.data as any).message;
+      popErrorToast(error);
     }
   };
 

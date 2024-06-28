@@ -270,11 +270,20 @@ router.put(
       const maxSize = 5 * 1024 * 1024; // 5MB
 
       if (!allowedTypes.includes(mimetype)) {
-        return res.status(400).json({ message: "Invalid file type" });
+        return res.status(400).json({
+          message:
+            "Invalid file type\nSupported: jpeg, png, gif\nUploaded: " +
+            mimetype.substring(6),
+        });
       }
 
       if (size > maxSize) {
-        return res.status(400).json({ message: "File too large" });
+        return res.status(400).json({
+          message:
+            "File too large!\nMaximum: 5MB, Uploaded: " +
+            (size / 1000000).toFixed(2) +
+            "MB",
+        });
       }
 
       // Crop the image to a square
