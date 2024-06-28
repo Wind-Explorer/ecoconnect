@@ -25,6 +25,9 @@ app.get("/", (req, res) => {
 
 app.use("/users", usersRoute);
 
+const postRoute = require('./routes/post');
+app.use("/post", postRoute);
+
 db.sequelize
   .sync({ alter: true })
   .then(() => {
