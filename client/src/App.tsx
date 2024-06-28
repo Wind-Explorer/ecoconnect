@@ -4,6 +4,7 @@ import SignUpPage from "./pages/SignUpPage";
 import SignInPage from "./pages/SignInPage";
 import SpringboardPage from "./pages/SpringboardPage";
 import ManageUserAccountPage from "./pages/ManageUserAccountPage";
+import SchedulePage from "./pages/SchedulePage";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         element={<ManageUserAccountPage />}
         path="/manage-account/:accessToken"
       />
+      <Route element={<SchedulePage/>} path="/schedule"/>
     </Routes>
   );
 }
