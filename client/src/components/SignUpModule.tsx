@@ -6,6 +6,7 @@ import config from "../config";
 import NextUIFormikInput from "./NextUIFormikInput";
 import { useNavigate } from "react-router-dom";
 import { popErrorToast } from "../utilities";
+import { useState } from "react";
 
 const validationSchema = Yup.object({
   firstName: Yup.string()
@@ -47,6 +48,7 @@ const validationSchema = Yup.object({
 
 export default function SignUpModule() {
   const navigate = useNavigate();
+  const [step, setStep] = useState(1);
 
   const initialValues = {
     firstName: "",
@@ -64,10 +66,14 @@ export default function SignUpModule() {
         values
       );
       console.log("User created successfully:", response.data);
+      navigate("/signin");
     } catch (error) {
       popErrorToast(error);
     }
   };
+
+  const nextStep = () => setStep((prev) => prev + 1);
+  const prevStep = () => setStep((prev) => prev - 1);
 
   return (
     <div className="flex flex-col gap-16">
@@ -78,69 +84,106 @@ export default function SignUpModule() {
       >
         {({ isValid, dirty }) => (
           <Form className="flex flex-col gap-4">
-            <NextUIFormikInput
-              label="First Name"
-              name="firstName"
-              type="text"
-              placeholder="John"
-              labelPlacement="outside"
-            />
-            <NextUIFormikInput
-              label="Last Name"
-              name="lastName"
-              type="text"
-              placeholder="Doe"
-              labelPlacement="outside"
-            />
-            <NextUIFormikInput
-              label="Email"
-              name="email"
-              type="email"
-              placeholder="johndoe@email.com"
-              labelPlacement="outside"
-            />
-            <NextUIFormikInput
-              label="Phone number"
-              name="phoneNumber"
-              type="text"
-              placeholder="XXXXXXXX"
-              labelPlacement="outside"
-              startContent={
-                <p className="text-sm pr-2 border-r-2 border-neutral-300 dark:border-neutral-700">
-                  +65
+            {step === 1 && (
+              <>
+                <p className="text-4xl font-bold pb-6">
+                  First, let us know how to address you.
                 </p>
-              }
-            />
-            <NextUIFormikInput
-              label="New Password"
-              name="password"
-              type="password"
-              placeholder=" "
-              labelPlacement="outside"
-            />
-            <div>
-              <Field
-                name="terms"
-                type="checkbox"
-                as={Checkbox}
-                aria-label="Terms and services agreement checkbox"
-              >
-                I have read and agreed to the{" "}
-                <Link href="#">Terms and Services</Link>
-              </Field>
-              <ErrorMessage
-                name="terms"
-                component="div"
-                className="text-red-500"
-              />
-            </div>
-            <Button
-              type="submit"
-              color="primary"
-              isDisabled={!isValid || !dirty}
-            >
-              Sign up
-            </Button>
+                <NextUIFormikInput
+                  label="First Name"
+                  name="firstName"
+                  type="text"
+                  placeholder="John"
+                  labelPlacement="outside"
+                />
+                <NextUIFormikInput
+                  label="Last Name"
+                  name="lastName"
+                  type="text"
+                  placeholder="Doe"
+                  labelPlacement="outside"
+                />
+                <Button onClick={nextStep} color="primary">
+                  Next
+                </Button>
+              </>
+            )}
+            {step === 2 && (
+              <>
+                <p className="text-4xl font-bold pb-6">
+                  Nice to meet you! Next, your contacts.
+                </p>
+                <NextUIFormikInput
+                  label="Email"
+                  name="email"
+                  type="email"
+                  placeholder="johndoe@email.com"
+                  labelPlacement="outside"
+                />
+                <NextUIFormikInput
+                  label="Phone number"
+                  name="phoneNumber"
+                  type="text"
+                  placeholder="XXXXXXXX"
+                  labelPlacement="outside"
+                  startContent={
+                    <p className="text-sm pr-2 border-r-2 border-neutral-300 dark:border-neutral-700">
+                      +65
+                    </p>
+                  }
+                />
+                <div className="flex justify-between">
+                  <Button onClick={prevStep} variant="light">
+                    Back
+                  </Button>
+                  <Button onClick={nextStep} color="primary">
+                    Next
+                  </Button>
+                </div>
+              </>
+            )}
+            {step === 3 && (
+              <>
+                <p className="text-4xl font-bold pb-6">
+                  Almost there! Now, a strong password please.
+                </p>
+                <NextUIFormikInput
+                  label="New Password"
+                  name="password"
+                  type="password"
+                  placeholder=" "
+                  labelPlacement="outside"
+                />
+                <div>
+                  <Field
+                    name="terms"
+                    type="checkbox"
+                    as={Checkbox}
+                    aria-label="Terms and services agreement checkbox"
+                  >
+                    I have read and agreed to the{" "}
+                    <Link href="#">Terms and Services</Link>
+                  </Field>
+                  <ErrorMessage
+                    name="terms"
+                    component="div"
+                    className="text-red-500"
+                  />
+                </div>
+                <div className="flex justify-between">
+                  <Button onClick={prevStep} variant="light">
+                    Back
+                  </Button>
+                  <Button
+                    type="submit"
+                    color="primary"
+                    isDisabled={!isValid || !dirty}
+                  >
+                    Sign up
+                  </Button>
+                </div>
+              </>
+            )}
           </Form>
         )}
       </Formik>
