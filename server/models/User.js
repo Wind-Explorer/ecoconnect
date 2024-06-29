@@ -40,6 +40,11 @@ module.exports = (sequelize) => {
         type: DataTypes.BLOB("long"),
         allowNull: true,
       },
+      accountType: {
+        type: DataTypes.TINYINT(2),
+        allowNull: false,
+        defaultValue: 0
+      },
       isArchived: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
