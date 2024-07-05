@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import DefaultLayout from "../layouts/default";
 import { useEffect, useState } from "react";
 import { Button, Card, Link } from "@nextui-org/react";
@@ -9,12 +9,14 @@ import { retrieveUserInformation } from "../security/users";
 import UserProfilePicture from "../components/UserProfilePicture";
 
 export default function SpringboardPage() {
-  let { accessToken } = useParams<string>(); // TODO: Replace AT from props with AT from localstorage
+  const navigate = useNavigate();
+  let accessToken = localStorage.getItem("accessToken");
+  if (!accessToken) {
+    navigate("/signin");
+  }
   let [userInformation, setUserInformation] = useState<any>();
   let [accountUnavailable, setAccountUnavaliable] = useState(false);
   let timeOfDay = getTimeOfDay();
-
-  const navigate = useNavigate();
 
   let greeting = "";
   if (timeOfDay === 0) {
@@ -26,11 +28,11 @@ export default function SpringboardPage() {
   }
 
   useEffect(() => {
-    retrieveUserInformation(accessToken!)
+    retrieveUserInformation()
       .then((response) => {
         setUserInformation(response);
       })
-      .catch((error) => {
+      .catch((_) => {
         setAccountUnavaliable(true);
       });
     return;
@@ -60,7 +62,7 @@ export default function SpringboardPage() {
                     </div>
                   }
                   onPress={() => {
-                    navigate("/manage-account/" + accessToken);
+                    navigate("/manage-account/");
                   }}
                 >
                   Manage your account
@@ -68,7 +70,6 @@ export default function SpringboardPage() {
               </div>
               <UserProfilePicture
                 userId={userInformation.id}
-                token={accessToken!}
                 editable={false}
               />
             </div>
@@ -77,25 +78,21 @@ export default function SpringboardPage() {
                 title="Community Forums"
                 subtitle="Be involved in discussions among your neighbourhood"
                 linkToPage=""
-
               ></SpringboardButton>
               <SpringboardButton
                 title="Events"
                 subtitle="Participate in exciting upcoming events around Singapore"
                 linkToPage=""
-
               ></SpringboardButton>
               <SpringboardButton
                 title="Home Bill Contest"
                 subtitle="Save resources, win vouchers!"
                 linkToPage=""
-
               ></SpringboardButton>
-              <SpringboardButton 
+              <SpringboardButton
                 title="Karang Guni Scheduling"
                 subtitle="Arrange doorstep sales for your old gears with Karang Guni"
                 linkToPage="/schedule"
-
               ></SpringboardButton>
             </div>
             <div className="w-full h-[600px] bg-red-500"></div>

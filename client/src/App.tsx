@@ -16,16 +16,13 @@ function App() {
       <Route element={<HomePage />} path="/" />
       <Route element={<SignUpPage />} path="/signup" />
       <Route element={<SignInPage />} path="/signin" />
-      <Route element={<SpringboardPage />} path="/springboard/:accessToken" />
-      <Route
-        element={<ManageUserAccountPage />}
-        path="/manage-account/:accessToken"
-      />
+      <Route element={<SpringboardPage />} path="/springboard" />
+      <Route element={<ManageUserAccountPage />} path="/manage-account" />
 
       <Route element={<CommunityPage />} path="/community" />
       <Route element={<CreatePostPage />} path="/createPost" />
-      <Route element={<EditPostPage/>} path="/editPost/:id" />
-      <Route element={<SchedulePage/>} path="/schedule"/>
+      <Route element={<EditPostPage />} path="/editPost/:id" />
+      <Route element={<SchedulePage />} path="/schedule" />
     </Routes>
   );
 }

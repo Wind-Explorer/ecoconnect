@@ -1,39 +1,27 @@
-import axios from "axios";
 import React, { useRef, useState } from "react";
 import config from "../config";
 import { Button, Image } from "@nextui-org/react";
 import { popErrorToast } from "../utilities";
+import instance from "../security/http";
 
 export default function UserProfilePicture({
   userId,
-  token,
   editable,
 }: {
   userId: string;
-  token: string;
   editable: boolean;
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
 
-  const uploadProfileImage = async (
-    userId: string,
-    file: File,
-    token: string
-  ) => {
+  const uploadProfileImage = async (userId: string, file: File) => {
     const formData = new FormData();
     formData.append("image", file);
 
     try {
-      const response = await axios.put(
+      const response = await instance.put(
         `${config.serverAddress}/users/profile-image/${userId}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        formData
       );
       return response.data;
     } catch (error) {
@@ -57,7 +45,7 @@ export default function UserProfilePicture({
   const uploadAndHandleSubmit = async (file: File) => {
     setLoading(true);
     try {
-      await uploadProfileImage(userId, file, token);
+      await uploadProfileImage(userId, file);
     } catch (error) {
     } finally {
       setLoading(false);

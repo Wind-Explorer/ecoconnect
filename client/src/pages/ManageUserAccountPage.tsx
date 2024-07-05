@@ -1,15 +1,19 @@
-import { useParams } from "react-router-dom";
 import DefaultLayout from "../layouts/default";
 import UpdateAccountModule from "../components/UpdateAccountModule";
+import { useNavigate } from "react-router-dom";
 
 export default function ManageUserAccountPage() {
-  let { accessToken } = useParams<string>(); // TODO: Replace AT from props with AT from localstorage
+  const navigate = useNavigate();
+  let accessToken = localStorage.getItem("accessToken");
+  if (!accessToken) {
+    navigate("/signin");
+  }
 
   return (
     <DefaultLayout>
       <div>
         <div className="p-8 flex flex-col gap-8">
-          <UpdateAccountModule accessToken={accessToken!} />
+          <UpdateAccountModule />
         </div>
       </div>
     </DefaultLayout>

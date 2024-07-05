@@ -1,12 +1,12 @@
 import { Button, Checkbox, Link } from "@nextui-org/react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import axios from "axios";
 import config from "../config";
 import NextUIFormikInput from "./NextUIFormikInput";
 import { useNavigate } from "react-router-dom";
 import { popErrorToast } from "../utilities";
 import { useState } from "react";
+import instance from "../security/http";
 
 const validationSchema = Yup.object({
   firstName: Yup.string()
@@ -61,7 +61,7 @@ export default function SignUpModule() {
 
   const handleSubmit = async (values: any) => {
     try {
-      const response = await axios.post(
+      const response = await instance.post(
         config.serverAddress + "/users/register",
         values
       );

@@ -1,4 +1,3 @@
-import axios from "axios";
 import * as Yup from "yup";
 import config from "../config";
 import { useEffect, useState } from "react";
@@ -19,26 +18,23 @@ import NextUIFormikInput from "./NextUIFormikInput";
 import { useNavigate } from "react-router-dom";
 import UserProfilePicture from "./UserProfilePicture";
 import { popErrorToast } from "../utilities";
+import instance from "../security/http";
 
-export default function UpdateAccountModule({
-  accessToken,
-}: {
-  accessToken: string;
-}) {
+export default function UpdateAccountModule() {
   const navigate = useNavigate();
   let [userInformation, setUserInformation] = useState<any>();
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   useEffect(() => {
-    retrieveUserInformation(accessToken!)
+    retrieveUserInformation()
       .then((response) => {
         setUserInformation(response);
       })
       .catch(() => {
-        navigate("/springboard/" + accessToken);
+        navigate("/springboard/");
       });
-  }, [accessToken]);
+  }, []);
 
   const validationSchema = Yup.object({
     firstName: Yup.string()
@@ -70,17 +66,12 @@ export default function UpdateAccountModule({
 
   const handleSubmit = async (values: any) => {
     try {
-      const response = await axios.put(
+      const response = await instance.put(
         `${config.serverAddress}/users/individual/${userInformation.id}`,
-        values,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
+        values
       );
       console.log("User updated successfully:", response.data);
-      navigate("/springboard/" + accessToken);
+      navigate("/springboard/");
     } catch (error) {
       popErrorToast(error);
     }
@@ -103,16 +94,8 @@ export default function UpdateAccountModule({
       };
 
   const archiveAccount = () => {
-    axios
-      .put(
-        config.serverAddress + "/users/archive/" + userInformation.id,
-        null,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      )
+    instance
+      .put(config.serverAddress + "/users/archive/" + userInformation.id)
       .then(() => {
         navigate("/signin");
       })
@@ -143,7 +126,7 @@ export default function UpdateAccountModule({
                         <Button
                           variant="light"
                           onPress={() => {
-                            navigate("/springboard/" + accessToken);
+                            navigate("/springboard/");
                           }}
                         >
                           Cancel
@@ -200,7 +183,6 @@ export default function UpdateAccountModule({
                       <div>
                         <UserProfilePicture
                           userId={userInformation.id}
-                          token={accessToken}
                           editable={true}
                         />
                       </div>

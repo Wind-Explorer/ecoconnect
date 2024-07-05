@@ -38,7 +38,8 @@ export default function SignInModule() {
     axios
       .post(config.serverAddress + "/users/login", values)
       .then((response) => {
-        navigate("/springboard/" + response.data.accessToken);
+        localStorage.setItem("accessToken", response.data.accessToken);
+        navigate("/springboard/");
       })
       .catch((error) => {
         popErrorToast(error);
