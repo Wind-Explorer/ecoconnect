@@ -1,5 +1,6 @@
 import { Toaster } from "react-hot-toast";
 import SingaporeAgencyStrip from "../components/SingaporeAgencyStrip";
+import NavigationBar from "../components/NavigationBar";
 
 export default function DefaultLayout({
   children,
@@ -9,8 +10,9 @@ export default function DefaultLayout({
   return (
     <div className="relative flex flex-col h-screen">
       <SingaporeAgencyStrip />
-      <main className=" flex-grow">{children}</main>
+      <main className="pt-16 flex-grow">{children}</main>
       <Toaster />
+      <NavigationBar />
     </div>
   );
 }

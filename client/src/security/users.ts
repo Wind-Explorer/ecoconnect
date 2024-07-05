@@ -3,6 +3,9 @@ import config from "../config";
 import instance from "./http";
 
 export async function retrieveUserInformation() {
+  if (!localStorage.getItem("accessToken")) {
+    throw "No access token";
+  }
   try {
     let userId = await instance.get(`${config.serverAddress}/users/auth`);
     let userInformation = await instance.get(
