@@ -28,6 +28,9 @@ app.use("/users", usersRoute);
 const postRoute = require('./routes/post');
 app.use("/post", postRoute);
 
+const schedulesRoute = require("./routes/schedule");
+app.use("/schedule", schedulesRoute)
+
 db.sequelize
   .sync({ alter: true })
   .then(() => {

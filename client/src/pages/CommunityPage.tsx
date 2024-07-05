@@ -3,8 +3,8 @@ import DefaultLayout from "../layouts/default";
 import { SetStateAction, useEffect, useState } from 'react';
 import { Button, Avatar, Link, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Input } from "@nextui-org/react";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@nextui-org/react";
-import axios from "axios";
 import config from "../config";
+import instance from "../security/http";
 
 interface Post {
   title: string;
@@ -28,29 +28,29 @@ export default function CommunityPage() {
   const onSearchChange = (e: { target: { value: SetStateAction<string>; }; }) => {
     setSearch(e.target.value);
   };
-  
+
   const getPosts = () => {
-    axios
-    .get(config.serverAddress + '/post').then((res) => {
+    instance
+      .get(config.serverAddress + '/post').then((res) => {
         setCommunityList(res.data);
       });
-    };
+  };
 
   const searchPosts = () => {
-    axios
-    .get(config.serverAddress + `/post?search=${search}`).then((res) => {
-      setCommunityList(res.data);
-    });
+    instance
+      .get(config.serverAddress + `/post?search=${search}`).then((res) => {
+        setCommunityList(res.data);
+      });
   };
 
   useEffect(() => {
     getPosts();
-    }, []);
+  }, []);
 
   const onSearchKeyDown = (e: { key: string; }) => {
-      if (e.key === "Enter") {
-        searchPosts();
-      }
+    if (e.key === "Enter") {
+      searchPosts();
+    }
   };
 
   const onClickSearch = () => {
@@ -62,11 +62,11 @@ export default function CommunityPage() {
   };
 
   useEffect(() => {
-    axios
-    .get(config.serverAddress + '/post').then((res) => {
-      console.log(res.data);
-      setCommunityList(res.data);
-    });
+    instance
+      .get(config.serverAddress + '/post').then((res) => {
+        console.log(res.data);
+        setCommunityList(res.data);
+      });
   }, []);
 
   const handleDeleteClick = (post: Post) => {
@@ -76,8 +76,8 @@ export default function CommunityPage() {
   const handleDeleteConfirm = async () => {
     if (selectedPost) {
       try {
-        await axios
-        .delete(config.serverAddress + `/post/${selectedPost.id}`);
+        await instance
+          .delete(config.serverAddress + `/post/${selectedPost.id}`);
         setCommunityList((prevList) => prevList.filter(post => post.id !== selectedPost.id));
         onOpenChange();
       } catch (error) {
@@ -116,18 +116,18 @@ export default function CommunityPage() {
                             <div>
                               <DropdownTrigger className="justify-center items-center">
                                 <Button isIconOnly className="w-full h-3/5 justify-center items-center" variant="light">
-                                  <svg 
-                                  xmlns="http://www.w3.org/2000/svg" 
-                                  fill="none" 
-                                  viewBox="0 0 24 24" 
-                                  stroke-width="1.5" 
-                                  stroke="currentColor" 
-                                  className="size-6">
-                                    
-                                  <path 
-                                  stroke-linecap="round" 
-                                  stroke-linejoin="round" 
-                                  d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke-width="1.5"
+                                    stroke="currentColor"
+                                    className="size-6">
+
+                                    <path
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
                                   </svg>
                                 </Button>
                               </DropdownTrigger>
@@ -218,35 +218,35 @@ export default function CommunityPage() {
               onKeyDown={onSearchKeyDown}
             />
             <Button isIconOnly className="bg-red-color">
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                fill="none" 
-                viewBox="0 0 24 24" 
-                stroke-width="1.5" 
-                stroke="currentColor" 
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
                 className="size-6 bg-red-color text-white"
                 onClick={onClickSearch}>
-              
-                <path 
-                stroke-linecap="round" 
-                stroke-linejoin="round" 
-                d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
               </svg>
             </Button>
             <Button isIconOnly className="bg-red-color">
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                fill="none" 
-                viewBox="0 0 24 24" 
-                stroke-width="1.5" 
-                stroke="currentColor" 
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
                 className="size-6 text-white"
                 onClick={onClickClear}>
-                
-              <path 
-                stroke-linecap="round" 
-                stroke-linejoin="round" 
-                d="M6 18 18 6M6 6l12 12" />
+
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M6 18 18 6M6 6l12 12" />
               </svg>
             </Button>
           </div>

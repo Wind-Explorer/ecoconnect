@@ -44,7 +44,7 @@ export default function SchedulePage() {
       <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
         <h1>Karang Guni Schedule</h1>
         <div className="flex flex-col gap-8">
-          <Table>
+          <Table aria-label="Schedule Table">
             <TableHeader>
               <TableColumn>Date</TableColumn>
               <TableColumn>Time</TableColumn>
@@ -77,7 +77,7 @@ export default function SchedulePage() {
             <div>
               <div className="flex flex-row gap-20 ">
                 <div>
-                  <Card>
+                  <Card aria-label="Paper Price Card 1">
                     <CardBody>
                       <p className="text-lg">Paper</p>
                       <p className="text-xl">$0.05 to 0.20/KG</p>
@@ -90,7 +90,7 @@ export default function SchedulePage() {
                   </Card>
                 </div>
                 <div>
-                  <Card>
+                  <Card aria-label="Paper Price Card 2">
                     <CardBody>
                       <p className="text-lg">Paper</p>
                       <p className="text-xl">$0.05 to 0.20/KG</p>
@@ -103,7 +103,7 @@ export default function SchedulePage() {
                   </Card>
                 </div>
                 <div>
-                  <Card>
+                  <Card aria-label="Paper Price Card 3">
                     <CardBody>
                       <p className="text-lg">Paper</p>
                       <p className="text-xl">$0.05 to 0.20/KG</p>
