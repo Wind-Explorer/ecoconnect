@@ -30,10 +30,10 @@ function CreatePostPage() {
         tags: ''
     };
 
-    const handleSubmit = async (values: any, { setSubmitting, resetForm , setFieldError }: any) => {
+    const handleSubmit = async (values: any, { setSubmitting, resetForm, setFieldError }: any) => {
         try {
-            const response = await axios 
-            .post(config.serverAddress + '/post', values); // Assuming an API route
+            const response = await axios
+                .post(config.serverAddress + '/post', values); // Assuming an API route
             if (response.status === 200) {
                 console.log('Post created successfully:', response.data);
                 resetForm(); // Clear form after successful submit
@@ -56,18 +56,18 @@ function CreatePostPage() {
         <DefaultLayout>
             <section className="w-8/12 mx-auto">
                 <Link href="/community">
-                    <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    fill="none" 
-                    viewBox="0 0 24 24" 
-                    stroke-width="1.5" 
-                    stroke="black" 
-                    className="size-5">
-                        
-                    <path 
-                    stroke-linecap="round" 
-                    stroke-linejoin="round" 
-                    d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="black"
+                        className="size-5">
+
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
                     </svg>
                 </Link>
             </section>

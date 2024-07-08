@@ -94,7 +94,7 @@ export default function CommunityPage() {
           {
             communityList.map((post) => {
               return (
-                <section className="mb-7 flex flex-row bg-red-50 border border-none rounded-2xl">
+                <section className="mb-7 flex flex-row bg-red-50 border border-none rounded-2xl" key={post.id}>
                   <div className="pl-7 pr-3 pt-5">
                     <Avatar src="https://pbs.twimg.com/media/GOva9x5a0AAK8Bn?format=jpg&name=large" size="lg" />
                   </div>
@@ -116,17 +116,16 @@ export default function CommunityPage() {
                             <div>
                               <DropdownTrigger className="justify-center items-center">
                                 <Button isIconOnly className="w-full h-3/5 justify-center items-center" variant="light">
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
+                                  <svg xmlns="http://www.w3.org/2000/svg"
                                     fill="none"
                                     viewBox="0 0 24 24"
-                                    stroke-width="1.5"
+                                    strokeWidth={1.5}
                                     stroke="currentColor"
                                     className="size-6">
 
                                     <path
-                                      stroke-linecap="round"
-                                      stroke-linejoin="round"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
                                       d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
                                   </svg>
                                 </Button>
@@ -150,7 +149,7 @@ export default function CommunityPage() {
                         </div>
                       </div>
                       <div>
-                        <p className="">
+                        <p>
                           {post.content}
                         </p>
                       </div>
@@ -189,17 +188,16 @@ export default function CommunityPage() {
                     <p>Create a post!</p>
                   </div>
                   <div>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
+                    <svg xmlns="http://www.w3.org/2000/svg"
                       fill="none"
                       viewBox="0 0 24 24"
-                      stroke-width="1.7"
+                      strokeWidth={1.7}
                       stroke="currentColor"
                       className="size-5">
 
                       <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                         d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
                   </div>
@@ -218,18 +216,17 @@ export default function CommunityPage() {
               onKeyDown={onSearchKeyDown}
             />
             <Button isIconOnly className="bg-red-color">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
+              <svg xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
-                stroke-width="1.5"
+                strokeWidth={1.5}
                 stroke="currentColor"
                 className="size-6 bg-red-color text-white"
                 onClick={onClickSearch}>
 
                 <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
               </svg>
             </Button>
@@ -238,14 +235,14 @@ export default function CommunityPage() {
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
-                stroke-width="1.5"
+                strokeWidth={1.5}
                 stroke="currentColor"
                 className="size-6 text-white"
                 onClick={onClickClear}>
 
                 <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   d="M6 18 18 6M6 6l12 12" />
               </svg>
             </Button>
