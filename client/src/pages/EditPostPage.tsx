@@ -1,5 +1,5 @@
 import DefaultLayout from "../layouts/default";
-import { Button, Link } from "@nextui-org/react";
+import { Button } from "@nextui-org/react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { useEffect, useState } from "react";
@@ -9,6 +9,7 @@ import NextUIFormikInput from "../components/NextUIFormikInput";
 import NextUIFormikTextarea from "../components/NextUIFormikTextarea";
 import config from "../config";
 import instance from "../security/http";
+import { ArrowUTurnLeftIcon } from "../icons";
 
 const validationSchema = Yup.object({
   title: Yup.string()
@@ -34,13 +35,6 @@ const validationSchema = Yup.object({
 function editPost() {
   const { id } = useParams();
   const navigate = useNavigate();
-
-  // const initialValues = {
-  //     title: '',
-  //     content: '',
-  //     tags: ''
-  // };
-
   const [post, setPost] = useState({
     title: "",
     content: "",
@@ -62,10 +56,10 @@ function editPost() {
       const response = await instance.put(
         config.serverAddress + `/post/${id}`,
         values
-      ); // Assuming an API route
+      );
       if (response.status === 200) {
         console.log("Post updated successfully:", response.data);
-        resetForm(); // Clear form after successful submit
+        resetForm();
         navigate("/community");
       } else {
         console.error("Error updating post:", response.statusText);
@@ -84,21 +78,14 @@ function editPost() {
   return (
     <DefaultLayout>
       <section className="w-8/12 mx-auto">
-        <Link href="/community">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="black"
-            className="size-5">
-
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
-          </svg>
-        </Link>
+        <Button
+          variant="light"
+          onPress={() => {
+            navigate(-1);
+          }}
+        >
+          <ArrowUTurnLeftIcon />
+        </Button>
       </section>
       <section className="w-8/12 mx-auto p-5 bg-red-100 border border-none rounded-2xl">
         {!loading && (

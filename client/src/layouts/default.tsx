@@ -13,6 +13,12 @@ export default function DefaultLayout({
       <main className="pt-16 flex-grow">{children}</main>
       <Toaster />
       <NavigationBar />
+
+      {/*
+      A div that becomes black in dark mode to cover white color parts
+      of the website when scrolling past the window's original view.
+      */}
+      <div className="fixed -z-50 dark:bg-black inset-0 w-full h-full"></div>
     </div>
   );
 }

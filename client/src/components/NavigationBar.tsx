@@ -95,7 +95,7 @@ export default function NavigationBar() {
                   navigate("/community");
                 }}
               >
-                <p className="text-lg">Community</p>
+                <p className="text-lg">Community Forums</p>
               </Button>
             </div>
           </div>
