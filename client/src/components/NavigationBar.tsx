@@ -76,7 +76,13 @@ export default function NavigationBar() {
               />
             </Button>
             <div className="flex flex-row *:my-auto *:text-red-800 dark:*:text-red-100">
-              <Button variant="light" size="sm">
+              <Button 
+                variant="light" 
+                size="sm"
+                onPress={() => {
+                  navigate("/events");
+                }}
+              >
                 <p className="text-lg">Events</p>
               </Button>
               <Button

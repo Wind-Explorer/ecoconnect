@@ -9,6 +9,7 @@ import CommunityPage from "./pages/CommunityPage";
 import CreatePostPage from "./pages/CreatePostPage";
 import EditPostPage from "./pages/EditPostPage";
 import SchedulePage from "./pages/SchedulePage";
+import EventsPage from "./pages/EventsPage";
 
 function App() {
   return (
@@ -23,6 +24,8 @@ function App() {
       <Route element={<CreatePostPage />} path="/createPost" />
       <Route element={<EditPostPage />} path="/editPost/:id" />
       <Route element={<SchedulePage />} path="/schedule" />
+      <Route element={<EventsPage />} path="/events" />
+
     </Routes>
   );
 }

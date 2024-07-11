@@ -25,6 +25,9 @@ app.get("/", (req, res) => {
 
 app.use("/users", usersRoute);
 
+const eventsRoute = require('./routes/events');
+app.use("/events", eventsRoute);
+
 const postRoute = require('./routes/post');
 app.use("/post", postRoute);
 
