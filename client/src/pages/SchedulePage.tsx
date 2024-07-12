@@ -1,6 +1,10 @@
 import {
+  Button,
   Card,
   CardBody,
+  Chip,
+  ChipProps,
+  Input,
   Table,
   TableBody,
   TableCell,
@@ -12,6 +16,8 @@ import DefaultLayout from "../layouts/default";
 import { useEffect, useState } from "react";
 import config from "../config";
 import instance from "../security/http";
+import { MagnifyingGlassIcon, XMarkIcon } from "../icons";
+import React from "react";
 
 interface Schedule {
   id: number;
@@ -21,28 +27,99 @@ interface Schedule {
   status: string;
 }
 
+const statusColorMap: Record<string, ChipProps["color"]> = {
+  "On going": "success",
+  "Up coming": "danger",
+  "Ended": "default",
+};
+
+const getStatusColor = (status: string): ChipProps["color"] => {
+  return statusColorMap[status] || "default";
+};
+
 export default function SchedulePage() {
   const [scheduleList, setScheduleList] = useState<Schedule[]>([]);
 
   useEffect(() => {
+    getSchedule();
+  }, []);
+
+  const getSchedule = () => {
     instance
       .get(config.serverAddress + "/schedule")
       .then((res) => {
         const schedules = res.data.map((schedule: Schedule) => ({
           ...schedule,
-          dateTime: new Date(schedule.dateTime), // Convert to Date object
+          dateTime: new Date(schedule.dateTime), // Ensure dateTime is a Date object
         }));
         setScheduleList(schedules);
       })
       .catch((err) => {
         console.error("Error fetching schedules:", err);
       });
-  }, []);
+  };
+
+  // search
+  const [search, setSearch] = useState("");
+  const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+  };
+
+  const onSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      searchSchedule();
+    }
+  };
+
+  const onClickSearch = () => {
+    searchSchedule();
+  };
+
+  const onClickClear = () => {
+    setSearch("");
+    getSchedule();
+  };
+
+  const searchSchedule = () => {
+    console.log(`Searching for: ${search}`);
+    instance
+      .get(`${config.serverAddress}/schedule?search=${search}`)
+      .then((res) => {
+        const schedules = res.data.map((schedule: Schedule) => ({
+          ...schedule,
+          dateTime: new Date(schedule.dateTime), // Ensure dateTime is a Date object
+        }));
+        setScheduleList(schedules);
+      })
+      .catch((err) => {
+        console.error("Error fetching search results:", err);
+      });
+  };
 
   return (
     <DefaultLayout>
       <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
         <h1>Karang Guni Schedule</h1>
+        <div className="flex gap-4">
+          {/* Search Input */}
+          <Input
+            value={search}
+            className="w-[400px]"
+            placeholder="Search Address/Postal"
+            onChange={onSearchChange}
+            onKeyDown={onSearchKeyDown}
+            endContent={
+              <div className="flex flex-row -mr-3">
+                <Button isIconOnly variant="light" onPress={onClickSearch}>
+                  <MagnifyingGlassIcon />
+                </Button>
+                <Button isIconOnly variant="light" onPress={onClickClear}>
+                  <XMarkIcon />
+                </Button>
+              </div>
+            }
+          />
+        </div>
         <div className="flex flex-col gap-8">
           <Table aria-label="Schedule Table">
             <TableHeader>
@@ -68,7 +145,11 @@ export default function SchedulePage() {
                   </TableCell>
                   <TableCell>{schedule.location}</TableCell>
                   <TableCell>{schedule.postalCode}</TableCell>
-                  <TableCell>{schedule.status}</TableCell>
+                  <TableCell>
+                    <Chip color={getStatusColor(schedule.status)}>
+                      {schedule.status}
+                    </Chip>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
