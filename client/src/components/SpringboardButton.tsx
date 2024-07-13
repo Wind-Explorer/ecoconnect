@@ -12,7 +12,12 @@ export default function SpringboardButton({
 }) {
   const navigate = useNavigate();
   return (
-    <Button onPress={() => {navigate(linkToPage)}} className="border-4 border-red-500 bg-neutral-700 hover:bg-red-500 text-white">
+    <Button
+      onPress={() => {
+        navigate(linkToPage);
+      }}
+      className="border-4 border-primary-500 bg-neutral-700 hover:bg-primary-500 text-white"
+    >
       <div className="flex flex-col justify-between w-full h-full py-4 px-2 text-left *:text-wrap mr-16">
         <p className="text-2xl font-semibold">{title}</p>
         <p>{subtitle}</p>

@@ -128,7 +128,7 @@ export default function CommunityPage() {
             {communityList.map((post) => {
               return (
                 <section
-                  className="flex flex-row gap-4 bg-red-50 dark:bg-red-950 border border-none rounded-2xl p-4"
+                  className="flex flex-row gap-4 bg-primary-50 dark:bg-primary-950 border border-none rounded-2xl p-4"
                   key={post.id}
                 >
                   <div>
@@ -201,10 +201,10 @@ export default function CommunityPage() {
             })}
           </div>
         </div>
-        <div className="flex flex-col gap-4 bg-red-50 dark:bg-red-950 p-4 rounded-xl w-[400px]">
+        <div className="flex flex-col gap-4 bg-primary-50 dark:bg-primary-950 p-4 rounded-xl w-[400px]">
           <Button
             startContent={<PlusIcon />}
-            className=" bg-red-500 dark:bg-red-700 text-white"
+            className=" bg-primary-500 dark:bg-primary-700 text-white"
             size="lg"
             onPress={() => {
               navigate("/createPost");

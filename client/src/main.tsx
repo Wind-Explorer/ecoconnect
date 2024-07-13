@@ -9,7 +9,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <BrowserRouter>
       <NextUIProvider>
-        <App />
+        <main className="red-light dark:red-dark">
+          <App />
+        </main>
       </NextUIProvider>
     </BrowserRouter>
   </React.StrictMode>

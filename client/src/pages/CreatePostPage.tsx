@@ -75,7 +75,7 @@ function CreatePostPage() {
           <ArrowUTurnLeftIcon />
         </Button>
       </section>
-      <section className="w-8/12 mx-auto p-5 bg-red-100 border border-none rounded-2xl">
+      <section className="w-8/12 mx-auto p-5 bg-primary-100 border border-none rounded-2xl">
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
@@ -114,7 +114,7 @@ function CreatePostPage() {
               <div className="flex flex-row-reverse border">
                 <Button
                   type="submit"
-                  className="bg-red-color text-white text-xl w-1/6"
+                  className="bg-primary-color text-white text-xl w-1/6"
                   disabled={!isValid || !dirty || isSubmitting}
                 >
                   <p>Post</p>

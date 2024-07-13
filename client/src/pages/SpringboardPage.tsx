@@ -95,7 +95,7 @@ export default function SpringboardPage() {
                 linkToPage="/schedule"
               ></SpringboardButton>
             </div>
-            <div className="w-full h-[600px] bg-red-500"></div>
+            <div className="w-full h-[600px] bg-primary-500"></div>
           </div>
         )}
       </div>
@@ -104,7 +104,7 @@ export default function SpringboardPage() {
           <div className="m-8 flex flex-col gap-4">
             <Card>
               <div className="flex flex-col m-8 gap-8">
-                <div className="rounded-xl flex flex-col gap-8 p-4 justify-center bg-red-500 text-center text-white">
+                <div className="rounded-xl flex flex-col gap-8 p-4 justify-center bg-primary-500 text-center text-white">
                   <div className="pt-10 w-full flex flex-row justify-center scale-150">
                     <div className="scale-150 pb-2">
                       <LockClosedIcon />
@@ -119,7 +119,7 @@ export default function SpringboardPage() {
                     </div>
                     <p>
                       If you wish to recover the account, please{" "}
-                      <Link className="text-white px-1 rounded-md bg-red-400">
+                      <Link className="text-white px-1 rounded-md bg-primary-400">
                         contact us
                       </Link>
                     </p>

@@ -63,7 +63,7 @@ export default function UserProfilePicture({
         onChange={handleFileChange}
       />
       <Button
-        className="w-48 h-48 p-0 border-2 border-red-500 shadow-red-500 shadow-2xl"
+        className="w-48 h-48 p-0 border-2 border-primary-500 shadow-primary-500 shadow-2xl"
         radius="full"
         onPress={editable ? handleButtonClick : () => {}}
         isLoading={loading}

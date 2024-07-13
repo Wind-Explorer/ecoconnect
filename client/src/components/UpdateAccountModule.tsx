@@ -6,6 +6,7 @@ import {
   Accordion,
   AccordionItem,
   Button,
+  Card,
   Modal,
   ModalBody,
   ModalContent,
@@ -196,8 +197,9 @@ export default function UpdateAccountModule() {
                 <AccordionItem
                   key="1"
                   aria-label="Account danger zone"
+                  as={Card}
                   title={
-                    <div className="flex flex-col -my-2">
+                    <div className="flex flex-col">
                       <p className="text-lg">More actions</p>
                       <p className="opacity-50">
                         Click to show more options collapsed for security
@@ -205,9 +207,9 @@ export default function UpdateAccountModule() {
                       </p>
                     </div>
                   }
-                  className="rounded-xl -m-2 px-4 py-2 bg-neutral-100 dark:bg-neutral-800 border-2 border-transparent hover:border-neutral-200 dark:hover:border-neutral-700 transition-colors"
+                  className="rounded-xl -m-2 *:px-4"
                 >
-                  <div className="flex flex-row justify-between *:my-auto bg-red-100 dark:bg-red-950 p-4 rounded-xl">
+                  <Card className="flex flex-row justify-between *:my-auto bg-primary-50 dark:bg-primary-950 p-4 my-2">
                     <div className="flex flex-col">
                       <p className="text-lg">Danger zone</p>
                       <p className="opacity-50">
@@ -222,7 +224,7 @@ export default function UpdateAccountModule() {
                         Archive this account
                       </Button>
                     </div>
-                  </div>
+                  </Card>
                 </AccordionItem>
               </Accordion>
             </div>

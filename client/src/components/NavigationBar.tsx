@@ -59,7 +59,7 @@ export default function NavigationBar() {
           : "transition-all fixed w-full p-2 mt-8"
       }
     >
-      <div className="relative bg-red-100 dark:bg-red-900 border-2 border-red-200 dark:border-red-950 shadow-lg w-full h-full rounded-xl flex flex-col justify-center p-1">
+      <div className="relative bg-primary-50 dark:bg-primary-800 border-2 border-primary-100 dark:border-primary-950 shadow-lg w-full h-full rounded-xl flex flex-col justify-center p-1">
         <div className=" w-full flex flex-row justify-between gap-4">
           <div className="flex flex-row gap-0 my-auto *:my-auto">
             <Button
@@ -75,9 +75,9 @@ export default function NavigationBar() {
                 className="h-6 dark:invert dark:hue-rotate-180"
               />
             </Button>
-            <div className="flex flex-row *:my-auto *:text-red-800 dark:*:text-red-100">
-              <Button 
-                variant="light" 
+            <div className="flex flex-row *:my-auto *:text-primary-800 dark:*:text-primary-100">
+              <Button
+                variant="light"
                 size="sm"
                 onPress={() => {
                   navigate("/events");
