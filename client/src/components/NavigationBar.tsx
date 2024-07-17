@@ -18,6 +18,7 @@ import config from "../config";
 import { retrieveUserInformation } from "../security/users";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import EcoconnectFullLogo from "./EcoconnectFullLogo";
 
 export default function NavigationBar() {
   let [userProfileImageURL, setUserProfileImageURL] = useState("");
@@ -69,11 +70,7 @@ export default function NavigationBar() {
                 navigate("/");
               }}
             >
-              <img
-                src="../../assets/ecoconnectFull.svg"
-                alt="ecoconnect logo"
-                className="h-6 dark:invert dark:hue-rotate-180"
-              />
+              <EcoconnectFullLogo />
             </Button>
             <div className="flex flex-row *:my-auto *:text-primary-800 dark:*:text-primary-100">
               <Button
