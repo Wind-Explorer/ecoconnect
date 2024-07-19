@@ -62,7 +62,7 @@ function CreatePostPage() {
       setSubmitting(false);
     }
   };
-
+    
   return (
     <DefaultLayout>
       <section className="w-8/12 mx-auto">
@@ -93,7 +93,9 @@ function CreatePostPage() {
                 />
               </div>
               <div className="text-sm">
-                <p>Image</p>
+                <div>
+                  <p>Image</p>
+                </div>
               </div>
               <div>
                 <NextUIFormikTextarea
@@ -111,10 +113,10 @@ function CreatePostPage() {
                   labelPlacement="inside"
                 />
               </div>
-              <div className="flex flex-row-reverse border">
+              <div className="flex flex-row-reverse">
                 <Button
                   type="submit"
-                  className="bg-primary-color text-white text-xl w-1/6"
+                  className="bg-primary-color text-white text-xl w-1/12"
                   disabled={!isValid || !dirty || isSubmitting}
                 >
                   <p>Post</p>

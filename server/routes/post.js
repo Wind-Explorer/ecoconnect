@@ -3,6 +3,8 @@ const router = express.Router();
 const { Post } = require('../models');
 const { Op, where } = require("sequelize");
 const yup = require("yup");
+const multer = require("multer");
+const sharp = require("sharp");
 
 // Profanity function
 const Filter = require('bad-words');  // Import the bad-words library
@@ -19,7 +21,8 @@ router.post("/", async (req, res) => {
     // Validate request body
     let validationSchema = yup.object({
         title: yup.string().trim().min(3).max(200).required(), // yup object to define validation schema
-        content: yup.string().trim().min(3).max(500).required()
+        content: yup.string().trim().min(3).max(500).required(),
+        postImage: yup.string().trim().max(255),
     });
     try {
         data = await validationSchema.validate(data, // validate() method is used to validate data against the schema and returns the valid data and any applied transformations

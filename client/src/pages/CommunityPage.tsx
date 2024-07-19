@@ -10,8 +10,6 @@ import {
   DropdownItem,
   Input,
   Chip,
-} from "@nextui-org/react";
-import {
   Modal,
   ModalContent,
   ModalHeader,
@@ -30,9 +28,12 @@ import {
   XMarkIcon,
 } from "../icons";
 import { useNavigate } from "react-router-dom";
+// import { retrieveUserInformation } from "../security/users";
+// import UserPostImage from "../components/UserPostImage";
 
 interface Post {
   title: string;
+  postImage: Blob;
   content: string;
   tags: string;
   id: number;
@@ -42,6 +43,8 @@ export default function CommunityPage() {
   const navigate = useNavigate();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+
+  // const [userInformation, setUserInformation] = useState(null);
 
   // communityList is a state variable
   // function setCommunityList is the setter function for the state variable
@@ -114,6 +117,18 @@ export default function CommunityPage() {
     }
   };
 
+  // useEffect(() => {
+  //   retrieveUserInformation()
+  //     .then((response) => {
+  //       setUserInformation(response);
+  //     })
+  //   return;
+  // }, []);
+
+  const handlePostClick = (id: number) => {
+    navigate(`/post/${id}`);
+  };
+
   return (
     <DefaultLayout>
       <div className="flex flex-row gap-4 m-10">
@@ -130,8 +145,9 @@ export default function CommunityPage() {
                 <section
                   className="flex flex-row gap-4 bg-primary-50 dark:bg-primary-950 border border-none rounded-2xl p-4"
                   key={post.id}
+                  onClick={() => handlePostClick(post.id)}
                 >
-                  <div>
+                  <div onClick={(e) => e.stopPropagation()}>
                     <Avatar
                       src="https://pbs.twimg.com/media/GOva9x5a0AAK8Bn?format=jpg&name=large"
                       size="lg"
@@ -147,7 +163,8 @@ export default function CommunityPage() {
                         <div className="flex flex-row-reverse justify-center items-center">
                           <Dropdown>
                             <div>
-                              <DropdownTrigger className="justify-center items-center">
+                              <DropdownTrigger className="justify-center items-center"
+                                onClick={(e) => e.stopPropagation()}>
                                 <Button isIconOnly variant="light">
                                   <EllipsisHorizontalIcon />
                                 </Button>
@@ -177,6 +194,15 @@ export default function CommunityPage() {
                       <div>
                         <p>{post.content}</p>
                       </div>
+                      <div>
+                        <p>Image</p>
+                        {/* {userInformation && (
+                          <UserPostImage
+                            userId={userInformation}
+                            editable={true}
+                          />
+                        )} */}
+                      </div>
                     </div>
                     <div className="flex flex-col gap-2">
                       <div className="flex flex-row gap-2">
@@ -184,18 +210,19 @@ export default function CommunityPage() {
                         <Chip>Tag 2</Chip>
                       </div>
                       <div className="flex flex-row">
-                        <Button variant="light" isIconOnly>
+                        <Button variant="light" isIconOnly onClick={(e) => e.stopPropagation()}>
                           <HandThumbsUpIcon />
                         </Button>
-                        <Button variant="light" isIconOnly>
+                        <Button variant="light" isIconOnly onClick={(e) => e.stopPropagation()}>
                           <ChatBubbleOvalLeftEllipsisIcon />
                         </Button>
-                        <Button variant="light" isIconOnly>
+                        <Button variant="light" isIconOnly onClick={(e) => e.stopPropagation()}>
                           <EllipsisHorizontalIcon />
                         </Button>
                       </div>
                     </div>
                   </div>
+
                 </section>
               );
             })}
