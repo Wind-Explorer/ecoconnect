@@ -1,8 +1,8 @@
+import React, { useEffect, useState } from 'react';
 import DefaultLayout from "../layouts/default";
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Avatar, Button } from "@nextui-org/react";
 import { useNavigate } from "react-router-dom";
 import { PencilSquareIcon, TrashIcon } from "../icons";
-import { useEffect, useState } from "react";
 import axios from "axios";
 import config from "../config";
 
@@ -25,14 +25,16 @@ const ManageEventsPage = () => {
   }, []);
 
   const handleEdit = (id: string) => {
-    navigate(`/edit-event/${id}`);
+    navigate(`/editEvent/${id}`);
   };
 
-  const handleDelete = (id: string) => {
-    // Add delete functionality here
-    axios.delete(`${config.serverAddress}/events/${id}`).then((res) => {
+  const handleDelete = async (id: string) => {
+    try {
+      await axios.delete(`${config.serverAddress}/events/${id}`);
       setEvents(events.filter((event) => event.id !== id));
-    });
+    } catch (error) {
+      console.error("Failed to delete event:", error);
+    }
   };
 
   return (
@@ -99,3 +101,4 @@ const ManageEventsPage = () => {
 };
 
 export default ManageEventsPage;
+

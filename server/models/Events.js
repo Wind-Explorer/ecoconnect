@@ -27,10 +27,6 @@ module.exports = (sequelize)  => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    Events: {
-      type: DataTypes.BLOB("long"),
-      allowNull: true,
-    },
     slotsAvailable: {
       type: DataTypes.INTEGER,
       allowNull: false,

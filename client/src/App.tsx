@@ -14,6 +14,7 @@ import EventsPage from "./pages/EventsPage";
 import CreateEventsPage from "./pages/CreateEventsPage";
 import ManageEventsPage from "./pages/ManageEventsPage";
 import AdministratorSpringboard from "./pages/AdministratorSpringboard";
+import EditEventsPage from "./pages/EditEventsPage";
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
       <Route element={<EventsPage />} path="/events" />
       <Route element={<CreateEventsPage />} path="/createEvent" />
       <Route element={<ManageEventsPage />} path="/manageEvent" />
+      <Route element={<EditEventsPage />} path="/editEvent/:id" />
     </Routes>
   );
 }
