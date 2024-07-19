@@ -124,7 +124,7 @@ function editPost() {
                     labelPlacement="inside"
                   />
                 </div>
-                <div className="flex flex-row-reverse border">
+                <div className="flex flex-row-reverse">
                   <Button
                     type="submit"
                     className="bg-primary-color text-white text-xl w-1/6"

@@ -8,6 +8,7 @@ import ManageUserAccountPage from "./pages/ManageUserAccountPage";
 import CommunityPage from "./pages/CommunityPage";
 import CreatePostPage from "./pages/CreatePostPage";
 import EditPostPage from "./pages/EditPostPage";
+import PostPage from './pages/PostPage';
 import SchedulePage from "./pages/SchedulePage";
 import EventsPage from "./pages/EventsPage";
 import AdministratorSpringboard from "./pages/AdministratorSpringboard";
@@ -25,6 +26,7 @@ function App() {
       <Route element={<CommunityPage />} path="/community" />
       <Route element={<CreatePostPage />} path="/createPost" />
       <Route element={<EditPostPage />} path="/editPost/:id" />
+      <Route element={<PostPage />} path="/post/:id" />
       <Route element={<SchedulePage />} path="/schedule" />
       <Route element={<EventsPage />} path="/events" />
     </Routes>
