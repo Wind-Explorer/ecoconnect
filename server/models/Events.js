@@ -1,4 +1,7 @@
-module.exports = (sequelize, DataTypes) => {
+const { DataTypes } = require('sequelize');
+
+
+module.exports = (sequelize)  => {
   const Events = sequelize.define("Events", {
     title: {
       type: DataTypes.STRING,
@@ -25,8 +28,8 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     Events: {
-        type: DataTypes.BLOB("long"),
-        allowNull: true,
+      type: DataTypes.BLOB("long"),
+      allowNull: true,
     },
     slotsAvailable: {
       type: DataTypes.INTEGER,
@@ -36,6 +39,5 @@ module.exports = (sequelize, DataTypes) => {
     tableName: "events",
     timestamps: true,
   });
-
   return Events;
-};
+}

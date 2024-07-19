@@ -10,6 +10,8 @@ import CreatePostPage from "./pages/CreatePostPage";
 import EditPostPage from "./pages/EditPostPage";
 import SchedulePage from "./pages/SchedulePage";
 import EventsPage from "./pages/EventsPage";
+import CreateEventsPage from "./pages/CreateEventsPage";
+import ManageEventsPage from "./pages/ManageEventsPage";
 import AdministratorSpringboard from "./pages/AdministratorSpringboard";
 
 function App() {
@@ -27,6 +29,8 @@ function App() {
       <Route element={<EditPostPage />} path="/editPost/:id" />
       <Route element={<SchedulePage />} path="/schedule" />
       <Route element={<EventsPage />} path="/events" />
+      <Route element={<CreateEventsPage />} path="/createEvent" />
+      <Route element={<ManageEventsPage />} path="/manageEvent" />
     </Routes>
   );
 }
