@@ -34,6 +34,9 @@ app.use("/post", postRoute);
 const schedulesRoute = require("./routes/schedule");
 app.use("/schedule", schedulesRoute)
 
+const HBCformRoute = require("./routes/hbcform");
+app.use("/hbcform", HBCformRoute)
+
 db.sequelize
   .sync({ alter: true })
   .then(() => {

@@ -14,6 +14,8 @@ import EventsPage from "./pages/EventsPage";
 import CreateEventsPage from "./pages/CreateEventsPage";
 import ManageEventsPage from "./pages/ManageEventsPage";
 import AdministratorSpringboard from "./pages/AdministratorSpringboard";
+import HBContestPage from "./pages/HBContestPage";
+import HBFormPage from "./pages/HBFormPage";
 import EditEventsPage from "./pages/EditEventsPage";
 
 function App() {
@@ -32,6 +34,8 @@ function App() {
       <Route element={<PostPage />} path="/post/:id" />
       <Route element={<SchedulePage />} path="/schedule" />
       <Route element={<EventsPage />} path="/events" />
+      <Route element={<HBContestPage />} path="/contest" />
+      <Route element={<HBFormPage />} path="/hbcform" />
       <Route element={<CreateEventsPage />} path="/createEvent" />
       <Route element={<ManageEventsPage />} path="/manageEvent" />
       <Route element={<EditEventsPage />} path="/editEvent/:id" />

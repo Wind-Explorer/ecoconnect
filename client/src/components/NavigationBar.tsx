@@ -95,6 +95,15 @@ export default function NavigationBar() {
                 variant="light"
                 size="sm"
                 onPress={() => {
+                  navigate("/contest");
+                }}
+              >
+                <p className="text-lg">HB Contest</p>
+              </Button>
+              <Button
+                variant="light"
+                size="sm"
+                onPress={() => {
                   navigate("/community");
                 }}
               >
