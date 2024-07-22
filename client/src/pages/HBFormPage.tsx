@@ -10,10 +10,26 @@ import axios from "axios";
 import InsertImage from '../components/InsertImage';
 
 const validationSchema = Yup.object({
-    electricalBill: Yup.number().positive().required(),
-    waterBill: Yup.number().positive().required(),
-    totalBill: Yup.number().positive().required(),
-    noOfDependents: Yup.number().integer().positive().required(),
+    electricalBill: Yup.number()
+        .typeError('Must be a number')
+        .positive("Must be a positive value")
+        .max(99999.99, "Value is too large")
+        .required(),
+    waterBill: Yup.number()
+        .typeError('Must be a number')
+        .positive("Must be a positive value")
+        .max(99999.99, "Value is too large")
+        .required(),
+    totalBill: Yup.number()
+        .typeError('Must be a number')
+        .positive("Must be a positive value")
+        .max(99999.99, "Value is too large")
+        .required(),
+    noOfDependents: Yup.number()
+        .typeError('Must be a number')
+        .integer("Must be a whole number")
+        .positive("Must be a positive value")
+        .required(),
 });
 
 export default function HBFormPage() {
@@ -40,7 +56,7 @@ export default function HBFormPage() {
 
     const handleSubmit = async (
         values: any,
-        { setSubmitting, resetForm, setFieldError }: any
+        { setSubmitting, resetForm, setFieldError, setFieldValue }: any
     ) => {
         const formData = new FormData();
         formData.append('electricalBill', values.electricalBill);
@@ -48,18 +64,12 @@ export default function HBFormPage() {
         formData.append('totalBill', values.totalBill);
         formData.append('noOfDependents', values.noOfDependents);
 
-        // Convert image files to blobs
-        const ebPictureFile = values.ebPicture;
-        const wbPictureFile = values.wbPicture;
-
-        if (ebPictureFile) {
-            const ebPictureBlob = ebPictureFile.slice(0, ebPictureFile.size, ebPictureFile.type);
-            formData.append('ebPicture', ebPictureBlob);
+        if (values.ebPicture) {
+            formData.append('ebPicture', values.ebPicture);
         }
 
-        if (wbPictureFile) {
-            const wbPictureBlob = wbPictureFile.slice(0, wbPictureFile.size, wbPictureFile.type);
-            formData.append('wbPicture', wbPictureBlob);
+        if (values.wbPicture) {
+            formData.append('wbPicture', values.wbPicture);
         }
 
         try {
@@ -71,13 +81,18 @@ export default function HBFormPage() {
             if (response.status === 200) {
                 console.log("Form created successfully:", response.data);
                 resetForm(); // Clear form after successful submit
+                setFieldValue('ebPicture', null);
+                setFieldValue('wbPicture', null);
                 navigate("/contest");
             } else {
                 console.error("Error creating form:", response.statusText);
             }
         } catch (error: any) {
-            if (error.response && error.response.data && error.response.data.field) {
-                setFieldError(error.response.data.field, error.response.data.error);
+            if (error.response && error.response.data && error.response.data.errors) {
+                const errors = error.response.data.errors;
+                Object.keys(errors).forEach((key) => {
+                    setFieldError(key, errors[key]);
+                });
             } else {
                 console.error("Unexpected error:", error);
             }
@@ -88,7 +103,7 @@ export default function HBFormPage() {
 
     return (
         <DefaultLayout>
-            <section className="w-8/12 mx-auto">
+            <section className="w-7/12 mx-auto">
                 <Button
                     variant="light"
                     onPress={() => navigate(-1)}
@@ -96,7 +111,7 @@ export default function HBFormPage() {
                     <ArrowUTurnLeftIcon />
                 </Button>
             </section>
-            <section className="w-7/12 mx-auto p-5 bg-red-100 border border-none rounded-2xl max-h-m">
+            <section className="w-7/12 mx-auto p-5 bg-red-100 border border-none rounded-2xl h-600px">
                 <Formik
                     initialValues={initialValues}
                     validationSchema={validationSchema}
@@ -136,7 +151,7 @@ export default function HBFormPage() {
                                             labelPlacement="inside"
                                         />
                                     </div>
-                                    <div className="flex flex-row gap-10 max-w-xs max-h-xs">
+                                    <div className="flex flex-row gap-8 max-w-xs h-[500px]">
                                         <InsertImage
                                             onImageSelected={(file) => {
                                                 setFieldValue('ebPicture', file);

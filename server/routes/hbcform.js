@@ -13,8 +13,6 @@ router.post("/", upload.fields([
     { name: 'ebPicture', maxCount: 1 },
     { name: 'wbPicture', maxCount: 1 }
 ]), async (req, res) => {
-    console.log("Request Body:", req.body);
-    console.log("Request Files:", req.files);
 
     let data = req.body;
     let files = req.files;
@@ -28,7 +26,6 @@ router.post("/", upload.fields([
     });
     try {
         data = await validationSchema.validate(data, { abortEarly: false });
-        console.log("Validated data:", data);
 
         // Process valid data
         let ebPicture = files.ebPicture[0].buffer;
