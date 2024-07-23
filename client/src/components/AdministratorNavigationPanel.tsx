@@ -46,7 +46,9 @@ export default function AdministratorNavigationPanel() {
   return (
     <div className="h-full">
       <div
-        className={`fixed transition-all top-${isScrolled ? "2" : "10"} left-2`}
+        className={`fixed transition-all ${
+          isScrolled ? "top-2" : "top-10"
+        } left-2`}
       >
         <div className="bg-white rounded-full z-40">
           <Button
