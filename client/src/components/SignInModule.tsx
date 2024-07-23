@@ -7,6 +7,7 @@ import NextUIFormikInput from "./NextUIFormikInput";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeftIcon } from "../icons";
 import { popErrorToast } from "../utilities";
+import { retrieveUserInformation } from "../security/users";
 
 const validationSchema = Yup.object({
   email: Yup.string()
@@ -39,7 +40,13 @@ export default function SignInModule() {
       .post(config.serverAddress + "/users/login", values)
       .then((response) => {
         localStorage.setItem("accessToken", response.data.accessToken);
-        navigate("/springboard/");
+        retrieveUserInformation().then((value) => {
+          if (value.accountType == 2) {
+            navigate("/admin");
+          } else {
+            navigate("/springboard/");
+          }
+        });
       })
       .catch((error) => {
         popErrorToast(error);

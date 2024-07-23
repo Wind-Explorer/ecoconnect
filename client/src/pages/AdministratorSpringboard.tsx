@@ -29,9 +29,12 @@ export default function AdministratorSpringboard() {
   useEffect(() => {
     retrieveUserInformation()
       .then((response) => {
+        if (response.accountType != 2) {
+          navigate("/");
+        }
         setUserInformation(response);
       })
-      .catch((_) => {
+      .catch(() => {
         navigate("/signin");
       });
     return;

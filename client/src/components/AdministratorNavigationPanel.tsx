@@ -3,6 +3,10 @@ import {
   Button,
   Card,
   CircularProgress,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
   ScrollShadow,
 } from "@nextui-org/react";
 import {
@@ -14,6 +18,7 @@ import {
   GiftTopIcon,
   ChatBubbleOvalLeftIcon,
   ChevronLeftIcon,
+  ArrowRightStartOnRectangleIcon,
 } from "../icons";
 import EcoconnectFullLogo from "./EcoconnectFullLogo";
 import { retrieveUserInformation } from "../security/users";
@@ -176,26 +181,42 @@ export default function AdministratorNavigationPanel() {
                   </div>
                 </ScrollShadow>
                 <div className="bg-primary-500 p-1">
-                  <Button variant="light" className="h-full w-full p-2">
-                    <div className="flex flex-row w-full justify-start">
-                      <div className="flex flex-row w-full gap-3 *:my-auto text-white">
-                        <Avatar src={userProfileImageURL} />
-                        <div className="flex flex-col h-full text-left">
-                          <p className="font-semibold">
-                            {userInformation.firstName +
-                              " " +
-                              userInformation.lastName}
-                          </p>
-                          <p className="text-sm opacity-70">
-                            {userInformation.email}
-                          </p>
-                          <p className="text-sm opacity-70">
-                            +65 {userInformation.phoneNumber}
-                          </p>
+                  <Dropdown placement="top-start">
+                    <DropdownTrigger>
+                      <Button variant="light" className="h-full w-full p-2">
+                        <div className="flex flex-row w-full justify-start">
+                          <div className="flex flex-row w-full gap-3 *:my-auto text-white">
+                            <Avatar src={userProfileImageURL} />
+                            <div className="flex flex-col h-full text-left">
+                              <p className="font-semibold">
+                                {userInformation.firstName +
+                                  " " +
+                                  userInformation.lastName}
+                              </p>
+                              <p className="text-sm opacity-70">
+                                {userInformation.email}
+                              </p>
+                              <p className="text-sm opacity-70">
+                                +65 {userInformation.phoneNumber}
+                              </p>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                  </Button>
+                      </Button>
+                    </DropdownTrigger>
+                    <DropdownMenu>
+                      <DropdownItem
+                        key="signout"
+                        startContent={<ArrowRightStartOnRectangleIcon />}
+                        color="danger"
+                        title="Sign out"
+                        onPress={() => {
+                          localStorage.clear();
+                          window.location.reload();
+                        }}
+                      />
+                    </DropdownMenu>
+                  </Dropdown>
                 </div>
               </div>
             )}
