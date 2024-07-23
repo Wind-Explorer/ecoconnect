@@ -30,6 +30,9 @@ export default function SpringboardPage() {
   useEffect(() => {
     retrieveUserInformation()
       .then((response) => {
+        if (response.accountType == 2) {
+          navigate("/admin");
+        }
         setUserInformation(response);
       })
       .catch((_) => {
