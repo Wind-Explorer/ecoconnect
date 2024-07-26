@@ -19,6 +19,7 @@ import {
   ChatBubbleOvalLeftIcon,
   ChevronLeftIcon,
   ArrowRightStartOnRectangleIcon,
+  UsersIcon,
 } from "../icons";
 import EcoconnectFullLogo from "./EcoconnectFullLogo";
 import { retrieveUserInformation } from "../security/users";
@@ -192,7 +193,12 @@ export default function AdministratorNavigationPanel() {
                     <div>
                       <p className="text-sm font-bold opacity-50 pb-2">Users</p>
                       <AdministratorNavigationPanelNavigationButton
-                        text="User Feedbacks"
+                        text="Manage Users"
+                        icon={<UsersIcon />}
+                        onClickRef="users-management"
+                      />
+                      <AdministratorNavigationPanelNavigationButton
+                        text="Feedbacks"
                         icon={<ChatBubbleOvalLeftIcon />}
                         onClickRef="#"
                       />

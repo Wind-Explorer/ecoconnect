@@ -79,6 +79,7 @@ router.get("/all", async (req, res) => {
   let list = await User.findAll({
     where: condition,
     order: [["createdAt", "DESC"]],
+    attributes: { exclude: ["password", "profilePicture"] },
   });
   res.json(list);
 });
@@ -97,6 +98,8 @@ router.get("/individual/:id", validateToken, async (req, res) => {
       message: `ERR_ACC_IS_ARCHIVED`,
     });
   } else {
+    user.password = undefined;
+    user.profilePicture = undefined;
     res.json(user);
   }
 });
@@ -211,6 +214,30 @@ router.put("/archive/:id", validateToken, async (req, res) => {
   try {
     await User.update(
       { isArchived: true },
+      {
+        where: { id: id },
+      }
+    );
+    res.json({
+      message: "User archived successfully.",
+    });
+  } catch (err) {
+    res.status(400).json({ errors: err.errors });
+  }
+});
+
+router.put("/unarchive/:id", validateToken, async (req, res) => {
+  let id = req.params.id;
+  let user = await User.findByPk(id);
+
+  if (!user) {
+    res.sendStatus(404);
+    return;
+  }
+
+  try {
+    await User.update(
+      { isArchived: false },
       {
         where: { id: id },
       }
