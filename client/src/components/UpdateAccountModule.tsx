@@ -23,7 +23,7 @@ import instance from "../security/http";
 
 export default function UpdateAccountModule() {
   const navigate = useNavigate();
-  let [userInformation, setUserInformation] = useState<any>();
+  const [userInformation, setUserInformation] = useState<any>();
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -33,7 +33,7 @@ export default function UpdateAccountModule() {
         setUserInformation(response);
       })
       .catch(() => {
-        navigate("/springboard/");
+        navigate("/signin");
       });
   }, []);
 
@@ -72,7 +72,7 @@ export default function UpdateAccountModule() {
         values
       );
       console.log("User updated successfully:", response.data);
-      navigate("/springboard/");
+      navigate("/springboard");
     } catch (error) {
       popErrorToast(error);
     }
@@ -127,7 +127,7 @@ export default function UpdateAccountModule() {
                         <Button
                           variant="light"
                           onPress={() => {
-                            navigate("/springboard/");
+                            navigate("/springboard");
                           }}
                         >
                           Cancel

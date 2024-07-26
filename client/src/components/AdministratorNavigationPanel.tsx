@@ -26,19 +26,30 @@ import { useEffect, useState } from "react";
 import config from "../config";
 import AdministratorNavigationPanelNavigationButton from "./AdministratorNavigationPanelNavigationButton";
 import EcoconnectLogo from "./EcoconnectLogo";
+import { useNavigate } from "react-router-dom";
 
 export default function AdministratorNavigationPanel() {
   const [userInformation, setUserInformation] = useState<any>();
   const [userProfileImageURL, setUserProfileImageURL] = useState("");
   const [panelVisible, setPanelVisible] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
+
+  const navigate = useNavigate();
+
   useEffect(() => {
-    retrieveUserInformation().then((value) => {
-      setUserInformation(value);
-      setUserProfileImageURL(
-        `${config.serverAddress}/users/profile-image/${value.id}`
-      );
-    });
+    retrieveUserInformation()
+      .then((value) => {
+        if (!value || value.accountType != 2) {
+          navigate("/");
+        }
+        setUserInformation(value);
+        setUserProfileImageURL(
+          `${config.serverAddress}/users/profile-image/${value.id}`
+        );
+      })
+      .catch(() => {
+        navigate("/signin");
+      });
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };

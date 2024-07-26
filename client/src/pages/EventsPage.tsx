@@ -1,9 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import DefaultLayout from "../layouts/default";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import instance from "../security/http";
 import config from "../config";
-import { Card, CardHeader, CardBody, CardFooter, Image, Button } from "@nextui-org/react";
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  CardFooter,
+  Image,
+  Button,
+} from "@nextui-org/react";
 
 const EventsPage = () => {
   const [events, setEvents] = useState<any[]>([]);
@@ -24,7 +30,7 @@ const EventsPage = () => {
   }, []);
 
   return (
-    <DefaultLayout>
+    <div className="w-full h-full">
       <div className="p-8">
         <div className="mb-6">
           <h2 className="text-3xl font-semibold text-primary-600">Events</h2>
@@ -34,8 +40,8 @@ const EventsPage = () => {
             <p className="text-gray-600">No events available.</p>
           ) : (
             events.map((event) => (
-              <Card 
-                key={event.id} 
+              <Card
+                key={event.id}
                 className="bg-white rounded-lg overflow-hidden border"
               >
                 <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
@@ -53,7 +59,7 @@ const EventsPage = () => {
                 </CardBody>
                 <CardFooter className="flex flex-col items-start p-4">
                   <p className="text-gray-600 mb-4">{event.description}</p>
-                  <Button 
+                  <Button
                     className="bg-primary-600 text-white rounded px-4 py-2 hover:bg-primary-700"
                     onClick={() => navigate(`/event/${event.id}`)}
                   >
@@ -65,7 +71,7 @@ const EventsPage = () => {
           )}
         </div>
       </div>
-    </DefaultLayout>
+    </div>
   );
 };
 

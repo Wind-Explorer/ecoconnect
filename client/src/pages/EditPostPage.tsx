@@ -1,4 +1,3 @@
-import DefaultLayout from "../layouts/default";
 import { Button } from "@nextui-org/react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
@@ -60,7 +59,7 @@ function editPost() {
       if (response.status === 200) {
         console.log("Post updated successfully:", response.data);
         resetForm();
-        navigate("/community");
+        navigate(-1);
       } else {
         console.error("Error updating post:", response.statusText);
       }
@@ -76,7 +75,7 @@ function editPost() {
   };
 
   return (
-    <DefaultLayout>
+    <div className="w-full h-full">
       <section className="w-8/12 mx-auto">
         <Button
           variant="light"
@@ -138,7 +137,7 @@ function editPost() {
           </Formik>
         )}
       </section>
-    </DefaultLayout>
+    </div>
   );
 }
 

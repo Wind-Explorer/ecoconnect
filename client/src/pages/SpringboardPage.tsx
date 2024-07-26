@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import DefaultLayout from "../layouts/default";
 import { useEffect, useState } from "react";
 import { Button, Card, Link } from "@nextui-org/react";
 import { LockClosedIcon, PencilSquareIcon } from "../icons";
@@ -14,8 +13,8 @@ export default function SpringboardPage() {
   if (!accessToken) {
     navigate("/signin");
   }
-  let [userInformation, setUserInformation] = useState<any>();
-  let [accountUnavailable, setAccountUnavaliable] = useState(false);
+  const [userInformation, setUserInformation] = useState<any>();
+  const [accountUnavailable, setAccountUnavaliable] = useState(false);
   let timeOfDay = getTimeOfDay();
 
   let greeting = "";
@@ -42,7 +41,7 @@ export default function SpringboardPage() {
   }, []);
 
   return (
-    <DefaultLayout>
+    <div className="w-full h-full">
       <div>
         {userInformation && (
           <div className="flex flex-col w-full">
@@ -165,6 +164,6 @@ export default function SpringboardPage() {
           </div>
         )}
       </div>
-    </DefaultLayout>
+    </div>
   );
 }

@@ -21,23 +21,23 @@ import { useNavigate } from "react-router-dom";
 import EcoconnectFullLogo from "./EcoconnectFullLogo";
 
 export default function NavigationBar() {
-  let [userProfileImageURL, setUserProfileImageURL] = useState("");
-  let [userInformation, setUserInformation] = useState<any>();
-  let [doneLoading, setDoneLoading] = useState(false);
+  const [userProfileImageURL, setUserProfileImageURL] = useState("");
+  const [userInformation, setUserInformation] = useState<any>();
+  const [doneLoading, setDoneLoading] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
-  let navigate = useNavigate();
+  const navigate = useNavigate();
   useEffect(() => {
     retrieveUserInformation()
       .then((value) => {
+        if (value.accountType == 2) navigate("/admin");
         setUserProfileImageURL(
           `${config.serverAddress}/users/profile-image/${value.id}`
         );
         setUserInformation(value);
       })
-      .catch((err) => {
-        console.log(err);
-        return;
+      .catch(() => {
+        navigate("/signin");
       })
       .finally(() => {
         setDoneLoading(true);
@@ -86,7 +86,7 @@ export default function NavigationBar() {
                 variant="light"
                 size="sm"
                 onPress={() => {
-                  navigate("/schedule");
+                  navigate("/karang-guni-schedules");
                 }}
               >
                 <p className="text-lg">Schedules</p>
@@ -95,7 +95,7 @@ export default function NavigationBar() {
                 variant="light"
                 size="sm"
                 onPress={() => {
-                  navigate("/contest");
+                  navigate("/home-bill-contest");
                 }}
               >
                 <p className="text-lg">HB Contest</p>
@@ -104,7 +104,7 @@ export default function NavigationBar() {
                 variant="light"
                 size="sm"
                 onPress={() => {
-                  navigate("/community");
+                  navigate("/community-posts");
                 }}
               >
                 <p className="text-lg">Community Forums</p>

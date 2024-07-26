@@ -1,4 +1,3 @@
-import DefaultLayout from "../layouts/default";
 import { Button } from "@nextui-org/react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
@@ -48,7 +47,7 @@ function CreatePostPage() {
       if (response.status === 200) {
         console.log("Post created successfully:", response.data);
         resetForm(); // Clear form after successful submit
-        navigate("/community");
+        navigate(-1);
       } else {
         console.error("Error creating post:", response.statusText);
       }
@@ -62,9 +61,9 @@ function CreatePostPage() {
       setSubmitting(false);
     }
   };
-    
+
   return (
-    <DefaultLayout>
+    <div className="w-full h-full">
       <section className="w-8/12 mx-auto">
         <Button
           variant="light"
@@ -126,7 +125,7 @@ function CreatePostPage() {
           )}
         </Formik>
       </section>
-    </DefaultLayout>
+    </div>
   );
 }
 

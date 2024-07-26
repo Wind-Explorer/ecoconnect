@@ -8,8 +8,8 @@ export default function SignedInStatusVerifier({
 }: {
   children: React.JSX.Element;
 }) {
-  let navigate = useNavigate();
-  let [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     retrieveUserInformation()
       .then((value) => {

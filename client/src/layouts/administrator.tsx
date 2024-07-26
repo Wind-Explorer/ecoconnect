@@ -1,12 +1,9 @@
 import { Toaster } from "react-hot-toast";
 import SingaporeAgencyStrip from "../components/SingaporeAgencyStrip";
 import AdministratorNavigationPanel from "../components/AdministratorNavigationPanel";
+import { Outlet } from "react-router-dom";
 
-export default function AdministratorLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AdministratorLayout() {
   return (
     <div className="relative flex flex-col h-full">
       <SingaporeAgencyStrip />
@@ -14,7 +11,9 @@ export default function AdministratorLayout({
         <div className="h-full z-50">
           <AdministratorNavigationPanel />
         </div>
-        <main className="flex-grow">{children}</main>
+        <main className="flex-grow">
+          <Outlet />
+        </main>
       </div>
       <Toaster />
 

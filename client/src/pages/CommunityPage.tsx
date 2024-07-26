@@ -1,5 +1,4 @@
 // import { title } from "@/components/primitives";
-import DefaultLayout from "../layouts/default";
 import { SetStateAction, useEffect, useState } from "react";
 import {
   Button,
@@ -117,20 +116,12 @@ export default function CommunityPage() {
     }
   };
 
-  // useEffect(() => {
-  //   retrieveUserInformation()
-  //     .then((response) => {
-  //       setUserInformation(response);
-  //     })
-  //   return;
-  // }, []);
-
   const handlePostClick = (id: number) => {
-    navigate(`/post/${id}`);
+    navigate(`post/${id}`);
   };
 
   return (
-    <DefaultLayout>
+    <div className="w-full h-full">
       <div className="flex flex-row gap-4 m-10">
         <div className="flex flex-col gap-8 w-full">
           <div className="flex flex-col">
@@ -163,8 +154,10 @@ export default function CommunityPage() {
                         <div className="flex flex-row-reverse justify-center items-center">
                           <Dropdown>
                             <div>
-                              <DropdownTrigger className="justify-center items-center"
-                                onClick={(e) => e.stopPropagation()}>
+                              <DropdownTrigger
+                                className="justify-center items-center"
+                                onClick={(e) => e.stopPropagation()}
+                              >
                                 <Button isIconOnly variant="light">
                                   <EllipsisHorizontalIcon />
                                 </Button>
@@ -174,7 +167,7 @@ export default function CommunityPage() {
                               <DropdownItem
                                 key="edit"
                                 onClick={() => {
-                                  navigate(`/editPost/${post.id}`);
+                                  navigate(`edit/${post.id}`);
                                 }}
                               >
                                 Edit
@@ -196,12 +189,6 @@ export default function CommunityPage() {
                       </div>
                       <div>
                         <p>Image</p>
-                        {/* {userInformation && (
-                          <UserPostImage
-                            userId={userInformation}
-                            editable={true}
-                          />
-                        )} */}
                       </div>
                     </div>
                     <div className="flex flex-col gap-2">
@@ -210,19 +197,30 @@ export default function CommunityPage() {
                         <Chip>Tag 2</Chip>
                       </div>
                       <div className="flex flex-row">
-                        <Button variant="light" isIconOnly onClick={(e) => e.stopPropagation()}>
+                        <Button
+                          variant="light"
+                          isIconOnly
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           <HandThumbsUpIcon />
                         </Button>
-                        <Button variant="light" isIconOnly onClick={(e) => e.stopPropagation()}>
+                        <Button
+                          variant="light"
+                          isIconOnly
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           <ChatBubbleOvalLeftEllipsisIcon />
                         </Button>
-                        <Button variant="light" isIconOnly onClick={(e) => e.stopPropagation()}>
+                        <Button
+                          variant="light"
+                          isIconOnly
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           <EllipsisHorizontalIcon />
                         </Button>
                       </div>
                     </div>
                   </div>
-
                 </section>
               );
             })}
@@ -234,7 +232,7 @@ export default function CommunityPage() {
             className=" bg-primary-500 dark:bg-primary-700 text-white"
             size="lg"
             onPress={() => {
-              navigate("/createPost");
+              navigate("create");
             }}
           >
             <p className="font-bold">Create a post!</p>
@@ -280,6 +278,6 @@ export default function CommunityPage() {
           )}
         </ModalContent>
       </Modal>
-    </DefaultLayout>
+    </div>
   );
 }

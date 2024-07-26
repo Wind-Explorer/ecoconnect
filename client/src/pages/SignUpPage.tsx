@@ -1,11 +1,10 @@
 import SignUpModule from "../components/SignUpModule";
-import DefaultLayout from "../layouts/default";
 import SignedInStatusVerifier from "../components/SignedInStatusVerifier";
 
 export default function SignUpPage() {
   return (
     <SignedInStatusVerifier>
-      <DefaultLayout>
+      <div className="w-full h-full">
         <div className="flex flex-col h-full">
           <div className="flex flex-row h-full">
             <div className="w-3/5 relative">
@@ -33,7 +32,7 @@ export default function SignUpPage() {
             </div>
           </div>
         </div>
-      </DefaultLayout>
+      </div>
     </SignedInStatusVerifier>
   );
 }

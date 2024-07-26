@@ -1,196 +1,200 @@
-import { useParams, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import DefaultLayout from "../layouts/default";
+import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import instance from "../security/http";
 import config from "../config";
 import {
-    Button,
-    Avatar,
-    Dropdown,
-    DropdownTrigger,
-    DropdownMenu,
-    DropdownItem,
-    Chip,
-    Modal,
-    ModalContent,
-    ModalHeader,
-    ModalBody,
-    ModalFooter,
-    useDisclosure,
-    Spinner,
-  } from "@nextui-org/react";
+  Button,
+  Avatar,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+  Chip,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
+  Spinner,
+} from "@nextui-org/react";
 import {
-ChatBubbleOvalLeftEllipsisIcon,
-EllipsisHorizontalIcon,
-HandThumbsUpIcon,
-ArrowUTurnLeftIcon,
+  ChatBubbleOvalLeftEllipsisIcon,
+  EllipsisHorizontalIcon,
+  HandThumbsUpIcon,
+  ArrowUTurnLeftIcon,
 } from "../icons";
 
 interface Post {
-    title: string;
-    postImage: Blob;
-    content: string;
-    tags: string;
-    id: number;
+  title: string;
+  postImage: Blob;
+  content: string;
+  tags: string;
+  id: number;
 }
 
 const PostPage: React.FC = () => {
-    const navigate = useNavigate();
-    const { id } = useParams<{ id: string }>();
-    const [post, setPost] = useState<Post | null>(null);
-    const { isOpen, onOpen, onOpenChange } = useDisclosure();
-    const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const [post, setPost] = useState<Post | null>(null);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
 
-    useEffect(() => {
-        if (id) {
-            instance.get(`${config.serverAddress}/post/${id}`).then((res) => {
-                setPost(res.data);
-            });
-        }
-    }, [id]);
-
-    if (!post) {
-        return <div className="flex justify-center min-h-screen"><Spinner label="Loading..." color="danger" /></div>;
+  useEffect(() => {
+    if (id) {
+      instance.get(`${config.serverAddress}/post/${id}`).then((res) => {
+        setPost(res.data);
+      });
     }
-    
-    const handleDeleteClick = (post: Post) => {
-        setSelectedPost(post);
-        onOpen();
-      };
-    const handleDeleteConfirm = async () => {
-        if (selectedPost) {
-        try {
-            await instance.delete(
-            config.serverAddress + `/post/${selectedPost.id}`
-            );
-            onOpenChange();
-        } catch (error) {
-            console.error("Error deleting post:", error);
-        }
-        }
-    };
+  }, [id]);
 
+  if (!post) {
     return (
-        <DefaultLayout>
-            <section className="flex">
-                <div className="w-2/12 flex justify-end">
-                    <Button
-                    variant="light"
-                    onPress={() => {
-                        navigate(-1);
-                    }}
-                    >
-                    <ArrowUTurnLeftIcon />
-                    </Button>
+      <div className="flex justify-center min-h-screen">
+        <Spinner label="Loading..." color="danger" />
+      </div>
+    );
+  }
+
+  const handleDeleteClick = (post: Post) => {
+    setSelectedPost(post);
+    onOpen();
+  };
+  const handleDeleteConfirm = async () => {
+    if (selectedPost) {
+      try {
+        await instance.delete(
+          config.serverAddress + `/post/${selectedPost.id}`
+        );
+        onOpenChange();
+      } catch (error) {
+        console.error("Error deleting post:", error);
+      }
+    }
+  };
+
+  return (
+    <div className="w-full h-full">
+      <section className="flex">
+        <div className="w-2/12 flex justify-end">
+          <Button
+            variant="light"
+            onPress={() => {
+              navigate(-1);
+            }}
+          >
+            <ArrowUTurnLeftIcon />
+          </Button>
+        </div>
+        <div className="flex flex-row w-full gap-4 mx-auto ">
+          <div className="flex flex-col gap-8 w-full">
+            <div className="flex flex-col gap-4">
+              <section
+                className="flex flex-row gap-4 bg-primary-50 dark:bg-primary-950 border border-none rounded-2xl p-4"
+                key={post.id}
+              >
+                <div>
+                  <Avatar
+                    src="https://pbs.twimg.com/media/GOva9x5a0AAK8Bn?format=jpg&name=large"
+                    size="lg"
+                  />
                 </div>
-                <div className="flex flex-row w-full gap-4 mx-auto ">
-                    <div className="flex flex-col gap-8 w-full">
-                        <div className="flex flex-col gap-4">
-                            <section
-                            className="flex flex-row gap-4 bg-primary-50 dark:bg-primary-950 border border-none rounded-2xl p-4"
-                            key={post.id}>
-                            <div>
-                                <Avatar
-                                src="https://pbs.twimg.com/media/GOva9x5a0AAK8Bn?format=jpg&name=large"
-                                size="lg"
-                                />
-                            </div>
-                            <div className="flex flex-col gap-8 w-full">
-                                <div className="h-full flex flex-col gap-4">
-                                    <div className="flex flex-row justify-between">
-                                        <div className="flex flex-col">
-                                            <p className="text-xl font-bold">{post.title}</p>
-                                            <p className="text-md text-neutral-500">Adam</p>
-                                        </div>
-                                        <div className="flex flex-row-reverse justify-center items-center">
-                                            <Dropdown>
-                                                <DropdownTrigger className="justify-center items-center">
-                                                    <Button isIconOnly variant="light">
-                                                        <EllipsisHorizontalIcon />
-                                                    </Button>
-                                                </DropdownTrigger>
-                                                <DropdownMenu aria-label="Static Actions">
-                                                    <DropdownItem
-                                                    key="edit"
-                                                    onClick={() => {
-                                                        navigate(`/editPost/${post.id}`);
-                                                    }}>
-                                                        Edit
-                                                    </DropdownItem>
-                                                    <DropdownItem
-                                                    key="delete"
-                                                    className="text-danger"
-                                                    color="danger"
-                                                    onClick={() => handleDeleteClick(post)}
-                                                    >
-                                                    Delete
-                                                    </DropdownItem>
-                                                </DropdownMenu>
-                                            </Dropdown>
-                                        </div>
-                                    </div>
-                                <div>
-                                    <p>{post.content}</p>
-                                </div>
-                                <div>
-                                    <p>Image</p>
-                                    {/* {userInformation && (
+                <div className="flex flex-col gap-8 w-full">
+                  <div className="h-full flex flex-col gap-4">
+                    <div className="flex flex-row justify-between">
+                      <div className="flex flex-col">
+                        <p className="text-xl font-bold">{post.title}</p>
+                        <p className="text-md text-neutral-500">Adam</p>
+                      </div>
+                      <div className="flex flex-row-reverse justify-center items-center">
+                        <Dropdown>
+                          <DropdownTrigger className="justify-center items-center">
+                            <Button isIconOnly variant="light">
+                              <EllipsisHorizontalIcon />
+                            </Button>
+                          </DropdownTrigger>
+                          <DropdownMenu aria-label="Static Actions">
+                            <DropdownItem
+                              key="edit"
+                              onClick={() => {
+                                navigate(`edit/${post.id}`);
+                              }}
+                            >
+                              Edit
+                            </DropdownItem>
+                            <DropdownItem
+                              key="delete"
+                              className="text-danger"
+                              color="danger"
+                              onClick={() => handleDeleteClick(post)}
+                            >
+                              Delete
+                            </DropdownItem>
+                          </DropdownMenu>
+                        </Dropdown>
+                      </div>
+                    </div>
+                    <div>
+                      <p>{post.content}</p>
+                    </div>
+                    <div>
+                      <p>Image</p>
+                      {/* {userInformation && (
                                     <UserPostImage
                                         userId={userInformation}
                                         editable={true}
                                     />
                                     )} */}
-                                </div>
-                            </div>
-                            <div className="flex flex-col gap-2">
-                            <div className="flex flex-row gap-2">
-                                <Chip>Tag 1</Chip>
-                                <Chip>Tag 2</Chip>
-                            </div>
-                            <div className="flex flex-row">
-                                <Button variant="light" isIconOnly>
-                                <HandThumbsUpIcon />
-                                </Button>
-                                <Button variant="light" isIconOnly>
-                                <ChatBubbleOvalLeftEllipsisIcon />
-                                </Button>
-                                <Button variant="light" isIconOnly>
-                                <EllipsisHorizontalIcon />
-                                </Button>
-                            </div>
-                            </div>
-                        </div>
-                        </section>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex flex-row gap-2">
+                      <Chip>Tag 1</Chip>
+                      <Chip>Tag 2</Chip>
+                    </div>
+                    <div className="flex flex-row">
+                      <Button variant="light" isIconOnly>
+                        <HandThumbsUpIcon />
+                      </Button>
+                      <Button variant="light" isIconOnly>
+                        <ChatBubbleOvalLeftEllipsisIcon />
+                      </Button>
+                      <Button variant="light" isIconOnly>
+                        <EllipsisHorizontalIcon />
+                      </Button>
+                    </div>
+                  </div>
                 </div>
-                </div>
+              </section>
             </div>
-            <div className="w-2/12">
-            </div>
-          </section>
-          <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-            <ModalContent>
-              {(onClose) => (
-                <>
-                  <ModalHeader className="flex flex-col gap-1">
-                    Confirm Delete
-                  </ModalHeader>
-                  <ModalBody>
-                    <p>Are you sure you want to delete this post?</p>
-                  </ModalBody>
-                  <ModalFooter>
-                    <Button color="danger" variant="light" onPress={onClose}>
-                      Close
-                    </Button>
-                    <Button color="primary" onPress={handleDeleteConfirm}>
-                      Confirm
-                    </Button>
-                  </ModalFooter>
-                </>
-              )}
-            </ModalContent>
-          </Modal>
-        </DefaultLayout>
-      );
-    }
+          </div>
+        </div>
+        <div className="w-2/12"></div>
+      </section>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                Confirm Delete
+              </ModalHeader>
+              <ModalBody>
+                <p>Are you sure you want to delete this post?</p>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Close
+                </Button>
+                <Button color="primary" onPress={handleDeleteConfirm}>
+                  Confirm
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+    </div>
+  );
+};
 
 export default PostPage;

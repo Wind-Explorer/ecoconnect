@@ -1,6 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import DefaultLayout from "../layouts/default";
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Avatar, Button } from "@nextui-org/react";
+import React, { useEffect, useState } from "react";
+import {
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+  Avatar,
+  Button,
+} from "@nextui-org/react";
 import { useNavigate } from "react-router-dom";
 import { PencilSquareIcon, TrashIcon } from "../icons";
 import axios from "axios";
@@ -38,7 +46,7 @@ const ManageEventsPage = () => {
   };
 
   return (
-    <DefaultLayout>
+    <div className="w-full h-full">
       <div className="mb-6">
         <h2 className="text-3xl font-semibold text-red-600">Manage Events</h2>
       </div>
@@ -57,7 +65,10 @@ const ManageEventsPage = () => {
             <TableRow key={event.id}>
               <TableCell>
                 <div className="flex items-center">
-                  <Avatar src={`${config.serverAddress}${event.imageUrl}`} className="mr-4" />
+                  <Avatar
+                    src={`${config.serverAddress}${event.imageUrl}`}
+                    className="mr-4"
+                  />
                   {event.title}
                 </div>
               </TableCell>
@@ -92,13 +103,12 @@ const ManageEventsPage = () => {
       </Table>
       <Button
         className="mt-6 bg-red-600 text-white"
-        onPress={() => navigate("/CreateEvent")}
+        onPress={() => navigate("createEvent")}
       >
         Add events
       </Button>
-    </DefaultLayout>
+    </div>
   );
 };
 
 export default ManageEventsPage;
-

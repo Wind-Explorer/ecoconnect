@@ -1,4 +1,3 @@
-import DefaultLayout from "../layouts/default";
 import { Button } from "@nextui-org/react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
@@ -32,8 +31,12 @@ const validationSchema = Yup.object({
   time: Yup.string().required("Time is required"),
   location: Yup.string().required("Location is required"),
   category: Yup.string().required("Category is required"),
-  slotsAvailable: Yup.number().integer().required("Slots Available is required"),
-  imageUrl: Yup.string().url("Invalid URL format").required("Image URL is required")
+  slotsAvailable: Yup.number()
+    .integer()
+    .required("Slots Available is required"),
+  imageUrl: Yup.string()
+    .url("Invalid URL format")
+    .required("Image URL is required"),
 });
 
 const CreateEventsPage = () => {
@@ -47,7 +50,7 @@ const CreateEventsPage = () => {
     location: "",
     category: "",
     slotsAvailable: "",
-    imageUrl: ""
+    imageUrl: "",
   };
 
   const handleSubmit = async (
@@ -56,12 +59,15 @@ const CreateEventsPage = () => {
   ) => {
     console.log("Submitting form with values:", values); // Debug log
     try {
-      const response = await axios.post(config.serverAddress + "/events", values);
+      const response = await axios.post(
+        config.serverAddress + "/events",
+        values
+      );
       console.log("Server response:", response); // Debug log
       if (response.status === 200 || response.status === 201) {
         console.log("Event created successfully:", response.data);
         resetForm(); // Clear form after successful submit
-        navigate("/manageEvent");
+        navigate(-1);
       } else {
         console.error("Error creating event:", response.statusText);
       }
@@ -77,7 +83,7 @@ const CreateEventsPage = () => {
   };
 
   return (
-    <DefaultLayout>
+    <div className="w-full h-full">
       <section className="w-8/12 mx-auto">
         <Button
           variant="light"
@@ -163,7 +169,7 @@ const CreateEventsPage = () => {
           )}
         </Formik>
       </section>
-    </DefaultLayout>
+    </div>
   );
 };
 

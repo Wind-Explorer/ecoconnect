@@ -1,16 +1,15 @@
 import { Toaster } from "react-hot-toast";
 import SingaporeAgencyStrip from "../components/SingaporeAgencyStrip";
 import NavigationBar from "../components/NavigationBar";
+import { Outlet } from "react-router-dom";
 
-export default function DefaultLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function DefaultLayout() {
   return (
     <div className="relative flex flex-col h-screen">
       <SingaporeAgencyStrip />
-      <main className="pt-16 flex-grow">{children}</main>
+      <main className="pt-16 flex-grow">
+        <Outlet />
+      </main>
       <Toaster />
       <NavigationBar />
 

@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { ChevronLeftIcon } from "../icons";
 import { popErrorToast } from "../utilities";
 import { retrieveUserInformation } from "../security/users";
+import instance from "../security/http";
 
 const validationSchema = Yup.object({
   email: Yup.string()
@@ -36,7 +37,7 @@ export default function SignInModule() {
   };
 
   const handleSubmit = (values: any): void => {
-    axios
+    instance
       .post(config.serverAddress + "/users/login", values)
       .then((response) => {
         localStorage.setItem("accessToken", response.data.accessToken);
@@ -44,7 +45,7 @@ export default function SignInModule() {
           if (value.accountType == 2) {
             navigate("/admin");
           } else {
-            navigate("/springboard/");
+            navigate("/springboard");
           }
         });
       })

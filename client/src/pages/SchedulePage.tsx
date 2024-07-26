@@ -12,7 +12,6 @@ import {
   TableHeader,
   TableRow,
 } from "@nextui-org/react";
-import DefaultLayout from "../layouts/default";
 import { useEffect, useState } from "react";
 import config from "../config";
 import instance from "../security/http";
@@ -30,7 +29,7 @@ interface Schedule {
 const statusColorMap: Record<string, ChipProps["color"]> = {
   "On going": "success",
   "Up coming": "danger",
-  "Ended": "default",
+  Ended: "default",
 };
 
 const getStatusColor = (status: string): ChipProps["color"] => {
@@ -97,7 +96,7 @@ export default function SchedulePage() {
   };
 
   return (
-    <DefaultLayout>
+    <div className="w-full h-full">
       <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
         <h1>Karang Guni Schedule</h1>
         <div className="flex gap-4">
@@ -201,6 +200,6 @@ export default function SchedulePage() {
           </div>
         </div>
       </section>
-    </DefaultLayout>
+    </div>
   );
 }
