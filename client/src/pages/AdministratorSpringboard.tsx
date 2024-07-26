@@ -63,7 +63,7 @@ export default function AdministratorSpringboard() {
                   </div>
                 }
                 onPress={() => {
-                  navigate("/manage-account");
+                  navigate("manage-account");
                 }}
               >
                 Manage your account

@@ -19,6 +19,7 @@ import HBFormPage from "./pages/HBFormPage";
 import EditEventsPage from "./pages/EditEventsPage";
 import DefaultLayout from "./layouts/default";
 import AdministratorLayout from "./layouts/administrator";
+import UsersManagement from "./pages/UsersManagement";
 
 function App() {
   return (
@@ -60,6 +61,10 @@ function App() {
       {/* Admin Routes */}
       <Route path="/admin" element={<AdministratorLayout />}>
         <Route index element={<AdministratorSpringboard />} />
+        <Route path="manage-account" element={<ManageUserAccountPage />} />
+        <Route path="users-management">
+          <Route index element={<UsersManagement />} />
+        </Route>
 
         {/* Events */}
         <Route path="events">

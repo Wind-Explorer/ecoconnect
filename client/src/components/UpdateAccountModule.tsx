@@ -72,7 +72,7 @@ export default function UpdateAccountModule() {
         values
       );
       console.log("User updated successfully:", response.data);
-      navigate("/springboard");
+      navigate(-1);
     } catch (error) {
       popErrorToast(error);
     }

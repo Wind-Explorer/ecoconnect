@@ -103,12 +103,20 @@ export default function AdministratorNavigationPanel() {
         <Card className="h-full w-full">
           <div className="flex flex-col h-full">
             <div className="flex flex-row justify-between bg-primary-50 dark:bg-primary-950">
-              <div className="flex flex-col text-right p-4">
-                <EcoconnectFullLogo />
-                <p className="text-2xl text-primary-800 dark:text-primary-100 font-semibold">
-                  administrators
-                </p>
-              </div>
+              <Button
+                className="w-min h-full"
+                variant="light"
+                onPress={() => {
+                  navigate("/admin");
+                }}
+              >
+                <div className="flex flex-col text-right py-4">
+                  <EcoconnectFullLogo />
+                  <p className="text-2xl text-primary-800 dark:text-primary-100 font-semibold">
+                    administrators
+                  </p>
+                </div>
+              </Button>
               <Button
                 onPress={() => {
                   setPanelVisible(!panelVisible);
