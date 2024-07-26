@@ -127,7 +127,7 @@ export default function UpdateAccountModule() {
                         <Button
                           variant="light"
                           onPress={() => {
-                            navigate("/springboard");
+                            navigate(-1);
                           }}
                         >
                           Cancel
