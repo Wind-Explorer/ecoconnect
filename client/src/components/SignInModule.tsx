@@ -45,7 +45,7 @@ export default function SignInModule() {
           if (value.accountType == 2) {
             navigate("/admin");
           } else {
-            navigate("/springboard");
+            window.location.reload();
           }
         });
       })

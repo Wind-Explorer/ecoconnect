@@ -20,42 +20,46 @@ import EditEventsPage from "./pages/EditEventsPage";
 import DefaultLayout from "./layouts/default";
 import AdministratorLayout from "./layouts/administrator";
 import UsersManagement from "./pages/UsersManagement";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 function App() {
   return (
     <Routes>
       {/* User Routes */}
-      <Route path="/" element={<DefaultLayout />}>
-        {/* General Routes */}
-        <Route index element={<HomePage />} />
-        <Route element={<SignUpPage />} path="signup" />
-        <Route element={<SignInPage />} path="signin" />
-        <Route element={<SpringboardPage />} path="springboard" />
-        <Route element={<ManageUserAccountPage />} path="manage-account" />
+      <Route path="/">
+        <Route element={<DefaultLayout />}>
+          {/* General Routes */}
+          <Route index element={<HomePage />} />
+          <Route element={<SignUpPage />} path="signup" />
+          <Route element={<SignInPage />} path="signin" />
+          <Route element={<SpringboardPage />} path="springboard" />
+          <Route element={<ManageUserAccountPage />} path="manage-account" />
 
-        {/* Events Route */}
-        <Route path="events">
-          <Route index element={<EventsPage />} />
-        </Route>
+          {/* Events Route */}
+          <Route path="events">
+            <Route index element={<EventsPage />} />
+          </Route>
 
-        {/* Karang Guni Schedules Route */}
-        <Route path="karang-guni-schedules">
-          <Route index element={<SchedulePage />} />
-        </Route>
+          {/* Karang Guni Schedules Route */}
+          <Route path="karang-guni-schedules">
+            <Route index element={<SchedulePage />} />
+          </Route>
 
-        {/* Home Bill Contest Route */}
-        <Route path="home-bill-contest">
-          <Route index element={<HBContestPage />} />
-          <Route element={<HBFormPage />} path="new-submission" />
-        </Route>
+          {/* Home Bill Contest Route */}
+          <Route path="home-bill-contest">
+            <Route index element={<HBContestPage />} />
+            <Route element={<HBFormPage />} path="new-submission" />
+          </Route>
 
-        {/* Community Posts Route */}
-        <Route path="community-posts">
-          <Route index element={<CommunityPage />} />
-          <Route element={<CreatePostPage />} path="create" />
-          <Route element={<PostPage />} path="post/:id" />
-          <Route element={<EditPostPage />} path="edit/:id" />
+          {/* Community Posts Route */}
+          <Route path="community-posts">
+            <Route index element={<CommunityPage />} />
+            <Route element={<CreatePostPage />} path="create" />
+            <Route element={<PostPage />} path="post/:id" />
+            <Route element={<EditPostPage />} path="edit/:id" />
+          </Route>
         </Route>
+        <Route element={<ResetPasswordPage />} path="reset-password/:token" />
       </Route>
 
       {/* Admin Routes */}

@@ -43,12 +43,20 @@ module.exports = (sequelize) => {
       accountType: {
         type: DataTypes.TINYINT(2),
         allowNull: false,
-        defaultValue: 0
+        defaultValue: 0,
       },
       isArchived: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false,
+      },
+      resetPasswordToken: {
+        type: DataTypes.STRING(64),
+        allowNull: true,
+      },
+      resetPasswordExpireTime: {
+        type: DataTypes.DATE,
+        allowNull: true,
       },
     },
     {

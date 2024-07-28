@@ -1,6 +1,6 @@
 const express = require("express");
 const yup = require("yup");
-const { Op } = require("sequelize");
+const { Op, Sequelize } = require("sequelize");
 const { User } = require("../models");
 const { validateToken } = require("../middlewares/auth");
 const argon2 = require("argon2");
@@ -8,6 +8,10 @@ const router = express.Router();
 const { sign } = require("jsonwebtoken");
 const multer = require("multer");
 const sharp = require("sharp");
+const { sendPasswordResetEmail } = require("../connections/mailersend");
+const {
+  generatePasswordResetToken,
+} = require("../security/generatePasswordResetToken");
 
 require("dotenv").config();
 
@@ -332,5 +336,114 @@ router.put(
     }
   }
 );
+
+router.put("/request-reset-password/:email", async (req, res) => {
+  let email = req.params.email;
+
+  try {
+    console.log(email);
+    let user = await User.findOne({
+      where: { email: email },
+    });
+
+    if (!user) {
+      res.sendStatus(404);
+      return;
+    }
+
+    if (user.isArchived) {
+      res.status(400).json({
+        message: `ERR_ACC_IS_ARCHIVED`,
+      });
+    } else {
+      const token = await generatePasswordResetToken();
+      let num = await User.update(
+        {
+          resetPasswordToken: token,
+          resetPasswordExpireTime: Date.now() + 3600000,
+        },
+        {
+          where: { id: user.id },
+        }
+      );
+
+      if (num == 1) {
+        res.json({
+          message: "User was updated successfully.",
+        });
+      } else {
+        res.status(400).json({
+          message: `Something went wrong setting token for user with id ${id}.`,
+        });
+      }
+      await sendPasswordResetEmail(user.email, user.firstName, token);
+
+      res.status(200).json({ message: "Email sent successfully" });
+      return;
+    }
+  } catch (error) {
+    // Silence.
+  }
+});
+
+router.post("/reset-password", async (req, res) => {
+  let token = req.body.token;
+  let newPassword = req.body.password;
+
+  try {
+    resetPassword(token, newPassword).then(() => {
+      res.sendStatus(200);
+    });
+  } catch (err) {
+    res.status(400).json({ errors: err.errors });
+  }
+});
+
+router.get("/reset-password/:token", async (req, res) => {
+  let token = req.params.token;
+  try {
+    let user = await validateResetPasswordToken(token);
+
+    if (!user) {
+      console.log("no");
+      res.sendStatus(404);
+      return;
+    } else {
+      console.log("yes");
+      res.sendStatus(200);
+    }
+  } catch {
+    res.status(401);
+  }
+});
+
+async function validateResetPasswordToken(token) {
+  const user = await User.findOne({
+    where: {
+      resetPasswordToken: token,
+      resetPasswordExpireTime: { [Sequelize.Op.gt]: Date.now() },
+    },
+  });
+
+  if (!user) {
+    return undefined;
+  } else {
+    return user;
+  }
+}
+
+async function resetPassword(token, newPassword) {
+  const user = await validateResetPasswordToken(token);
+
+  if (!user) {
+    return undefined;
+  }
+
+  const hashedPassword = await argon2.hash(newPassword);
+  user.password = hashedPassword;
+  user.resetPasswordToken = null;
+  user.resetPasswordExpires = null;
+  await user.save();
+}
 
 module.exports = router;

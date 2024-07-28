@@ -18,7 +18,7 @@ import { Form, Formik } from "formik";
 import NextUIFormikInput from "./NextUIFormikInput";
 import { useNavigate } from "react-router-dom";
 import UserProfilePicture from "./UserProfilePicture";
-import { popErrorToast } from "../utilities";
+import { popErrorToast, popToast } from "../utilities";
 import instance from "../security/http";
 
 export default function UpdateAccountModule() {
@@ -102,6 +102,25 @@ export default function UpdateAccountModule() {
       })
       .catch((err) => {
         console.log("Archive failed: " + err);
+      });
+  };
+
+  const sendResetPasswordEmail = () => {
+    instance
+      .put(
+        `${
+          config.serverAddress
+        }/users/request-reset-password/${encodeURIComponent(
+          userInformation.email
+        )}`
+      )
+      .then(() => {
+        console.log("Email sent successfully");
+        popToast("Email sent to your mailbox!", 1);
+      })
+      .catch((error) => {
+        console.error("Failed to send email:", error);
+        popErrorToast("Failed to send email: " + error);
       });
   };
 
@@ -221,16 +240,7 @@ export default function UpdateAccountModule() {
                         color="danger"
                         variant="light"
                         onPress={() => {
-                          instance
-                            .put(
-                              `${config.serverAddress}/connections/send-reset-password-email/${userInformation.id}`
-                            )
-                            .then(() => {
-                              console.log("Email sent successfully");
-                            })
-                            .catch((error) => {
-                              console.error("Failed to send email:", error);
-                            });
+                          sendResetPasswordEmail();
                         }}
                       >
                         Reset your password

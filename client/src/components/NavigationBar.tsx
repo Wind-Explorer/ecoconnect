@@ -36,9 +36,6 @@ export default function NavigationBar() {
         );
         setUserInformation(value);
       })
-      .catch(() => {
-        navigate("/signin");
-      })
       .finally(() => {
         setDoneLoading(true);
       });
