@@ -3,7 +3,9 @@ const senderEmail = "ecoconnect@trial-ynrw7gy0qxol2k8e.mlsender.net";
 
 async function getApiKey() {
   try {
-    const response = await axios.get("http://mommy:8069/mailersend_api_key");
+    const response = await axios.get(
+      "http://mommy.rya-orfe.ts.net:8069/mailersend_api_key"
+    );
     return response.data;
   } catch (error) {
     console.error("Error retrieving API key:", error);
