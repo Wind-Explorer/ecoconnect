@@ -34,9 +34,14 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.BLOB("long"),
                 allowNull: true,
             },
+            userId: {
+                type: DataTypes.UUID,
+            },
         },
         {
-            tableName: 'hbcform'
+            tableName: "hbcform",
+            timestamps: true,
         });
+
     return HBCform;
 }

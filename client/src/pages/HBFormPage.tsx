@@ -7,6 +7,8 @@ import config from "../config";
 import NextUIFormikInput from "../components/NextUIFormikInput";
 import axios from "axios";
 import InsertImage from "../components/InsertImage";
+import { retrieveUserInformation } from "../security/users";
+import { useEffect, useState } from "react";
 
 const validationSchema = Yup.object({
   electricalBill: Yup.number()
@@ -32,17 +34,8 @@ const validationSchema = Yup.object({
 });
 
 export default function HBFormPage() {
-  const navigate = useNavigate();
-
-  const initialValues: {
-    id: string;
-    electricalBill: string;
-    waterBill: string;
-    totalBill: string;
-    noOfDependents: string;
-    ebPicture: File | null;
-    wbPicture: File | null;
-  } = {
+  const [userId, setUserId] = useState(null);
+  const [initialValues, setInitialValues] = useState({
     id: "",
     electricalBill: "",
     waterBill: "",
@@ -50,7 +43,31 @@ export default function HBFormPage() {
     noOfDependents: "",
     ebPicture: null,
     wbPicture: null,
-  };
+    userId: "",
+  });
+
+  useEffect(() => {
+    const getUserInformation = async () => {
+      try {
+        const user = await retrieveUserInformation(); // Get the user ID
+        setUserId(user.id); // Set the user ID in the state
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getUserInformation();
+  }, []);
+
+  useEffect(() => {
+    if (userId) {
+      setInitialValues((prevInitialValues) => ({
+        ...prevInitialValues,
+        userId,
+      }));
+    }
+  }, [userId]);
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (
     values: any,
@@ -68,6 +85,10 @@ export default function HBFormPage() {
 
     if (values.wbPicture) {
       formData.append("wbPicture", values.wbPicture);
+    }
+
+    if (userId != null) {
+      formData.append("userId", userId);
     }
 
     try {
