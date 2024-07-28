@@ -25,17 +25,20 @@ app.get("/", (req, res) => {
 
 app.use("/users", usersRoute);
 
-const eventsRoute = require('./routes/events');
+const eventsRoute = require("./routes/events");
 app.use("/events", eventsRoute);
 
-const postRoute = require('./routes/post');
+const postRoute = require("./routes/post");
 app.use("/post", postRoute);
 
 const schedulesRoute = require("./routes/schedule");
-app.use("/schedule", schedulesRoute)
+app.use("/schedule", schedulesRoute);
 
 const HBCformRoute = require("./routes/hbcform");
-app.use("/hbcform", HBCformRoute)
+app.use("/hbcform", HBCformRoute);
+
+const connections = require("./routes/connections");
+app.use("/connections", connections);
 
 db.sequelize
   .sync({ alter: true })

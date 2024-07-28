@@ -217,7 +217,22 @@ export default function UpdateAccountModule() {
                       </p>
                     </div>
                     <div className="flex flex-row gap-4">
-                      <Button color="danger" variant="light">
+                      <Button
+                        color="danger"
+                        variant="light"
+                        onPress={() => {
+                          instance
+                            .put(
+                              `${config.serverAddress}/connections/send-reset-password-email/${userInformation.id}`
+                            )
+                            .then(() => {
+                              console.log("Email sent successfully");
+                            })
+                            .catch((error) => {
+                              console.error("Failed to send email:", error);
+                            });
+                        }}
+                      >
                         Reset your password
                       </Button>
                       <Button color="danger" variant="flat" onPress={onOpen}>
