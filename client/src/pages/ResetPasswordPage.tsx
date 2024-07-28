@@ -7,12 +7,12 @@ import EcoconnectFullLogo from "../components/EcoconnectFullLogo";
 import NextUIFormikInput from "../components/NextUIFormikInput";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import axios from "axios";
 import { popErrorToast, popToast } from "../utilities";
 
 const validationSchema = Yup.object({
   password: Yup.string()
     .trim()
+    .min(8, "Password must be at least 8 characters")
     .max(69, "Password must be at most 69 characters")
     .matches(
       /^(?=.*[a-zA-Z])(?=.*[0-9]).{1,}$/,
@@ -20,7 +20,7 @@ const validationSchema = Yup.object({
     )
     .required("Password is required"),
   confirmPassword: Yup.string()
-    .oneOf([Yup.ref("password"), undefined], "Passwords must match")
+    .oneOf([Yup.ref("password"), undefined], "Passwords do not match")
     .required("Confirm Password is required"),
 });
 

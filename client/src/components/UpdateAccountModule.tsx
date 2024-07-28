@@ -25,7 +25,17 @@ export default function UpdateAccountModule() {
   const navigate = useNavigate();
   const [userInformation, setUserInformation] = useState<any>();
 
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const {
+    isOpen: isArchiveDialogOpen,
+    onOpen: onArchiveDialogOpen,
+    onOpenChange: onArchiveDialogOpenChange,
+  } = useDisclosure();
+
+  const {
+    isOpen: isResetPasswordOpen,
+    onOpen: onResetPasswordOpen,
+    onOpenChange: onResetPasswordOpenChange,
+  } = useDisclosure();
 
   useEffect(() => {
     retrieveUserInformation()
@@ -239,13 +249,15 @@ export default function UpdateAccountModule() {
                       <Button
                         color="danger"
                         variant="light"
-                        onPress={() => {
-                          sendResetPasswordEmail();
-                        }}
+                        onPress={onResetPasswordOpen}
                       >
                         Reset your password
                       </Button>
-                      <Button color="danger" variant="flat" onPress={onOpen}>
+                      <Button
+                        color="danger"
+                        variant="flat"
+                        onPress={onArchiveDialogOpen}
+                      >
                         Archive this account
                       </Button>
                     </div>
@@ -254,7 +266,12 @@ export default function UpdateAccountModule() {
               </Accordion>
             </div>
           </div>
-          <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+
+          {/* Archive Account Modal */}
+          <Modal
+            isOpen={isArchiveDialogOpen}
+            onOpenChange={onArchiveDialogOpenChange}
+          >
             <ModalContent>
               {(onClose) => {
                 return (
@@ -285,6 +302,48 @@ export default function UpdateAccountModule() {
                       </Button>
                       <Button color="primary" onPress={onClose}>
                         Cancel
+                      </Button>
+                    </ModalFooter>
+                  </>
+                );
+              }}
+            </ModalContent>
+          </Modal>
+
+          {/* Reset Password Modal */}
+          <Modal
+            isOpen={isResetPasswordOpen}
+            onOpenChange={onResetPasswordOpenChange}
+          >
+            <ModalContent>
+              {(onClose) => {
+                return (
+                  <>
+                    <ModalHeader className="flex flex-col gap-1">
+                      Reset Password
+                    </ModalHeader>
+                    <ModalBody>
+                      <p>
+                        We will send you an email helping you to reset your
+                        password.
+                      </p>
+                      <p>
+                        Check in the junk mailbox if you do not receive it after
+                        3 minutes.
+                      </p>
+                    </ModalBody>
+                    <ModalFooter>
+                      <Button color="danger" variant="light" onPress={onClose}>
+                        Cancel
+                      </Button>
+                      <Button
+                        color="danger"
+                        onPress={() => {
+                          sendResetPasswordEmail();
+                          onClose();
+                        }}
+                      >
+                        Send email
                       </Button>
                     </ModalFooter>
                   </>
