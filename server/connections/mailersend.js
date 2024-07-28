@@ -219,7 +219,6 @@ async function sendPasswordResetEmail(email, firstName) {
     "[Password Reset] Reset your password for ecoconnect",
     emailContent
   );
-  popToast();
 }
 
 module.exports = { sendPasswordResetEmail };
