@@ -10,15 +10,27 @@ interface NextUIFormikInputProps {
   placeholder: string;
   labelPlacement?: "inside" | "outside";
   startContent?: JSX.Element;
+  readOnly?: boolean;
+  setFieldValue?: (field: string, value: any, shouldValidate?: boolean) => void;
 }
 
 const NextUIFormikInput = ({
   label,
   startContent,
+  readOnly = false,
+  setFieldValue,
   ...props
 }: NextUIFormikInputProps) => {
   const [field, meta] = useField(props.name);
   const [inputType, setInputType] = useState(props.type);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    field.onChange(e);
+    if (setFieldValue) {
+      setFieldValue(props.name, value);
+    }
+  };
 
   return (
     <Input
@@ -43,6 +55,8 @@ const NextUIFormikInput = ({
           </>
         ) : null
       }
+      readOnly={readOnly}
+      onChange={handleChange}
     />
   );
 };

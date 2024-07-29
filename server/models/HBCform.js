@@ -26,6 +26,10 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.INTEGER,
                 allowNull: false
             },
+            avgBill: {
+                type: DataTypes.DECIMAL(7, 2),
+                allowNull: false
+            },
             ebPicture: {
                 type: DataTypes.BLOB("long"),
                 allowNull: true,
