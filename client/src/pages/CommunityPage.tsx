@@ -15,6 +15,7 @@ import {
   ModalBody,
   ModalFooter,
   useDisclosure,
+  Spinner,
 } from "@nextui-org/react";
 import config from "../config";
 import instance from "../security/http";
@@ -40,6 +41,24 @@ interface Post {
 
 export default function CommunityPage() {
   const navigate = useNavigate();
+  
+  let accessToken = localStorage.getItem("accessToken");
+  if (!accessToken) {
+    return (
+      setTimeout(() => {
+        navigate("/signin");
+      }, 1000) 
+      &&
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-center">
+          <p className="text-xl font-bold text-primary-500">User is not verified</p>
+          <p className="text-md">Redirecting to sign-in page...</p>
+          <Spinner color="danger" />
+        </div>
+      </div>
+    );
+  }
+
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
 
@@ -229,7 +248,7 @@ export default function CommunityPage() {
         <div className="flex flex-col gap-4 bg-primary-50 dark:bg-primary-950 p-4 rounded-xl w-[400px]">
           <Button
             startContent={<PlusIcon />}
-            className=" bg-primary-500 dark:bg-primary-700 text-white"
+            className="bg-primary-500 dark:bg-primary-700 text-white"
             size="lg"
             onPress={() => {
               navigate("create");
