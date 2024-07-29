@@ -1,7 +1,6 @@
 import { Button, Link } from "@nextui-org/react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import axios from "axios";
 import config from "../config";
 import NextUIFormikInput from "./NextUIFormikInput";
 import { useNavigate } from "react-router-dom";
@@ -74,13 +73,24 @@ export default function SignInModule() {
               placeholder="johndoe@email.com"
               labelPlacement="outside"
             />
-            <NextUIFormikInput
-              label="Password"
-              name="password"
-              type="password"
-              placeholder=" "
-              labelPlacement="outside"
-            />
+            <div className="flex flex-col gap-2 w-full">
+              <NextUIFormikInput
+                label="Password"
+                name="password"
+                type="password"
+                placeholder=" "
+                labelPlacement="outside"
+              />
+              <Link
+                className="hover:cursor-pointer w-max"
+                size="sm"
+                onPress={() => {
+                  navigate("/forgot-password");
+                }}
+              >
+                Forgot password?
+              </Link>
+            </div>
             <Button
               type="submit"
               color="primary"
