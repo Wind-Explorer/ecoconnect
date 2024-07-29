@@ -57,12 +57,13 @@ router.post("/", async (req, res) => {
 
 router.get("/", async (req, res) => {
     let condition = {
+        where: {},
         order: [['createdAt', 'DESC']]
     };
 
     let search = req.query.search;
     if (search) {
-        condition[Op.or] = [
+        condition.where[Op.or] = [
             { title: { [Op.like]: `%${search}%` } },
             { content: { [Op.like]: `%${search}%` } }
         ];
