@@ -73,8 +73,8 @@ function App() {
         {/* Events */}
         <Route path="events">
           <Route index element={<ManageEventsPage />} />
-          <Route element={<CreateEventsPage />} path="create" />
-          <Route element={<EditEventsPage />} path="edit/:id" />
+          <Route element={<CreateEventsPage />} path="createEvent" />
+          <Route element={<EditEventsPage />} path="editEvent/:id" />
         </Route>
       </Route>
     </Routes>

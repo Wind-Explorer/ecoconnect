@@ -33,7 +33,7 @@ const ManageEventsPage = () => {
   }, []);
 
   const handleEdit = (id: string) => {
-    navigate(`/editEvent/${id}`);
+    navigate(`editEvent/${id}`);
   };
 
   const handleDelete = async (id: string) => {

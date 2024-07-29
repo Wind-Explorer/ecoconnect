@@ -142,7 +142,7 @@ export default function AdministratorNavigationPanel() {
                       <AdministratorNavigationPanelNavigationButton
                         text="Events"
                         icon={<CalendarDaysIcon />}
-                        onClickRef="#"
+                        onClickRef="events"
                       />
                     </div>
                     <div>
