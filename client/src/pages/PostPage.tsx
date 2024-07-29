@@ -143,6 +143,7 @@ const PostPage: React.FC = () => {
                           <DropdownMenu aria-label="Static Actions">
                             <DropdownItem
                               key="edit"
+                              textValue="Edit"
                               onClick={() => {
                                 navigate(`edit/${post.id}`);
                               }}
@@ -151,6 +152,7 @@ const PostPage: React.FC = () => {
                             </DropdownItem>
                             <DropdownItem
                               key="delete"
+                              textValue="Delete"
                               className="text-danger"
                               color="danger"
                               onClick={() => handleDeleteClick(post)}
