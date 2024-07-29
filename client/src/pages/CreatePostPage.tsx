@@ -7,6 +7,8 @@ import NextUIFormikInput from "../components/NextUIFormikInput";
 import NextUIFormikTextarea from "../components/NextUIFormikTextarea";
 import config from "../config";
 import { ArrowUTurnLeftIcon } from "../icons";
+import { useEffect, useState } from "react";
+import { retrieveUserInformation } from "../security/users";
 
 const validationSchema = Yup.object({
   title: Yup.string()
@@ -31,6 +33,7 @@ const validationSchema = Yup.object({
 
 function CreatePostPage() {
   const navigate = useNavigate();
+  const [userId, setUserId] = useState(null);
 
   const initialValues = {
     title: "",
@@ -38,12 +41,28 @@ function CreatePostPage() {
     tags: "",
   };
 
+  useEffect(() => {
+    const getUserInformation = async () => {
+      try {
+        const user = await retrieveUserInformation(); // Get the user ID
+        setUserId(user.id); // Set the user ID in the state
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getUserInformation();
+  }, []);
+
   const handleSubmit = async (
     values: any,
     { setSubmitting, resetForm, setFieldError }: any
   ) => {
     try {
-      const response = await axios.post(config.serverAddress + "/post", values); // Assuming an API route
+      const postData = {
+        ...values,
+        userId: userId
+      }
+      const response = await axios.post(config.serverAddress + "/post", postData); // Assuming an API route
       if (response.status === 200) {
         console.log("Post created successfully:", response.data);
         resetForm(); // Clear form after successful submit

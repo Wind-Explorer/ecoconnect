@@ -16,6 +16,7 @@ import {
   ModalFooter,
   useDisclosure,
   Spinner,
+  User,
 } from "@nextui-org/react";
 import config from "../config";
 import instance from "../security/http";
@@ -28,7 +29,8 @@ import {
   XMarkIcon,
 } from "../icons";
 import { useNavigate } from "react-router-dom";
-// import { retrieveUserInformation } from "../security/users";
+import { retrieveUserInformationById } from "../security/usersbyid";
+import { number } from "yup";
 // import UserPostImage from "../components/UserPostImage";
 
 interface Post {
@@ -37,17 +39,29 @@ interface Post {
   content: string;
   tags: string;
   id: number;
+  userId: number;
 }
+
+type User = {
+  id: number;
+  firstName: string;
+  lastName: string;
+};
 
 export default function CommunityPage() {
   const navigate = useNavigate();
-  
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [communityList, setCommunityList] = useState<Post[]>([]);
+  const [search, setSearch] = useState(""); // Search Function
+  const [userInformation, setUserInformation] = useState<Record<number, User>>({});
+
   let accessToken = localStorage.getItem("accessToken");
   if (!accessToken) {
     return (
       setTimeout(() => {
         navigate("/signin");
-      }, 1000) 
+      }, 1000)
       &&
       <div className="flex justify-center items-center min-h-screen">
         <div className="text-center">
@@ -59,27 +73,38 @@ export default function CommunityPage() {
     );
   }
 
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
-
-  // const [userInformation, setUserInformation] = useState(null);
-
-  // communityList is a state variable
-  // function setCommunityList is the setter function for the state variable
-  // e initial value of the state variable is an empty array []
-  // After getting the api response, call setCommunityList() to set the value of CommunityList
-  const [communityList, setCommunityList] = useState<Post[]>([]);
-
-  // Search Function
-  const [search, setSearch] = useState("");
-  const onSearchChange = (e: { target: { value: SetStateAction<string> } }) => {
-    setSearch(e.target.value);
-  };
-
   const getPosts = () => {
     instance.get(config.serverAddress + "/post").then((res) => {
       setCommunityList(res.data);
     });
+  };
+
+  useEffect(() => {
+    getPosts();
+  }, []);
+
+  useEffect(() => {
+    const fetchUserInformation = async (userId: number) => {
+      try {
+        const user = await retrieveUserInformationById(userId);
+        setUserInformation((prevMap) => ({
+          ...prevMap,
+          [userId]: user,
+        }));
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    communityList.forEach((post) => {
+      if (!userInformation[post.userId]) {
+        fetchUserInformation(post.userId);
+      }
+    });
+  }, [communityList]);
+
+  const onSearchChange = (e: { target: { value: SetStateAction<string> } }) => {
+    setSearch(e.target.value);
   };
 
   const searchPosts = () => {
@@ -89,10 +114,6 @@ export default function CommunityPage() {
         setCommunityList(res.data);
       });
   };
-
-  useEffect(() => {
-    getPosts();
-  }, []);
 
   const onSearchKeyDown = (e: { key: string }) => {
     if (e.key === "Enter") {
@@ -107,13 +128,6 @@ export default function CommunityPage() {
     setSearch("");
     getPosts();
   };
-
-  useEffect(() => {
-    instance.get(config.serverAddress + "/post").then((res) => {
-      console.log(res.data);
-      setCommunityList(res.data);
-    });
-  }, []);
 
   const handleDeleteClick = (post: Post) => {
     setSelectedPost(post);
@@ -168,7 +182,7 @@ export default function CommunityPage() {
                       <div className="flex flex-row justify-between">
                         <div className="flex flex-col">
                           <p className="text-xl font-bold">{post.title}</p>
-                          <p className="text-md text-neutral-500">Adam</p>
+                          <p className="text-md text-neutral-500">{userInformation[post.userId]?.firstName} {userInformation[post.userId]?.lastName}</p>
                         </div>
                         <div className="flex flex-row-reverse justify-center items-center">
                           <Dropdown>

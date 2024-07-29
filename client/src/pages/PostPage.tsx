@@ -24,6 +24,7 @@ import {
   HandThumbsUpIcon,
   ArrowUTurnLeftIcon,
 } from "../icons";
+import { retrieveUserInformationById } from "../security/usersbyid";
 
 interface Post {
   title: string;
@@ -31,7 +32,14 @@ interface Post {
   content: string;
   tags: string;
   id: number;
+  userId: number;
 }
+
+type User = {
+  id: number;
+  firstName: string;
+  lastName: string;
+};
 
 const PostPage: React.FC = () => {
   const navigate = useNavigate();
@@ -39,14 +47,33 @@ const PostPage: React.FC = () => {
   const [post, setPost] = useState<Post | null>(null);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [userInformation, setUserInformation] = useState<Record<number, User>>({});
 
   useEffect(() => {
     if (id) {
-      instance.get(`${config.serverAddress}/post/${id}`).then((res) => {
-        setPost(res.data);
-      });
+      instance.get(`${config.serverAddress}/post/${id}`)
+        .then((res) => setPost(res.data))
+        .catch((error) => console.error("Error fetching post:", error));
     }
   }, [id]);
+
+  useEffect(() => {
+    if (post) {
+      const fetchUserInformation = async () => {
+        try {
+          const user = await retrieveUserInformationById(post.userId);
+          setUserInformation((prevMap) => ({
+            ...prevMap,
+            [post.userId]: user,
+          }));
+        } catch (error) {
+          console.error(error);
+        }
+      };
+
+      fetchUserInformation();
+    }
+  }, [post]);
 
   if (!post) {
     return (
@@ -104,7 +131,7 @@ const PostPage: React.FC = () => {
                     <div className="flex flex-row justify-between">
                       <div className="flex flex-col">
                         <p className="text-xl font-bold">{post.title}</p>
-                        <p className="text-md text-neutral-500">Adam</p>
+                        <p className="text-md text-neutral-500">{userInformation[post.userId]?.firstName} {userInformation[post.userId]?.lastName}</p>
                       </div>
                       <div className="flex flex-row-reverse justify-center items-center">
                         <Dropdown>
