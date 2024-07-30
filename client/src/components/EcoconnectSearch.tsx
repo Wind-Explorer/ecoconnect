@@ -37,7 +37,7 @@ export default function EcoconnectSearch() {
   };
 
   const handleKeyPress = (event: KeyboardEvent) => {
-    if (event.ctrlKey && event.key === "s") {
+    if ((event.ctrlKey || event.metaKey) && event.key === "s") {
       event.preventDefault();
       onAiDialogOpen();
     }
@@ -102,7 +102,7 @@ export default function EcoconnectSearch() {
           startContent={<MagnifyingGlassIcon />}
           endContent={
             <div className="-mr-1">
-              <Kbd keys={["ctrl"]}>S</Kbd>
+              <Kbd keys={["command"]}>S</Kbd>
             </div>
           }
           placeholder="Search..."
