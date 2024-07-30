@@ -24,6 +24,7 @@ import UsersManagement from "./pages/UsersManagement";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import RestrictedLayout from "./layouts/restricted";
+import Ranking from "./pages/Ranking";
 
 function App() {
   return (
@@ -88,6 +89,10 @@ function App() {
             <Route index element={<ManageEventsPage />} />
             <Route element={<CreateEventsPage />} path="createEvent" />
             <Route element={<EditEventsPage />} path="editEvent/:id" />
+          </Route>
+
+          <Route path="ranking">
+            <Route index element={<Ranking />} />
           </Route>
         </Route>
       </Route>
