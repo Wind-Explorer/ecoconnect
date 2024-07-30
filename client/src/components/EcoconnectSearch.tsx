@@ -1,5 +1,6 @@
 import {
   Button,
+  Card,
   Input,
   Kbd,
   Modal,
@@ -9,15 +10,19 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import { useEffect, useState } from "react";
-import { MagnifyingGlassIcon } from "../icons";
+import { ArrowTopRightOnSquare, MagnifyingGlassIcon } from "../icons";
 import config from "../config";
 import instance from "../security/http";
 import EcoconnectFullLogo from "./EcoconnectFullLogo";
+import { useNavigate } from "react-router-dom";
 
 export default function EcoconnectSearch() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [aiResponse, setAiResponse] = useState("");
+  const [aiResponseRoute, setAiResponseRoute] = useState("");
+  const [aiResponseRouteDescription, setAiResponseRouteDescription] =
+    useState("");
   const [isQueryLoading, setIsQueryLoading] = useState(false);
+  const navigate = useNavigate();
 
   const {
     isOpen: isAiDialogOpen,
@@ -28,7 +33,7 @@ export default function EcoconnectSearch() {
   const dialogOpenChange = () => {
     onAiDialogOpenChange();
     setSearchQuery("");
-    setAiResponse("");
+    setAiResponseRoute("");
   };
 
   const handleKeyPress = (event: KeyboardEvent) => {
@@ -42,16 +47,33 @@ export default function EcoconnectSearch() {
     if (searchQuery.length <= 0) return;
     setIsQueryLoading(true);
     instance
-      .get(
-        `${config.serverAddress}/connections/openai-chat-completion/${searchQuery}`
-      )
+      .get(`${config.serverAddress}/connections/nls/${searchQuery}`)
       .then((response) => {
-        console.log(response.data.response);
-        setAiResponse(response.data.response);
+        const rawResponse = response.data.response;
+        const parsedResponse = JSON.parse(rawResponse);
+        const resolvedRoute = parsedResponse.route;
+        setAiResponseRoute(resolvedRoute);
+        setAiResponseRouteDescription(getRouteDescription(resolvedRoute));
       })
       .finally(() => {
         setIsQueryLoading(false);
       });
+  };
+
+  const routeDescriptions: { [key: string]: string } = {
+    "/": "Go home",
+    "/springboard": "Go to the Dashboard",
+    "/manage-account": "Management your account",
+    "/events": "Browse events",
+    "/karang-guni-schedules": "Browse available Karang Guni",
+    "/home-bill-contest": "Take part in a contest",
+    "/home-bill-contest/new-submission": "Submit your bill",
+    "/community-posts": "Browse community posts",
+    "/community-posts/create": "Create a post",
+  };
+
+  const getRouteDescription = (route: string) => {
+    return routeDescriptions[route] || "Unknown";
   };
 
   useEffect(() => {
@@ -93,7 +115,7 @@ export default function EcoconnectSearch() {
         placement="top"
       >
         <ModalContent>
-          {() => {
+          {(onClose) => {
             return (
               <>
                 <ModalBody>
@@ -121,10 +143,30 @@ export default function EcoconnectSearch() {
                         </Button>
                       }
                     />
-                    {aiResponse.length > 0 && (
-                      <p className="bg-neutral-50 p-4 border-2 rounded-xl">
-                        {aiResponse}
-                      </p>
+                    {aiResponseRoute.length > 0 && (
+                      <Card className="p-4">
+                        <div className="flex flex-row justify-between *:my-auto">
+                          <div className="flex flex-col">
+                            <p className="text-xl font-bold">
+                              {aiResponseRouteDescription}
+                            </p>
+                            <p className="text-sm opacity-50">
+                              https://ecoconnect.gov{aiResponseRoute}
+                            </p>
+                          </div>
+                          <Button
+                            isIconOnly
+                            variant="light"
+                            className="text-red-500"
+                            onPress={() => {
+                              onClose();
+                              navigate(aiResponseRoute);
+                            }}
+                          >
+                            <ArrowTopRightOnSquare />
+                          </Button>
+                        </div>
+                      </Card>
                     )}
                   </div>
                 </ModalBody>
