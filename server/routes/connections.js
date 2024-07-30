@@ -4,25 +4,21 @@ const { validateToken } = require("../middlewares/auth");
 const router = express.Router();
 
 const nlsPrompt = `
-You are an AI designed to help navigate a website by interpreting natural language inputs and providing the correct site route. Below are routes and a brief description of each:
+"/": home
+"/springboard": user dashboard
+"/manage-account": user account management
+"/events": events
+"/karang-guni-schedules": browse slots
+"/home-bill-contest": participate in contest & earn vouchers
+"/home-bill-contest/new-submission": submit bill
+"/community-posts": show posts
+"/community-posts/create": create post
 
-"/" : home
-"/springboard" : user dashboard
-"/manage-account" : user account management
-"/events" : events
-"/karang-guni-schedules" : browse slots
-"/home-bill-contest" : participate in contest & earn vouchers
-"/home-bill-contest/new-submission" : submit bill
-"/community-posts" : show posts
-"/community-posts/create" : create post
-
-based on input, provide appropriate route in following format:
-
-{
-  "route": "<appropriate route>",
-}
-
+based on input, provide appropriate route closest to fulfilling user's needs
 If none matches user query, return empty route.
+in following format:
+
+{"route": "<appropriate route>"}
 `;
 
 async function naturalLanguageSearch(userQuery) {
