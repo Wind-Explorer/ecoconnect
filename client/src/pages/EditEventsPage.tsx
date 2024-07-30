@@ -75,7 +75,7 @@ const EditEventsPage = () => {
       if (response.status === 200 || response.status === 201) {
         console.log("Event updated successfully:", response.data);
         resetForm(); // Clear form after successful submit
-        navigate("/manageEvent");
+        navigate("/events");
       } else {
         console.error("Error updating event:", response.statusText);
       }
@@ -91,7 +91,7 @@ const EditEventsPage = () => {
   };
 
   return (
-    <DefaultLayout>
+    <div className="w-full h-full">
       <section className="w-8/12 mx-auto">
         <Button
           variant="light"
@@ -178,7 +178,7 @@ const EditEventsPage = () => {
           )}
         </Formik>
       </section>
-    </DefaultLayout>
+    </div>
   );
 };
 
