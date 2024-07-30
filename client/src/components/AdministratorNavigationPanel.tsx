@@ -178,7 +178,7 @@ export default function AdministratorNavigationPanel() {
                       <AdministratorNavigationPanelNavigationButton
                         text="Schedules"
                         icon={<CalendarDaysIcon />}
-                        onClickRef="#"
+                        onClickRef="schedules"
                       />
                       <AdministratorNavigationPanelNavigationButton
                         text="Transactions"

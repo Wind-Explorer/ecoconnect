@@ -73,19 +73,18 @@ export default function Ranking() {
 
     return (
         <section className="flex flex-col items-center justify-center py-5">
-            <p className="text-2xl font-bold">Form Data</p>
+            <p className="text-xl font-bold">Form Data</p>
             <div className="gap-8 p-8">
                 <Table aria-label="Form Data Table">
                     <TableHeader>
-                        <TableColumn onClick={handleSort}>
-                            Average Bill {renderSortIndicator()}
-                        </TableColumn>
-                        <TableColumn>Form ID</TableColumn>
                         <TableColumn>User ID</TableColumn>
                         <TableColumn>Electrical Bill</TableColumn>
                         <TableColumn>Water Bill</TableColumn>
                         <TableColumn>Total Bill</TableColumn>
                         <TableColumn>Number of Dependents</TableColumn>
+                        <TableColumn onClick={handleSort}>
+                            Average Bill {renderSortIndicator()}
+                        </TableColumn>
                         <TableColumn>Electrical Bill Picture</TableColumn>
                         <TableColumn>Water Bill Picture</TableColumn>
                         <TableColumn>Actions</TableColumn>
@@ -93,13 +92,12 @@ export default function Ranking() {
                     <TableBody>
                         {sortedFormData.map((data) => (
                             <TableRow key={data.id}>
-                                <TableCell>${data.avgBill.toFixed(2)}</TableCell>
-                                <TableCell>{data.id}</TableCell>
                                 <TableCell>{data.userId}</TableCell>
                                 <TableCell>${data.electricalBill.toFixed(2)}</TableCell>
                                 <TableCell>${data.waterBill.toFixed(2)}</TableCell>
                                 <TableCell>${data.totalBill.toFixed(2)}</TableCell>
                                 <TableCell>{data.noOfDependents}</TableCell>
+                                <TableCell>${data.avgBill.toFixed(2)}</TableCell>
                                 <TableCell>
                                     {data.ebPicture && <img src={`${config.serverAddress}/hbcform/ebPicture/${data.id}`} alt="Electrical Bill" className="w-full" />}
                                 </TableCell>

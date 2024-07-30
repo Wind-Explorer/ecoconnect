@@ -25,6 +25,7 @@ import ResetPasswordPage from "./pages/ResetPasswordPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import RestrictedLayout from "./layouts/restricted";
 import Ranking from "./pages/Ranking";
+import ManageSchedulePage from "./pages/ManageSchedulePage";
 
 function App() {
   return (
@@ -44,7 +45,7 @@ function App() {
             <Route path="events">
               <Route index element={<EventsPage />} />
             </Route>
-            <Route element={<EventDetailsPage />} path="event/:id"/>
+            <Route element={<EventDetailsPage />} path="event/:id" />
 
             {/* Karang Guni Schedules Route */}
             <Route path="karang-guni-schedules">
@@ -93,6 +94,10 @@ function App() {
 
           <Route path="ranking">
             <Route index element={<Ranking />} />
+          </Route>
+
+          <Route path="schedules">
+            <Route index element={<ManageSchedulePage />} />
           </Route>
         </Route>
       </Route>
