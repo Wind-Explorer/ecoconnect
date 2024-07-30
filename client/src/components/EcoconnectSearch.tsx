@@ -175,7 +175,7 @@ export default function EcoconnectSearch() {
                   <div className="w-full h-full flex flex-row justify-between *:my-auto">
                     <EcoconnectFullLogo />
                     <p className="text-lg text-red-900 dark:text-red-100">
-                      Natural Language Search
+                      Natural Language Search™
                     </p>
                   </div>
                 </ModalFooter>
