@@ -137,6 +137,7 @@ export default function EcoconnectSearch() {
                           variant="flat"
                           onPress={executeSearch}
                           isLoading={isQueryLoading}
+                          isDisabled={searchQuery.length <= 0}
                           className="-mr-2"
                         >
                           <MagnifyingGlassIcon />
