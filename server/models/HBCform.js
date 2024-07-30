@@ -12,23 +12,23 @@ module.exports = (sequelize, DataTypes) => {
             },
             electricalBill: {
                 type: DataTypes.DECIMAL(7, 2),
-                allowNull: false
+                allowNull: false,
             },
             waterBill: {
                 type: DataTypes.DECIMAL(7, 2),
-                allowNull: false
+                allowNull: false,
             },
             totalBill: {
                 type: DataTypes.DECIMAL(7, 2),
-                allowNull: false
+                allowNull: false,
             },
             noOfDependents: {
                 type: DataTypes.INTEGER,
-                allowNull: false
+                allowNull: false,
             },
             avgBill: {
                 type: DataTypes.DECIMAL(7, 2),
-                allowNull: false
+                allowNull: false,
             },
             ebPicture: {
                 type: DataTypes.BLOB("long"),
@@ -40,6 +40,7 @@ module.exports = (sequelize, DataTypes) => {
             },
             userId: {
                 type: DataTypes.UUID,
+                allowNull: false,
             },
         },
         {

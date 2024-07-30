@@ -139,12 +139,12 @@ export default function HBFormPage() {
 
   return (
     <div className="w-full h-full">
-      <section className="w-8/12 mx-auto">
+      <section className="w-7/12 mx-auto">
         <Button variant="light" onPress={() => navigate(-1)}>
           <ArrowUTurnLeftIcon />
         </Button>
       </section>
-      <section className="w-8/12 mx-auto p-5 bg-red-100 dark:bg-red-950 border border-primary-100 rounded-2xl h-600px">
+      <section className="w-7/12 mx-auto p-5 bg-red-100 dark:bg-red-950 border border-primary-100 rounded-2xl h-600px">
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
@@ -201,6 +201,7 @@ export default function HBFormPage() {
                         type="text"
                         placeholder="0"
                         labelPlacement="inside"
+                        setFieldValue={setFieldValue}
                       />
                       <NextUIFormikInput
                         label="Average Bill"
