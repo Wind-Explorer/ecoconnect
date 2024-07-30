@@ -15,9 +15,9 @@ import EventDetailsPage from "./pages/EventDetailsPage";
 import CreateEventsPage from "./pages/CreateEventsPage";
 import ManageEventsPage from "./pages/ManageEventsPage";
 import AdministratorSpringboard from "./pages/AdministratorSpringboard";
+import EditEventsPage from "./pages/EditEventsPage";
 import HBContestPage from "./pages/HBContestPage";
 import HBFormPage from "./pages/HBFormPage";
-import EditEventsPage from "./pages/EditEventsPage";
 import DefaultLayout from "./layouts/default";
 import AdministratorLayout from "./layouts/administrator";
 import UsersManagement from "./pages/UsersManagement";
@@ -43,6 +43,7 @@ function App() {
             <Route path="events">
               <Route index element={<EventsPage />} />
             </Route>
+            <Route element={<EventDetailsPage />} path="event/:id"/>
 
             {/* Karang Guni Schedules Route */}
             <Route path="karang-guni-schedules">

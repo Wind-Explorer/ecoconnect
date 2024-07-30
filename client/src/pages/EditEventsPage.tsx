@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
+import DefaultLayout from "../layouts/default";
 import { Button } from "@nextui-org/react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
@@ -32,12 +33,8 @@ const validationSchema = Yup.object({
   time: Yup.string().required("Time is required"),
   location: Yup.string().required("Location is required"),
   category: Yup.string().required("Category is required"),
-  slotsAvailable: Yup.number()
-    .integer()
-    .required("Slots Available is required"),
-  imageUrl: Yup.string()
-    .url("Invalid URL format")
-    .required("Image URL is required"),
+  slotsAvailable: Yup.number().integer().required("Slots Available is required"),
+  imageUrl: Yup.string().url("Invalid URL format").required("Image URL is required")
 });
 
 const EditEventsPage = () => {
@@ -51,16 +48,13 @@ const EditEventsPage = () => {
     location: "",
     category: "",
     slotsAvailable: "",
-    imageUrl: "",
+    imageUrl: ""
   });
 
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const response = await axios.get(
-          `${config.serverAddress}/events/${id}`
-        );
-        console.log("Fetched event data:", response.data); // Debug log
+        const response = await axios.get(`${config.serverAddress}/events/${id}`);
         setInitialValues(response.data);
       } catch (error) {
         console.error("Failed to fetch event data:", error);
@@ -76,15 +70,12 @@ const EditEventsPage = () => {
   ) => {
     console.log("Submitting form with values:", values); // Debug log
     try {
-      const response = await axios.put(
-        `${config.serverAddress}/events/${id}`,
-        values
-      );
+      const response = await axios.put(`${config.serverAddress}/events/${id}`, values);
       console.log("Server response:", response); // Debug log
       if (response.status === 200 || response.status === 201) {
         console.log("Event updated successfully:", response.data);
         resetForm(); // Clear form after successful submit
-        navigate(-1);
+        navigate("/manageEvent");
       } else {
         console.error("Error updating event:", response.statusText);
       }
@@ -100,7 +91,7 @@ const EditEventsPage = () => {
   };
 
   return (
-    <div className="w-full h-full">
+    <DefaultLayout>
       <section className="w-8/12 mx-auto">
         <Button
           variant="light"
@@ -116,7 +107,7 @@ const EditEventsPage = () => {
           initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
-          enableReinitialize={true}
+          enableReinitialize
         >
           {({ isValid, dirty, isSubmitting }) => (
             <Form className="flex flex-col gap-5">
@@ -180,14 +171,14 @@ const EditEventsPage = () => {
                   className="bg-red-600 text-white text-xl w-1/6"
                   disabled={!isValid || !dirty || isSubmitting}
                 >
-                  <p>Edit Event</p>
+                  <p>Edit Events</p>
                 </Button>
               </div>
             </Form>
           )}
         </Formik>
       </section>
-    </div>
+    </DefaultLayout>
   );
 };
 

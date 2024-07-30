@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import instance from "../security/http";
 import config from "../config";
 import { Card, CardHeader, CardBody, Button } from "@nextui-org/react";
-import { ArrowUTurnLeftIcon } from "../icons"; // Assuming you have this icon component
+import { ArrowUTurnLeftIcon } from "../icons"; // Make sure this path is correct
 
 const EventDetailsPage = () => {
   const { id } = useParams<{ id: string }>(); // Get the event ID from the URL
@@ -13,6 +13,7 @@ const EventDetailsPage = () => {
   useEffect(() => {
     const fetchEventDetails = async () => {
       try {
+        console.log("Fetching event details for ID:", id); // Debug log
         const res = await instance.get(`${config.serverAddress}/events/${id}`);
         console.log("Fetched event details:", res.data); // Log the fetched data
         setEvent(res.data);
