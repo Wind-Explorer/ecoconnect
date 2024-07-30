@@ -66,7 +66,7 @@ export default function EcoconnectSearch() {
     "/manage-account": "Manage your account",
     "/events": "Browse events",
     "/karang-guni-schedules": "Browse available Karang Guni",
-    "/home-bill-contest": "Take part in a contest",
+    "/home-bill-contest": "Take part in the home bill contest",
     "/home-bill-contest/new-submission": "Submit your bill",
     "/community-posts": "Browse community posts",
     "/community-posts/create": "Create a post",
