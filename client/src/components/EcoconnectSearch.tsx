@@ -121,7 +121,7 @@ export default function EcoconnectSearch() {
                 <ModalBody>
                   <div className="py-4 flex flex-col gap-4">
                     <Input
-                      placeholder="Search..."
+                      placeholder="What would you like to do?"
                       size="lg"
                       value={searchQuery}
                       onValueChange={setSearchQuery}
