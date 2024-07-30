@@ -19,6 +19,7 @@ import { retrieveUserInformation } from "../security/users";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import EcoconnectFullLogo from "./EcoconnectFullLogo";
+import EcoconnectSearch from "./EcoconnectSearch";
 
 export default function NavigationBar() {
   const [userProfileImageURL, setUserProfileImageURL] = useState("");
@@ -58,7 +59,7 @@ export default function NavigationBar() {
       }
     >
       <div className="relative bg-primary-50 dark:bg-primary-800 border-2 border-primary-100 dark:border-primary-950 shadow-lg w-full h-full rounded-xl flex flex-col justify-center p-1">
-        <div className=" w-full flex flex-row justify-between gap-4">
+        <div className="w-full flex flex-row justify-between gap-4">
           <div className="flex flex-row gap-0 my-auto *:my-auto">
             <Button
               variant="light"
@@ -109,60 +110,65 @@ export default function NavigationBar() {
             </div>
           </div>
           {userInformation && (
-            <div className="my-auto pr-1">
-              <Dropdown placement="bottom" backdrop="blur">
-                <DropdownTrigger>
-                  <Avatar src={userProfileImageURL} as="button" size="sm" />
-                </DropdownTrigger>
-                <DropdownMenu aria-label="Profile Actions">
-                  <DropdownSection showDivider>
-                    <DropdownItem key="account-overview" isReadOnly>
-                      <div className="flex flex-col gap-2 text-center *:mx-auto p-2">
-                        <Avatar
-                          src={userProfileImageURL}
-                          as="button"
-                          size="lg"
-                          isBordered
-                        />
-                        <div className="flex flex-col">
-                          <p>Signed in as</p>
-                          <p className="text-lg font-bold">
-                            <span>{userInformation.firstName}</span>{" "}
-                            <span>{userInformation.lastName}</span>
-                          </p>
-                          <p className="opacity-50">{userInformation.email}</p>
+            <div className="my-auto pr-1 flex flex-row justify-end">
+              <div className="flex flex-row gap-2 w-min">
+                <EcoconnectSearch />
+                <Dropdown placement="bottom" backdrop="blur">
+                  <DropdownTrigger>
+                    <Avatar src={userProfileImageURL} as="button" size="sm" />
+                  </DropdownTrigger>
+                  <DropdownMenu aria-label="Profile Actions">
+                    <DropdownSection showDivider>
+                      <DropdownItem key="account-overview" isReadOnly>
+                        <div className="flex flex-col gap-2 text-center *:mx-auto p-2 w-full">
+                          <Avatar
+                            src={userProfileImageURL}
+                            as="button"
+                            size="lg"
+                            isBordered
+                          />
+                          <div className="flex flex-col">
+                            <p>Signed in as</p>
+                            <p className="text-lg font-bold">
+                              <span>{userInformation.firstName}</span>{" "}
+                              <span>{userInformation.lastName}</span>
+                            </p>
+                            <p className="opacity-50">
+                              {userInformation.email}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    </DropdownItem>
+                      </DropdownItem>
+                      <DropdownItem
+                        key="dashboard"
+                        title="Dashboard"
+                        startContent={<RocketLaunchIcon />}
+                        onPress={() => {
+                          navigate("/springboard");
+                        }}
+                      />
+                      <DropdownItem
+                        key="manage-account"
+                        title="Manage your account"
+                        startContent={<PencilSquareIcon />}
+                        onPress={() => {
+                          navigate("/manage-account");
+                        }}
+                      />
+                    </DropdownSection>
                     <DropdownItem
-                      key="dashboard"
-                      title="Dashboard"
-                      startContent={<RocketLaunchIcon />}
+                      key="signout"
+                      startContent={<ArrowRightStartOnRectangleIcon />}
+                      color="danger"
+                      title="Sign out"
                       onPress={() => {
-                        navigate("/springboard");
+                        localStorage.clear();
+                        window.location.reload();
                       }}
                     />
-                    <DropdownItem
-                      key="manage-account"
-                      title="Manage your account"
-                      startContent={<PencilSquareIcon />}
-                      onPress={() => {
-                        navigate("/manage-account");
-                      }}
-                    />
-                  </DropdownSection>
-                  <DropdownItem
-                    key="signout"
-                    startContent={<ArrowRightStartOnRectangleIcon />}
-                    color="danger"
-                    title="Sign out"
-                    onPress={() => {
-                      localStorage.clear();
-                      window.location.reload();
-                    }}
-                  />
-                </DropdownMenu>
-              </Dropdown>
+                  </DropdownMenu>
+                </Dropdown>
+              </div>
             </div>
           )}
           {!userInformation && doneLoading && (

@@ -1,21 +1,10 @@
 const axios = require("axios");
 const senderEmail = "ecoconnect@trial-ynrw7gy0qxol2k8e.mlsender.net";
-
-async function getApiKey() {
-  try {
-    const response = await axios.get(
-      "http://mommy.rya-orfe.ts.net:8069/mailersend_api_key"
-    );
-    return response.data;
-  } catch (error) {
-    console.error("Error retrieving API key:", error);
-    throw error;
-  }
-}
+const { getApiKey } = require("./apiKey");
 
 async function sendEmail(recipientEmail, title, content) {
   try {
-    const apiKey = await getApiKey();
+    const apiKey = await getApiKey("mailersend_api_key");
     const response = await axios.post(
       "https://api.mailersend.com/v1/email",
       {
