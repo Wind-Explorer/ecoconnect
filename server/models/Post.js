@@ -17,9 +17,14 @@ module.exports = (sequelize, DataTypes) => {
         content: {
             type: DataTypes.TEXT,
             allowNull: false
-        }
+        },
+        userId: {
+            type: DataTypes.UUID,
+            allowNull: false,
+          },
     }, {
         tableName: 'posts'
     });
+    
     return Post;
 }

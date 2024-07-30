@@ -23,6 +23,7 @@ router.post("/", upload.fields([
         waterBill: yup.number().positive().required(),
         totalBill: yup.number().positive().required(),
         noOfDependents: yup.number().integer().positive().required(),
+        avgBill: yup.number().positive().required(),
     });
     try {
         data = await validationSchema.validate(data, { abortEarly: false });
@@ -48,6 +49,7 @@ router.get("/", async (req, res) => {
             { waterBill: { [Op.like]: `%${search}%` } },
             { totalBill: { [Op.like]: `%${search}%` } },
             { noOfDependents: { [Op.like]: `%${search}%` } },
+            { avgBill: { [Op.like]: `%${search}%` } },
         ];
     }
     let list = await HBCform.findAll({

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Post } = require('../models');
+const { Post, User } = require('../models');
 const { Op, where } = require("sequelize");
 const yup = require("yup");
 const multer = require("multer");
@@ -56,10 +56,14 @@ router.post("/", async (req, res) => {
 // });
 
 router.get("/", async (req, res) => {
-    let condition = {};
+    let condition = {
+        where: {},
+        order: [['createdAt', 'DESC']]
+    };
+
     let search = req.query.search;
     if (search) {
-        condition[Op.or] = [
+        condition.where[Op.or] = [
             { title: { [Op.like]: `%${search}%` } },
             { content: { [Op.like]: `%${search}%` } }
         ];
@@ -67,11 +71,7 @@ router.get("/", async (req, res) => {
     // You can add condition for other columns here
     // e.g. condition.columnName = value;
 
-    let list = await Post.findAll({
-        where: condition,
-        // order option takes an array of items. These items are themselves in the form of [column, direction]
-        order: [['createdAt', 'DESC']]
-    });
+    let list = await Post.findAll(condition);
     res.json(list);
 });
 

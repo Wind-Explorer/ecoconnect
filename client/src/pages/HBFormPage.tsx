@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Button } from "@nextui-org/react";
 import { ArrowUTurnLeftIcon } from "../icons";
 import { useNavigate } from "react-router-dom";
@@ -8,29 +9,25 @@ import NextUIFormikInput from "../components/NextUIFormikInput";
 import axios from "axios";
 import InsertImage from "../components/InsertImage";
 import { retrieveUserInformation } from "../security/users";
-import { useEffect, useState } from "react";
 
 const validationSchema = Yup.object({
   electricalBill: Yup.number()
     .typeError("Must be a number")
     .positive("Must be a positive value")
     .max(99999.99, "Value is too large")
-    .required(),
+    .required("Electrical bill is a required field"),
   waterBill: Yup.number()
     .typeError("Must be a number")
     .positive("Must be a positive value")
     .max(99999.99, "Value is too large")
-    .required(),
-  totalBill: Yup.number()
-    .typeError("Must be a number")
-    .positive("Must be a positive value")
-    .max(99999.99, "Value is too large")
-    .required(),
+    .required("Water bill is a required field"),
   noOfDependents: Yup.number()
     .typeError("Must be a number")
     .integer("Must be a whole number")
     .positive("Must be a positive value")
-    .required(),
+    .required("No. of dependents is a required field"),
+  ebPicture: Yup.mixed().required("Electrical bill picture is required"),
+  wbPicture: Yup.mixed().required("Water bill picture is required"),
 });
 
 export default function HBFormPage() {
@@ -41,9 +38,16 @@ export default function HBFormPage() {
     waterBill: "",
     totalBill: "",
     noOfDependents: "",
+    avgBill: "",
     ebPicture: null,
     wbPicture: null,
     userId: "",
+  });
+
+  // Add state for image selection
+  const [imagesSelected, setImagesSelected] = useState({
+    ebPicture: false,
+    wbPicture: false,
   });
 
   useEffect(() => {
@@ -78,6 +82,7 @@ export default function HBFormPage() {
     formData.append("waterBill", values.waterBill);
     formData.append("totalBill", values.totalBill);
     formData.append("noOfDependents", values.noOfDependents);
+    formData.append("avgBill", values.avgBill);
 
     if (values.ebPicture) {
       formData.append("ebPicture", values.ebPicture);
@@ -124,78 +129,117 @@ export default function HBFormPage() {
     }
   };
 
+  // Handler for image selection
+  const handleImageSelection = (name: string, file: File | null) => {
+    setImagesSelected(prevState => ({
+      ...prevState,
+      [name]: !!file,
+    }));
+  };
+
   return (
     <div className="w-full h-full">
-      <section className="w-7/12 mx-auto">
+      <section className="w-8/12 mx-auto">
         <Button variant="light" onPress={() => navigate(-1)}>
           <ArrowUTurnLeftIcon />
         </Button>
       </section>
-      <section className="w-7/12 mx-auto p-5 bg-red-100 border border-none rounded-2xl h-600px">
+      <section className="w-8/12 mx-auto p-5 bg-red-100 dark:bg-red-950 border border-primary-100 rounded-2xl h-600px">
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
         >
-          {({ isValid, dirty, isSubmitting, setFieldValue }) => (
-            <Form>
-              <div className="flex flex-col gap-5">
-                <div className="flex flex-row gap-10">
-                  <div className="flex flex-col gap-5">
-                    <NextUIFormikInput
-                      label="Electrical Bill"
-                      name="electricalBill"
-                      type="text"
-                      placeholder="$"
-                      labelPlacement="inside"
-                    />
-                    <NextUIFormikInput
-                      label="Water Bill"
-                      name="waterBill"
-                      type="text"
-                      placeholder="$"
-                      labelPlacement="inside"
-                    />
-                    <NextUIFormikInput
-                      label="Total Bill"
-                      name="totalBill"
-                      type="text"
-                      placeholder="$"
-                      labelPlacement="inside"
-                    />
-                    <NextUIFormikInput
-                      label="Number of dependents"
-                      name="noOfDependents"
-                      type="text"
-                      placeholder="0"
-                      labelPlacement="inside"
-                    />
+          {({ isValid, dirty, isSubmitting, setFieldValue, values }) => {
+            // Calculate the total bill
+            useEffect(() => {
+              const totalBill = Number(values.electricalBill) + Number(values.waterBill);
+              setFieldValue("totalBill", totalBill.toFixed(2));
+
+              const avgBill = Number(values.noOfDependents) > 0
+                ? totalBill / Number(values.noOfDependents)
+                : 0;
+              setFieldValue("avgBill", avgBill.toFixed(2));
+
+            }, [values.electricalBill, values.waterBill, values.noOfDependents, setFieldValue]);
+
+            // Disabled the submit button because the images field are not selected
+            const isSubmitDisabled = !imagesSelected.ebPicture || !imagesSelected.wbPicture;
+
+            return (
+              <Form>
+                <div className="flex flex-col gap-5">
+                  <div className="flex flex-row gap-10">
+                    <div className="flex flex-col gap-10">
+                      <NextUIFormikInput
+                        label="Electrical Bill"
+                        name="electricalBill"
+                        type="text"
+                        placeholder="0.00"
+                        labelPlacement="inside"
+                        setFieldValue={setFieldValue}
+                      />
+                      <NextUIFormikInput
+                        label="Water Bill"
+                        name="waterBill"
+                        type="text"
+                        placeholder="0.00"
+                        labelPlacement="inside"
+                        setFieldValue={setFieldValue}
+                      />
+                      <NextUIFormikInput
+                        label="Total Bill"
+                        name="totalBill"
+                        type="text"
+                        placeholder="0.00"
+                        labelPlacement="inside"
+                        readOnly={true}
+                      />
+                      <NextUIFormikInput
+                        label="Number of dependents"
+                        name="noOfDependents"
+                        type="text"
+                        placeholder="0"
+                        labelPlacement="inside"
+                      />
+                      <NextUIFormikInput
+                        label="Average Bill"
+                        name="avgBill"
+                        type="text"
+                        placeholder="0"
+                        labelPlacement="inside"
+                        readOnly={true}
+                      />
+                    </div>
+                    <div className="flex flex-row max-w-xs h-[500px] gap-10">
+                      <InsertImage
+                        onImageSelected={(file) => {
+                          setFieldValue("ebPicture", file);
+                          handleImageSelection("ebPicture", file);
+                        }}
+                      />
+                      <InsertImage
+                        onImageSelected={(file) => {
+                          setFieldValue("wbPicture", file);
+                          handleImageSelection("wbPicture", file);
+                        }}
+                      />
+                    </div>
                   </div>
-                  <div className="flex flex-row gap-8 max-w-xs h-[500px]">
-                    <InsertImage
-                      onImageSelected={(file) => {
-                        setFieldValue("ebPicture", file);
-                      }}
-                    />
-                    <InsertImage
-                      onImageSelected={(file) => {
-                        setFieldValue("wbPicture", file);
-                      }}
-                    />
+                  <div>
+                    <Button
+                      type="submit"
+                      className="bg-red-400 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-900 text-white"
+                      size="lg"
+                      isDisabled={!isValid || !dirty || isSubmitting || isSubmitDisabled}
+                    >
+                      <p>Submit</p>
+                    </Button>
                   </div>
                 </div>
-                <div>
-                  <Button
-                    type="submit"
-                    className="bg-red-500 dark:bg-red-700 text-white"
-                    isDisabled={!isValid || !dirty || isSubmitting}
-                  >
-                    <p>Submit</p>
-                  </Button>
-                </div>
-              </div>
-            </Form>
-          )}
+              </Form>
+            );
+          }}
         </Formik>
       </section>
     </div>
