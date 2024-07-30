@@ -63,7 +63,7 @@ export default function EcoconnectSearch() {
   const routeDescriptions: { [key: string]: string } = {
     "/": "Go home",
     "/springboard": "Go to the Dashboard",
-    "/manage-account": "Management your account",
+    "/manage-account": "Manage your account",
     "/events": "Browse events",
     "/karang-guni-schedules": "Browse available Karang Guni",
     "/home-bill-contest": "Take part in a contest",
