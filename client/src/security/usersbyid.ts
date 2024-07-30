@@ -2,7 +2,7 @@ import { AxiosError } from "axios";
 import config from "../config";
 import instance from "./http";
 
-export async function retrieveUserInformationById(userId: number) {
+export async function retrieveUserInformationById(userId: string) {
   if (!localStorage.getItem("accessToken")) {
     throw "No access token";
   }

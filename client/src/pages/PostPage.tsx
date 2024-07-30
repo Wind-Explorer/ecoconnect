@@ -31,12 +31,12 @@ interface Post {
   postImage: Blob;
   content: string;
   tags: string;
-  id: number;
-  userId: number;
+  id: string;
+  userId: string;
 }
 
 type User = {
-  id: number;
+  id: string;
   firstName: string;
   lastName: string;
 };
@@ -47,7 +47,7 @@ const PostPage: React.FC = () => {
   const [post, setPost] = useState<Post | null>(null);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
-  const [userInformation, setUserInformation] = useState<Record<number, User>>({});
+  const [userInformation, setUserInformation] = useState<Record<string, User>>({});
 
   useEffect(() => {
     if (id) {

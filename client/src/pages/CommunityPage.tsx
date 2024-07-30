@@ -30,6 +30,7 @@ import {
 } from "../icons";
 import { useNavigate } from "react-router-dom";
 import { retrieveUserInformationById } from "../security/usersbyid";
+import { retrieveUserInformation } from "../security/users";
 import { number } from "yup";
 // import UserPostImage from "../components/UserPostImage";
 
@@ -38,12 +39,12 @@ interface Post {
   postImage: Blob;
   content: string;
   tags: string;
-  id: number;
-  userId: number;
+  id: string;
+  userId: string;
 }
 
 type User = {
-  id: number;
+  id: string;
   firstName: string;
   lastName: string;
 };
@@ -54,7 +55,9 @@ export default function CommunityPage() {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [communityList, setCommunityList] = useState<Post[]>([]);
   const [search, setSearch] = useState(""); // Search Function
-  const [userInformation, setUserInformation] = useState<Record<number, User>>({});
+  const [userInformation, setUserInformation] = useState<Record<string, User>>({});
+  const [currentUserInfo, setCurrentUserInfo] = useState(null);
+
 
   let accessToken = localStorage.getItem("accessToken");
   if (!accessToken) {
@@ -84,7 +87,7 @@ export default function CommunityPage() {
   }, []);
 
   useEffect(() => {
-    const fetchUserInformation = async (userId: number) => {
+    const fetchUserInformation = async (userId: string) => {
       try {
         const user = await retrieveUserInformationById(userId);
         setUserInformation((prevMap) => ({
@@ -102,6 +105,19 @@ export default function CommunityPage() {
       }
     });
   }, [communityList]);
+
+  useEffect(() => {
+    const getCurrentUserInformation = async () => {
+      try {
+        const user = await retrieveUserInformation(); // Get the user ID
+        setCurrentUserInfo(user); // Set the user ID in the state
+        console.log(currentUserInfo);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getCurrentUserInformation();
+  }, []);
 
   const onSearchChange = (e: { target: { value: SetStateAction<string> } }) => {
     setSearch(e.target.value);
@@ -149,7 +165,7 @@ export default function CommunityPage() {
     }
   };
 
-  const handlePostClick = (id: number) => {
+  const handlePostClick = (id: string) => {
     navigate(`post/${id}`);
   };
 

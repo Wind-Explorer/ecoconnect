@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         title: {
             type: DataTypes.STRING(100),
-            allowNull: false
+            allowNull: false,
         },
         postImage: {
             type: DataTypes.BLOB("long"),
@@ -16,14 +16,15 @@ module.exports = (sequelize, DataTypes) => {
         },
         content: {
             type: DataTypes.TEXT,
-            allowNull: false
+            allowNull: false,
         },
         userId: {
             type: DataTypes.UUID,
             allowNull: false,
           },
     }, {
-        tableName: 'posts'
+        tableName: 'posts',
+        timestamps: true,
     });
     
     return Post;
