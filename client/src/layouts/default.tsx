@@ -6,8 +6,8 @@ import SiteFooter from "../components/SiteFooter";
 
 export default function DefaultLayout() {
   return (
-    <div className="relative flex flex-col justify-between h-screen">
-      <div className="flex flex-col h-screen">
+    <div className="relative flex flex-col justify-between">
+      <div className="flex flex-col min-h-screen">
         <SingaporeAgencyStrip />
         <main className="pt-16 flex-grow">
           <Outlet />

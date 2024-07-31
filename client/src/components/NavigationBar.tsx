@@ -54,8 +54,8 @@ export default function NavigationBar() {
     <div
       className={
         isScrolled
-          ? "transition-all fixed w-full p-2"
-          : "transition-all fixed w-full p-2 mt-8"
+          ? "transition-all fixed w-full p-2 z-50"
+          : "transition-all fixed w-full p-2 z-50 mt-8"
       }
     >
       <div className="relative bg-primary-50 dark:bg-primary-800 border-2 border-primary-100 dark:border-primary-950 shadow-lg w-full h-full rounded-xl flex flex-col justify-center p-1">
