@@ -6,6 +6,8 @@ import NextUIFormikTextarea from "../components/NextUIFormikTextarea";
 import instance from '../security/http';
 import { useNavigate, useParams } from "react-router-dom";
 import { retrieveUserInformation } from "../security/users";
+import { Button } from "@nextui-org/react";
+import { PaperAirplaneIcon } from "../icons";
 
 
 const validationSchema = Yup.object({
@@ -56,15 +58,22 @@ export default function CommentsModule() {
                         onSubmit={submitComment}
                     >
                         {({ isValid, dirty }) => (
-                            <Form className="flex flex-col gap-4">
+                            <Form>
+                                <div className="relative">
                                 <NextUIFormikTextarea
                                     label="Comment"
                                     name="content"
                                     placeholder="Write your comment here"
                                 />
-                                <button type="submit" disabled={!isValid || !dirty}>
-                                    Submit
-                                </button>
+                                <div className="flex justify-end my-2">
+                                    <Button isIconOnly
+                                        type="submit" 
+                                        disabled={!isValid || !dirty}
+                                        className="bg-primary-950 text-white">
+                                        <PaperAirplaneIcon />
+                                    </Button>
+                                </div>
+                                </div>
                             </Form>
                         )}
                     </Formik>
