@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Post, User } = require('../models');
+const { Post, Comment } = require('../models');
 const { Op, where } = require("sequelize");
 const yup = require("yup");
 const multer = require("multer");
@@ -28,7 +28,7 @@ router.post("/", async (req, res) => {
         data = await validationSchema.validate(data, // validate() method is used to validate data against the schema and returns the valid data and any applied transformations
             { abortEarly: false }); // abortEarly: false means the validation won’t stop when the first error is detected
         // Process valid data
-        
+
         // Check for profanity
         if (filter.isProfane(data.title)) {
             return res.status(400).json({ field: 'title', error: 'Profane content detected in title' });
@@ -42,6 +42,31 @@ router.post("/", async (req, res) => {
     }
     catch (err) {
         res.status(400).json({ errors: err.errors }); // If the error is caught, return the bad request
+    }
+});
+
+router.post("/:id/comments", async (req, res) => {
+    let data = req.body;
+
+    // Validate request body
+    let validationSchema = yup.object({
+        content: yup.string().trim().min(3).max(500).required(),
+        userId: yup.string().required(),
+        postId: yup.string().required()
+    });
+
+    try {
+        console.log("Validating schema...");
+        data = await validationSchema.validate(data, { abortEarly: false });
+
+        console.log("Creating comment...");
+        let result = await Comment.create(data);
+
+        res.json(result);
+        console.log("Success!");
+    } catch (err) {
+        console.log("Error caught! Info: " + err);
+        res.status(400).json({ errors: err.errors });
     }
 });
 

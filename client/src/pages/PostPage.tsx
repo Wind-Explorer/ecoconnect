@@ -25,6 +25,7 @@ import {
   ArrowUTurnLeftIcon,
 } from "../icons";
 import { retrieveUserInformationById } from "../security/usersbyid";
+import CommentsModule from "../components/CommentsModule";
 
 interface Post {
   title: string;
@@ -200,6 +201,10 @@ const PostPage: React.FC = () => {
         </div>
         <div className="w-2/12"></div>
       </section>
+      <section>
+        <CommentsModule />
+      </section>
+      
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           {(onClose) => (
