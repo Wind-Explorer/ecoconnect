@@ -124,7 +124,6 @@ const EventsPage: React.FC = () => {
             filteredEvents.map((event) => (
               <Card
                 key={event.id}
-                className="bg-white rounded-lg overflow-hidden border"
               >
                 <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
                   <h4 className="font-bold text-large">{event.title}</h4>
