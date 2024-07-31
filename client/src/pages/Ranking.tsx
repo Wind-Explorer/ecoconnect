@@ -1,8 +1,15 @@
 import { useEffect, useState } from 'react';
 import config from '../config';
 import instance from '../security/http';
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, SortDescriptor, Button } from '@nextui-org/react';
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, SortDescriptor, Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@nextui-org/react';
 import { EmailIcon, TrashDeleteIcon } from '../icons';
+
+interface User {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+}
 
 interface FormData {
     id: number;
@@ -18,29 +25,39 @@ interface FormData {
 
 export default function Ranking() {
     const [formData, setFormData] = useState<FormData[]>([]);
+    const [userData, setUserData] = useState<User[]>([]);
     const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
         column: 'avgBill',
         direction: 'ascending',
     });
+    const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [selectedUser, setSelectedUser] = useState<{ email: string, name: string }>({ email: '', name: '' });
+    const [selectedFormId, setSelectedFormId] = useState<number | null>(null);
 
     useEffect(() => {
-        const getFormData = async () => {
+        const fetchData = async () => {
             try {
-                const response = await instance.get(`${config.serverAddress}/hbcform`);
-                const processedData = response.data.map((data: FormData) => ({
+                // Fetch form data
+                const formResponse = await instance.get<FormData[]>(`${config.serverAddress}/hbcform`);
+                const processedFormData = formResponse.data.map((data) => ({
                     ...data,
                     electricalBill: Number(data.electricalBill),
                     waterBill: Number(data.waterBill),
                     totalBill: Number(data.totalBill),
                     avgBill: Number(data.avgBill),
                 }));
-                setFormData(processedData);
+                setFormData(processedFormData);
+
+                // Fetch user data
+                const userResponse = await instance.get<User[]>(`${config.serverAddress}/users/all`);
+                setUserData(userResponse.data);
             } catch (error) {
-                console.log("Failed to fetch form data");
+                console.log("Failed to fetch data");
             }
         };
 
-        getFormData();
+        fetchData();
     }, []);
 
     const sortFormData = (list: FormData[], descriptor: SortDescriptor) => {
@@ -71,6 +88,49 @@ export default function Ranking() {
 
     const sortedFormData = sortFormData(formData, sortDescriptor);
 
+    // Combine form data with user information
+    const combinedData = sortedFormData.map((data) => {
+        const user = userData.find((user) => user.id === data.userId);
+        return {
+            ...data,
+            userName: user ? `${user.firstName} ${user.lastName}` : 'Unknown User',
+            userEmail: user ? user.email : 'Unknown Email',
+        };
+    });
+
+    const handleEmailClick = (email: string, name: string) => {
+        setSelectedUser({ email, name });
+        setIsEmailModalOpen(true);
+    };
+
+    const sendEmail = () => {
+        const subject = "Home Bill Contest";
+        const body = `Dear ${selectedUser.name},
+        \nPlease submit another submission for the home bill contest with correct documents.
+        \nThank you for your cooperation.
+        \nYour Sincerely, 
+        Admin from Ecoconnect.gov`;
+        window.location.href = `mailto:${selectedUser.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        setIsEmailModalOpen(false);
+    };
+
+    const handleDeleteClick = (id: number) => {
+        setSelectedFormId(id);
+        setIsDeleteModalOpen(true);
+    };
+
+    const deleteForm = async () => {
+        if (selectedFormId === null) return;
+        try {
+            await instance.delete(`${config.serverAddress}/hbcform/${selectedFormId}`);
+            setFormData(formData.filter((data) => data.id !== selectedFormId));
+            setSelectedFormId(null);
+            setIsDeleteModalOpen(false);
+        } catch (error) {
+            console.error("Failed to delete form entry:", error);
+        }
+    };
+
     return (
         <section className="flex flex-col items-center justify-center py-5">
             <p className="text-xl font-bold">Form Data</p>
@@ -78,6 +138,8 @@ export default function Ranking() {
                 <Table aria-label="Form Data Table">
                     <TableHeader>
                         <TableColumn>User ID</TableColumn>
+                        <TableColumn>User Name</TableColumn>
+                        <TableColumn>User Email</TableColumn>
                         <TableColumn>Electrical Bill</TableColumn>
                         <TableColumn>Water Bill</TableColumn>
                         <TableColumn>Total Bill</TableColumn>
@@ -90,9 +152,11 @@ export default function Ranking() {
                         <TableColumn>Actions</TableColumn>
                     </TableHeader>
                     <TableBody>
-                        {sortedFormData.map((data) => (
+                        {combinedData.map((data) => (
                             <TableRow key={data.id}>
                                 <TableCell>{data.userId}</TableCell>
+                                <TableCell>{data.userName}</TableCell>
+                                <TableCell>{data.userEmail}</TableCell>
                                 <TableCell>${data.electricalBill.toFixed(2)}</TableCell>
                                 <TableCell>${data.waterBill.toFixed(2)}</TableCell>
                                 <TableCell>${data.totalBill.toFixed(2)}</TableCell>
@@ -105,14 +169,56 @@ export default function Ranking() {
                                     {data.wbPicture && <img src={`${config.serverAddress}/hbcform/wbPicture/${data.id}`} alt="Water Bill" className="w-full" />}
                                 </TableCell>
                                 <TableCell className="flex flex-row">
-                                    <Button isIconOnly variant="light"><EmailIcon /></Button>
-                                    <Button isIconOnly variant="light"><TrashDeleteIcon /></Button>
+                                    <Button isIconOnly variant="light" onClick={() => handleEmailClick(data.userEmail, data.userName)}><EmailIcon /></Button>
+                                    <Button isIconOnly variant="light" onClick={() => handleDeleteClick(data.id)}><TrashDeleteIcon /></Button>
                                 </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
             </div>
+            {/* Email Confirmation Modal */}
+            <Modal isOpen={isEmailModalOpen} onOpenChange={setIsEmailModalOpen} isDismissable={false} isKeyboardDismissDisabled={true}>
+                <ModalContent>
+                    {(onClose) => (
+                        <>
+                            <ModalHeader className="flex flex-col gap-1">Send Email</ModalHeader>
+                            <ModalBody>
+                                <p>Are you sure you want to send this email to {selectedUser.email}?</p>
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button color="danger" variant="light" onPress={onClose}>
+                                    Close
+                                </Button>
+                                <Button color="danger" onPress={() => { sendEmail(); onClose(); }}>
+                                    Send
+                                </Button>
+                            </ModalFooter>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
+            {/* Delete Confirmation Modal */}
+            <Modal isOpen={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen} isDismissable={false} isKeyboardDismissDisabled={true}>
+                <ModalContent>
+                    {(onClose) => (
+                        <>
+                            <ModalHeader className="flex flex-col gap-1">Delete Entry</ModalHeader>
+                            <ModalBody>
+                                <p>Are you sure you want to delete this entry?</p>
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button color="danger" variant="light" onPress={onClose}>
+                                    Cancel
+                                </Button>
+                                <Button color="danger" onPress={() => { deleteForm(); onClose(); }}>
+                                    Delete
+                                </Button>
+                            </ModalFooter>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
         </section>
     );
 }

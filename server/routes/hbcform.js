@@ -107,4 +107,21 @@ router.get("/wbPicture/:id", async (req, res) => {
     }
 });
 
+router.delete("/:id", async (req, res) => {
+    let id = req.params.id;
+    try {
+        const result = await HBCform.destroy({ where: { id } });
+        if (result === 0) {
+            // No rows were deleted
+            res.sendStatus(404);
+        } else {
+            // Successfully deleted
+            res.sendStatus(204);
+        }
+    } catch (err) {
+        console.error("Error deleting form entry:", err);
+        res.status(500).json({ message: "Failed to delete form entry", error: err });
+    }
+});
+
 module.exports = router;

@@ -161,7 +161,7 @@ export default function AdministratorNavigationPanel() {
                         Bill Contest
                       </p>
                       <AdministratorNavigationPanelNavigationButton
-                        text="Ranking"
+                        text="Manage Forms"
                         icon={<ChartBarIcon />}
                         onClickRef="ranking"
                       />
