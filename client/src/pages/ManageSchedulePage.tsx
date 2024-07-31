@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import instance from "../security/http";
 import { PencilSquareIcon, PlusIcon, TrashDeleteIcon } from "../icons";
@@ -13,7 +13,7 @@ interface Schedule {
 }
 
 export default function ManageSchedulePage() {
-
+    const navigate = useNavigate();
     const [scheduleList, setScheduleList] = useState<Schedule[]>([]);
     const [scheduleIdToDelete, setScheduleIdToDelete] = useState<number | null>(null);
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -35,6 +35,11 @@ export default function ManageSchedulePage() {
                 console.error('Error fetching schedules:', err);
             });
     }, []);
+
+    const handleEdit = (id: number) => {
+        navigate(`edit-schedule/${id}`);
+    };
+
 
     const deleteSchedule = () => {
         if (scheduleIdToDelete !== null) {
@@ -96,7 +101,11 @@ export default function ManageSchedulePage() {
             <div className="inline-block text-center justify-center flex flex-row gap-10">
                 <p className="text-3xl font-bold">Admin Karang Guni Schedule</p>
                 <Link to="/Addschedules">
-                    <Button isIconOnly color="primary">
+                    <Button
+                        isIconOnly
+                        color="primary"
+                        onPress={() => navigate("create-schedule")}
+                    >
                         <PlusIcon />
                     </Button>
                 </Link>
@@ -122,8 +131,21 @@ export default function ManageSchedulePage() {
                                 <TableCell>{schedule.postalCode}</TableCell>
                                 <TableCell>{schedule.status}</TableCell>
                                 <TableCell>
-                                    <Link to={`/Editschedules/${schedule.id}`}><Button isIconOnly color="success" variant="light"><PencilSquareIcon /></Button></Link>
-                                    <Button isIconOnly color="danger" variant="light" onPress={() => { setScheduleIdToDelete(schedule.id); onOpen(); }}><TrashDeleteIcon /></Button>
+                                    <Button
+                                        isIconOnly
+                                        variant="light"
+                                        color="success"
+                                        onPress={() => handleEdit(schedule.id)}
+                                    >
+                                        <PencilSquareIcon />
+                                    </Button>
+                                    <Button
+                                        isIconOnly
+                                        color="danger"
+                                        variant="light"
+                                        onPress={() => { setScheduleIdToDelete(schedule.id); onOpen(); }}>
+                                        <TrashDeleteIcon />
+                                    </Button>
                                 </TableCell>
                             </TableRow>
                         ))}

@@ -98,26 +98,29 @@ export default function SchedulePage() {
   return (
     <div className="w-full h-full">
       <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-        <h1>Karang Guni Schedule</h1>
-        <div className="flex gap-4">
-          {/* Search Input */}
-          <Input
-            value={search}
-            className="w-[400px]"
-            placeholder="Search Address/Postal"
-            onChange={onSearchChange}
-            onKeyDown={onSearchKeyDown}
-            endContent={
-              <div className="flex flex-row -mr-3">
-                <Button isIconOnly variant="light" onPress={onClickSearch}>
-                  <MagnifyingGlassIcon />
-                </Button>
-                <Button isIconOnly variant="light" onPress={onClickClear}>
-                  <XMarkIcon />
-                </Button>
-              </div>
-            }
-          />
+        <div className="flex flex-row gap-10">
+          <p className="text-2xl font-bold">Karang Guni Schedule</p>
+
+          <div className="flex gap-4">
+            {/* Search Input */}
+            <Input
+              value={search}
+              className="w-[400px]"
+              placeholder="Search"
+              onChange={onSearchChange}
+              onKeyDown={onSearchKeyDown}
+              endContent={
+                <div className="flex flex-row -mr-3">
+                  <Button isIconOnly variant="light" onPress={onClickSearch}>
+                    <MagnifyingGlassIcon />
+                  </Button>
+                  <Button isIconOnly variant="light" onPress={onClickClear}>
+                    <XMarkIcon />
+                  </Button>
+                </div>
+              }
+            />
+          </div>
         </div>
         <div className="flex flex-col gap-8">
           <Table aria-label="Schedule Table">
@@ -145,7 +148,7 @@ export default function SchedulePage() {
                   <TableCell>{schedule.location}</TableCell>
                   <TableCell>{schedule.postalCode}</TableCell>
                   <TableCell>
-                    <Chip color={getStatusColor(schedule.status)}>
+                    <Chip variant="flat" color={getStatusColor(schedule.status)}>
                       {schedule.status}
                     </Chip>
                   </TableCell>

@@ -26,6 +26,8 @@ import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import RestrictedLayout from "./layouts/restricted";
 import Ranking from "./pages/Ranking";
 import ManageSchedulePage from "./pages/ManageSchedulePage";
+import EditSchedulePage from "./pages/EditSchedulePage";
+import CreateSchedulePage from "./pages/CreateSchedulePage";
 
 function App() {
   return (
@@ -98,6 +100,8 @@ function App() {
 
           <Route path="schedules">
             <Route index element={<ManageSchedulePage />} />
+            <Route path="create-schedule" element={<CreateSchedulePage />} />
+            <Route path="edit-schedule/:id" element={<EditSchedulePage />} />
           </Route>
         </Route>
       </Route>
