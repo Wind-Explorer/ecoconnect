@@ -12,6 +12,7 @@ import PostPage from "./pages/PostPage";
 import SchedulePage from "./pages/SchedulePage";
 import EventsPage from "./pages/EventsPage";
 import EventDetailsPage from "./pages/EventDetailsPage";
+import RegisterPage from "./pages/RegisterPage";
 import CreateEventsPage from "./pages/CreateEventsPage";
 import ManageEventsPage from "./pages/ManageEventsPage";
 import AdministratorSpringboard from "./pages/AdministratorSpringboard";
@@ -48,6 +49,7 @@ function App() {
               <Route index element={<EventsPage />} />
             </Route>
             <Route element={<EventDetailsPage />} path="event/:id" />
+            <Route path="/register/:id" element={<RegisterPage />} />
 
             {/* Karang Guni Schedules Route */}
             <Route path="karang-guni-schedules">

@@ -33,7 +33,7 @@ const EventDetailsPage = () => {
         className="mb-4 bg-gray-200 text-black rounded px-4 py-2 hover:bg-gray-300"
         onClick={() => navigate(-1)}
       >
-        <ArrowUTurnLeftIcon/>
+        <ArrowUTurnLeftIcon />
         Back to Events
       </Button>
       <Card className="bg-white rounded-lg overflow-hidden border">
@@ -64,6 +64,12 @@ const EventDetailsPage = () => {
           <p className="text-gray-600 mt-2">
             <strong>Slots Available:</strong> {event.slotsAvailable}
           </p>
+          <Button
+            className="mt-4 bg-red-500 text-white rounded px-4 py-2 hover:red"
+            onClick={() => navigate(`/register/${id}`)}
+          >
+            Register for Event
+          </Button>
         </CardBody>
       </Card>
     </div>
