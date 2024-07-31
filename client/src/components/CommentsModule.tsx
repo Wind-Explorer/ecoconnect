@@ -3,19 +3,20 @@ import instance from "../security/http";
 import config from "../config";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Avatar, Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/react";
+import { Avatar, Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, User } from "@nextui-org/react";
 import { ChatBubbleOvalLeftEllipsisIcon, EllipsisHorizontalIcon, HandThumbsUpIcon } from "../icons";
 
 interface Comment {
     id: string;
     content: string;
+    user: User; // Make user optional
 }
 
-//   type User = {
-//     id: string;
-//     firstName: string;
-//     lastName: string;
-//   };
+interface User {
+    id: string;
+    firstName: string;
+    lastName: string;
+}
 
 export default function CommentsModule() {
     const { id } = useParams();
@@ -27,6 +28,7 @@ export default function CommentsModule() {
         instance
             .get(config.serverAddress + `/post/${postId}/getComments`).then((res) => {
                 setCommentList(res.data);
+                console.log(res.data);
             });
     };
     useEffect(() => {
@@ -45,21 +47,24 @@ export default function CommentsModule() {
                 <div className="w-8/12 mx-auto">
                     {commentList.length > 0 ? (
                         commentList.map((comment) => {
+                            // console.log(comment); // Log each comment to verify its structure
+                            // // Check if `comment.user` is defined before accessing properties
+                            // const user = comment.user || { firstName: "Unknown", lastName: "" };
                             return (
                                 <div className="flex flex-col w-full bg-primary-50 dark:bg-primary-950 rounded-xl mb-2 p-3 mx-auto"
                                     key={comment.id}>
-                                    <div className="flex flex-row w-full">
+                                    <div className="flex flex-row flex-shrink-0 w-full">
                                         <div>
                                             <Avatar
                                                 src="https://pbs.twimg.com/media/GOva9x5a0AAK8Bn?format=jpg&name=large"
                                                 size="md"
                                             />
                                         </div>
-                                        <div className="flex flex-col w-10/12 text-sm ml-3">
+                                        <div className="flex flex-col w-10/12 flex-grow text-sm ml-3">
                                             <div className="font-bold">Name</div>
                                             <div className="break-words whitespace-pre-wrap">{comment.content}</div>
                                         </div>
-                                        <div className="ml-10">
+                                        <div className="flex-shrink-0 ml-10">
                                             <div className="flex flex-row-reverse justify-center items-center size-7">
                                                 <Dropdown>
                                                     <div>

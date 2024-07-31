@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Post, Comment } = require('../models');
+const { Post, Comment, User } = require('../models');
 const { Op, where } = require("sequelize");
 const yup = require("yup");
 const multer = require("multer");
@@ -184,6 +184,12 @@ router.get("/:id/getComments", async (req, res) => {
 
     let condition = {
         where: { postId: id },
+        include: [
+            {
+                model: User,
+                attributes: ['id', 'firstName', 'lastName'] // Specify the attributes you need
+            }
+        ],
         order: [['createdAt', 'DESC']]
     };
 

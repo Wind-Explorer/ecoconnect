@@ -46,6 +46,7 @@ type User = {
   id: string;
   firstName: string;
   lastName: string;
+
 };
 
 export default function CommunityPage() {
@@ -56,7 +57,6 @@ export default function CommunityPage() {
   const [search, setSearch] = useState(""); // Search Function
   const [userInformation, setUserInformation] = useState<Record<string, User>>({});
   const [currentUserInfo, setCurrentUserInfo] = useState(null);
-
 
   let accessToken = localStorage.getItem("accessToken");
   if (!accessToken) {
@@ -89,6 +89,7 @@ export default function CommunityPage() {
     const fetchUserInformation = async (userId: string) => {
       try {
         const user = await retrieveUserInformationById(userId);
+
         setUserInformation((prevMap) => ({
           ...prevMap,
           [userId]: user,
@@ -168,6 +169,11 @@ export default function CommunityPage() {
     navigate(`post/${id}`);
   };
 
+  // Get pfp from server directly(no need convert blob to url)
+  const getProfilePicture = (userId: string): string => {
+    return `${config.serverAddress}/users/profile-image/${userId}`;
+  };
+
   return (
     <div className="w-full h-full">
       <div className="flex flex-row gap-4 m-10">
@@ -180,6 +186,7 @@ export default function CommunityPage() {
           </div>
           <div className="flex flex-col gap-4">
             {communityList.map((post) => {
+              const profilePictureUrl = getProfilePicture(post.userId);
               return (
                 <section
                   className="flex flex-row gap-4 bg-primary-50 dark:bg-primary-950 border border-none rounded-2xl p-4"
@@ -188,7 +195,7 @@ export default function CommunityPage() {
                 >
                   <div onClick={(e) => e.stopPropagation()}>
                     <Avatar
-                      src="https://pbs.twimg.com/media/GOva9x5a0AAK8Bn?format=jpg&name=large"
+                      src={profilePictureUrl}
                       size="lg"
                     />
                   </div>

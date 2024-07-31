@@ -77,6 +77,11 @@ const PostPage: React.FC = () => {
     }
   }, [post]);
 
+  useEffect(() => {
+    // Scroll to the top of the page when the component mounts
+    window.scrollTo(0, 0);
+  }, []);
+
   if (!post) {
     return (
       <div className="flex justify-center min-h-screen">
@@ -102,6 +107,11 @@ const PostPage: React.FC = () => {
     }
   };
 
+  const getProfilePicture = (userId: string): string => {
+    return `${config.serverAddress}/users/profile-image/${userId}`;
+  };
+  const profilePictureUrl = post ? getProfilePicture(post.userId) : "";
+
   return (
     <div className="w-full h-full">
       <section className="flex">
@@ -124,7 +134,7 @@ const PostPage: React.FC = () => {
               >
                 <div>
                   <Avatar
-                    src="https://pbs.twimg.com/media/GOva9x5a0AAK8Bn?format=jpg&name=large"
+                    src={profilePictureUrl}
                     size="lg"
                   />
                 </div>
