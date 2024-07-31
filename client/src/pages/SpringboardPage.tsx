@@ -51,7 +51,13 @@ export default function SpringboardPage() {
                   {greeting}, {userInformation.firstName}.
                 </p>
                 <p>
-                  Resident of <Link>Bishan-Toa Payoh Town Council</Link>
+                  Resident of{" "}
+                  <Link>
+                    {userInformation.townCouncil.length > 0
+                      ? userInformation.townCouncil
+                      : "Unknown"}{" "}
+                    Town Council
+                  </Link>
                 </p>
                 <Button
                   className="w-max"

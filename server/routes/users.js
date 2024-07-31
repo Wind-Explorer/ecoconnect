@@ -9,6 +9,7 @@ const { sign } = require("jsonwebtoken");
 const multer = require("multer");
 const sharp = require("sharp");
 const { sendPasswordResetEmail } = require("../connections/mailersend");
+const fs = require("fs");
 const {
   generatePasswordResetToken,
 } = require("../security/generatePasswordResetToken");
@@ -445,5 +446,26 @@ async function resetPassword(token, newPassword) {
   user.resetPasswordExpires = null;
   await user.save();
 }
+
+function readTownCouncilsFile() {
+  try {
+    const data = fs.readFileSync("assets/town_councils.json", "utf8");
+    return data;
+    // const parsedData = JSON.parse(data);
+    // return parsedData;
+  } catch (err) {
+    console.error("Error reading JSON file:", err);
+    return null;
+  }
+}
+
+router.get("/town-councils-metadata", async (req, res) => {
+  try {
+    let result = readTownCouncilsFile();
+    res.json(result);
+  } catch {
+    res.status(401);
+  }
+});
 
 module.exports = router;

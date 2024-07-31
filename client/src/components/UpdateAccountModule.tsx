@@ -20,10 +20,13 @@ import { useNavigate } from "react-router-dom";
 import UserProfilePicture from "./UserProfilePicture";
 import { popErrorToast, popToast } from "../utilities";
 import instance from "../security/http";
+import axios from "axios";
+import NextUIFormikSelect from "./NextUIFormikSelect";
 
 export default function UpdateAccountModule() {
   const navigate = useNavigate();
   const [userInformation, setUserInformation] = useState<any>();
+  const [townCouncils, setTownCouncils] = useState<string[]>([]);
 
   const {
     isOpen: isArchiveDialogOpen,
@@ -41,6 +44,11 @@ export default function UpdateAccountModule() {
     retrieveUserInformation()
       .then((response) => {
         setUserInformation(response);
+        axios
+          .get(`${config.serverAddress}/users/town-councils-metadata`)
+          .then((values) => {
+            setTownCouncils(JSON.parse(values.data).townCouncils);
+          });
       })
       .catch(() => {
         navigate("/signin");
@@ -73,6 +81,7 @@ export default function UpdateAccountModule() {
       )
       .length(8, "Phone number must be 8 digits")
       .required("Phone number is required"),
+    townCouncil: Yup.string().trim().max(30).required(),
   });
 
   const handleSubmit = async (values: any) => {
@@ -95,6 +104,7 @@ export default function UpdateAccountModule() {
         lastName: userInformation.lastName || "",
         email: userInformation.email || "",
         phoneNumber: userInformation.phoneNumber || "",
+        townCouncil: userInformation.townCouncil || "",
       }
     : {
         id: "",
@@ -102,6 +112,7 @@ export default function UpdateAccountModule() {
         lastName: "",
         email: "",
         phoneNumber: "",
+        townCouncil: "",
       };
 
   const archiveAccount = () => {
@@ -137,7 +148,7 @@ export default function UpdateAccountModule() {
   return (
     <div>
       {userInformation && (
-        <div>
+        <div className="max-w-[800px] mx-auto">
           <div className="flex flex-col gap-16">
             <div>
               <Formik
@@ -170,8 +181,8 @@ export default function UpdateAccountModule() {
                         </Button>
                       </div>
                     </div>
-                    <div className="flex flex-row gap-8">
-                      <div className="flex-grow flex sm:flex-row flex-col gap-4 *:w-full *:flex *:flex-col *:gap-4 *:my-auto">
+                    <div className="flex flex-row *:my-auto">
+                      <div className="w-full *:w-full *:flex *:flex-col *:gap-4 *:my-auto">
                         <div>
                           <NextUIFormikInput
                             label="First Name"
@@ -187,8 +198,6 @@ export default function UpdateAccountModule() {
                             placeholder="Doe"
                             labelPlacement="outside"
                           />
-                        </div>
-                        <div>
                           <NextUIFormikInput
                             label="Email"
                             name="email"
@@ -208,13 +217,32 @@ export default function UpdateAccountModule() {
                               </p>
                             }
                           />
+                          {townCouncils.length > 0 && (
+                            <NextUIFormikSelect
+                              label="Town council"
+                              name="townCouncil"
+                              placeholder="Choose the town council you belong to"
+                              labelPlacement="outside"
+                              options={townCouncils.map((townCouncil) => ({
+                                key: townCouncil,
+                                label: townCouncil,
+                              }))}
+                            />
+                          )}
                         </div>
                       </div>
-                      <div>
-                        <UserProfilePicture
-                          userId={userInformation.id}
-                          editable={true}
-                        />
+                      <div className="w-full flex flex-row justify-center">
+                        <div className="flex flex-col gap-8 text-center">
+                          <UserProfilePicture
+                            userId={userInformation.id}
+                            editable={true}
+                          />
+                          <p className="font-bold opacity-50 text-sm">
+                            Click to select a new
+                            <br />
+                            profile picture
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </Form>

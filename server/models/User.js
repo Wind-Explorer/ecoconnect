@@ -40,6 +40,10 @@ module.exports = (sequelize) => {
         type: DataTypes.BLOB("long"),
         allowNull: true,
       },
+      townCouncil: {
+        type: DataTypes.STRING(30),
+        allowNull: false,
+      },
       accountType: {
         type: DataTypes.TINYINT(2),
         allowNull: false,
