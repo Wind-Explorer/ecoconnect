@@ -81,7 +81,6 @@ const EventsPage: React.FC = () => {
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="bg-white border border-gray-300 rounded px-3 py-2"
           >
             <option value="">All Categories</option>
             {categories.map((category, index) => (
@@ -94,7 +93,6 @@ const EventsPage: React.FC = () => {
           <select
             value={selectedLocation}
             onChange={(e) => setSelectedLocation(e.target.value)}
-            className="bg-white border border-gray-300 rounded px-3 py-2"
           >
             <option value="">All Locations</option>
             {locations.map((location, index) => (
@@ -107,7 +105,6 @@ const EventsPage: React.FC = () => {
           <select
             value={selectedTime}
             onChange={(e) => setSelectedTime(e.target.value)}
-            className="bg-white border border-gray-300 rounded px-3 py-2"
           >
             <option value="">All Times</option>
             <option value="morning">Morning</option>
