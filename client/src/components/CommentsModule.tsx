@@ -1,85 +1,118 @@
-import { Formik, Form } from "formik";
-import React, { useEffect, useState } from "react";
-import config from '../config';
 import * as Yup from "yup";
-import NextUIFormikTextarea from "../components/NextUIFormikTextarea";
-import instance from '../security/http';
-import { useNavigate, useParams } from "react-router-dom";
-import { retrieveUserInformation } from "../security/users";
-import { Button } from "@nextui-org/react";
-import { PaperAirplaneIcon } from "../icons";
+import instance from "../security/http";
+import config from "../config";
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Avatar, Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/react";
+import { ChatBubbleOvalLeftEllipsisIcon, EllipsisHorizontalIcon, HandThumbsUpIcon } from "../icons";
 
+interface Comment {
+    id: string;
+    content: string;
+}
 
-const validationSchema = Yup.object({
-    content: Yup.string()
-        .trim()
-        .min(3, "Content must be at least 3 characters")
-        .max(500, "Content must be at most 500 characters")
-});
+//   type User = {
+//     id: string;
+//     firstName: string;
+//     lastName: string;
+//   };
 
 export default function CommentsModule() {
-    const navigate = useNavigate();
-    const [userId, setUserId] = useState(null);
-    const { id } = useParams(); // Retrieve 'id' from the route
-    
-    const initialValues = {
-        content: "",
+    const { id } = useParams();
+    const [commentList, setCommentList] = useState<Comment[]>([]);
+
+    let postId = id
+
+    const getComments = async () => {
+        instance
+            .get(config.serverAddress + `/post/${postId}/getComments`).then((res) => {
+                setCommentList(res.data);
+            });
     };
-
-    const postId = id;
-
     useEffect(() => {
-        const getUserInformation = async () => {
-            try {
-                const user = await retrieveUserInformation(); // Get the user ID
-                setUserId(user.id); // Set the user ID in the state
-            } catch (error) {
-                console.error(error);
-            }
-        };
-        getUserInformation();
-    }, []);
-
-    const submitComment = async (values: any) => {
-        const response = await instance.post(config.serverAddress + `/post/${postId}/comments`,
-            { ...values, userId, postId }
-        );
-        console.log("Comment created succesfully", response.data);
-    };
+        getComments();
+    }, [id]);
 
     return (
-        <div className="flex w-full">
-            <div className="w-2/12"></div>
-            <div className="w-full mx-auto mt-5">
-                <div>
-                    <Formik
-                        initialValues={initialValues}
-                        validationSchema={validationSchema}
-                        onSubmit={submitComment}
-                    >
-                        {({ isValid, dirty }) => (
-                            <Form>
-                                <div className="relative">
-                                <NextUIFormikTextarea
-                                    label="Comment"
-                                    name="content"
-                                    placeholder="Write your comment here"
-                                />
-                                <div className="flex justify-end my-2">
-                                    <Button isIconOnly
-                                        type="submit" 
-                                        disabled={!isValid || !dirty}
-                                        className="bg-primary-950 text-white">
-                                        <PaperAirplaneIcon />
-                                    </Button>
-                                </div>
-                                </div>
-                            </Form>
-                        )}
-                    </Formik>
-                </div>
+        <>
+            <div className="flex w-full">
+                <div className="w-2/12"></div>
+                <div className="w-8/12 ml-5 mb-2 text-md font-bold opacity-65">Comment Section</div>
+                <div className="w-2/12"></div>
             </div>
-            <div className="w-2/12"></div>
-        </div>
+            <div className="flex w-full h-full">
+                <div className="w-2/12"></div>
+                <div className="w-8/12 mx-auto">
+                    {commentList.length > 0 ? (
+                        commentList.map((comment) => {
+                            return (
+                                <div className="flex flex-col w-full bg-primary-50 dark:bg-primary-950 rounded-xl mb-2 p-3 mx-auto"
+                                    key={comment.id}>
+                                    <div className="flex flex-row w-full">
+                                        <div>
+                                            <Avatar
+                                                src="https://pbs.twimg.com/media/GOva9x5a0AAK8Bn?format=jpg&name=large"
+                                                size="md"
+                                            />
+                                        </div>
+                                        <div className="flex flex-col w-11/12 text-sm ml-3">
+                                            <div className="font-bold">Name</div>
+                                            <div className="break-words whitespace-pre-wrap">{comment.content}</div>
+                                        </div>
+                                        <div className="ml-4">
+                                            <div className="flex flex-row-reverse justify-center items-center size-7">
+                                                <Dropdown>
+                                                    <div>
+                                                        <DropdownTrigger
+                                                            className="justify-center items-center"
+                                                        >
+                                                            <Button isIconOnly variant="light">
+                                                                <EllipsisHorizontalIcon />
+                                                            </Button>
+                                                        </DropdownTrigger>
+                                                    </div>
+                                                    <DropdownMenu aria-label="Static Actions">
+                                                        <DropdownItem
+                                                            key="edit"
+                                                            textValue="Edit"
+                                                        >
+                                                            Edit
+                                                        </DropdownItem>
+                                                        <DropdownItem
+                                                            key="delete"
+                                                            textValue="Delete"
+                                                            className="text-danger"
+                                                            color="danger"
+                                                        >
+                                                            Delete
+                                                        </DropdownItem>
+                                                    </DropdownMenu>
+                                                </Dropdown>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-row ml-14 mt-2 gap-3 w-11/12">
+                                        <Button variant="light" isIconOnly>
+                                            <HandThumbsUpIcon />
+                                        </Button>
+                                        <Button variant="light" isIconOnly className="w-20">
+                                            <div>
+                                                <ChatBubbleOvalLeftEllipsisIcon />
+                                            </div>
+                                            <div>
+                                                Reply
+                                            </div>
+                                        </Button>
+                                    </div>
+                                </div>
+                            );
+                        })
+                    ) : (
+                        <div className="flex w-full justify-center m-auto p-20 text-gray-500">No comments... It's so lonely 🥹</div>
+                    )}
+                </div>
+                <div className="w-2/12"></div>
+            </div>
+        </>
     );
-}
+};

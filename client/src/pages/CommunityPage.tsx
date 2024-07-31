@@ -31,7 +31,6 @@ import {
 import { useNavigate } from "react-router-dom";
 import { retrieveUserInformationById } from "../security/usersbyid";
 import { retrieveUserInformation } from "../security/users";
-import { number } from "yup";
 // import UserPostImage from "../components/UserPostImage";
 
 interface Post {

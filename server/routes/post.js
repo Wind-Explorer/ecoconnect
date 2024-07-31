@@ -45,32 +45,6 @@ router.post("/", async (req, res) => {
     }
 });
 
-router.post("/:id/comments", async (req, res) => {
-    let data = req.body;
-
-    // Validate request body
-    let validationSchema = yup.object({
-        content: yup.string().trim().min(3).max(500).required(),
-        userId: yup.string().required(),
-        postId: yup.string().required()
-    });
-
-    try {
-        console.log("Validating schema...");
-        data = await validationSchema.validate(data, { abortEarly: false });
-
-        console.log("Creating comment...");
-        let result = await Comment.create(data);
-
-        res.json(result);
-        console.log("Success!");
-    } catch (err) {
-        console.log("Error caught! Info: " + err);
-        res.status(400).json({ errors: err.errors });
-    }
-});
-
-
 // // sequelize method findAll is used to generate a standard SELECT query which will retrieve all entries from the table
 // router.get("/", async (req, res) => {
 //     let list = await Tutorial.findAll({
@@ -178,6 +152,48 @@ router.delete("/:id", async (req, res) => {
             message: `Cannot delete post with id ${id}.`
         });
     }
+});
+
+router.post("/:id/comments", async (req, res) => {
+    let data = req.body;
+
+    // Validate request body
+    let validationSchema = yup.object({
+        content: yup.string().trim().min(3).max(500).required(),
+        userId: yup.string().required(),
+        postId: yup.string().required()
+    });
+
+    try {
+        console.log("Validating schema...");
+        data = await validationSchema.validate(data, { abortEarly: false });
+
+        console.log("Creating comment...");
+        let result = await Comment.create(data);
+
+        res.json(result);
+        console.log("Success!");
+    } catch (err) {
+        console.log("Error caught! Info: " + err);
+        res.status(400).json({ errors: err.errors });
+    }
+});
+
+router.get("/:id/getComments", async (req, res) => {
+    let id = req.params.id;
+
+    let condition = {
+        where: { postId: id },
+        order: [['createdAt', 'DESC']]
+    };
+
+    // Check id not found
+    let comments = await Comment.findAll(condition);
+    if (!comments) {
+        res.sendStatus(404);
+        return;
+    }
+    res.json(comments);
 });
 
 module.exports = router;

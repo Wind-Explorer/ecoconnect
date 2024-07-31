@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import instance from "../security/http";
 import config from "../config";
 import {
@@ -25,6 +25,7 @@ import {
   ArrowUTurnLeftIcon,
 } from "../icons";
 import { retrieveUserInformationById } from "../security/usersbyid";
+import CommentInputModule from "../components/CommentInputModule";
 import CommentsModule from "../components/CommentsModule";
 
 interface Post {
@@ -114,7 +115,7 @@ const PostPage: React.FC = () => {
             <ArrowUTurnLeftIcon />
           </Button>
         </div>
-        <div className="flex flex-row w-full gap-4 mx-auto ">
+        <div className="flex flex-row w-8/12 gap-4 mx-auto">
           <div className="flex flex-col gap-8 w-full">
             <div className="flex flex-col gap-4">
               <section
@@ -136,7 +137,8 @@ const PostPage: React.FC = () => {
                       </div>
                       <div className="flex flex-row-reverse justify-center items-center">
                         <Dropdown>
-                          <DropdownTrigger className="justify-center items-center">
+                          <DropdownTrigger 
+                          className="justify-center items-center">
                             <Button isIconOnly variant="light">
                               <EllipsisHorizontalIcon />
                             </Button>
@@ -146,7 +148,7 @@ const PostPage: React.FC = () => {
                               key="edit"
                               textValue="Edit"
                               onClick={() => {
-                                navigate(`edit/${post.id}`);
+                                navigate(`../edit/${post.id}`);
                               }}
                             >
                               Edit
@@ -202,9 +204,12 @@ const PostPage: React.FC = () => {
         <div className="w-2/12"></div>
       </section>
       <section>
+        <CommentInputModule />
+      </section>
+      <section>
         <CommentsModule />
       </section>
-      
+
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           {(onClose) => (
