@@ -4,7 +4,7 @@ import SignedInStatusVerifier from "../components/SignedInStatusVerifier";
 export default function SignInPage() {
   return (
     <SignedInStatusVerifier>
-      <div className="w-full h-full">
+      <div className="w-full h-[calc(100vh-110px)]">
         <div className="flex flex-col h-full">
           <div className="flex flex-row h-full">
             <div className="w-3/5 relative">
@@ -13,7 +13,7 @@ export default function SignInPage() {
                   <img
                     src="../assets/SigninScreenBG.png"
                     alt="HDB flat"
-                    className="w-full h-full object-cover -z-10"
+                    className="w-full h-full rounded-r-xl object-cover -z-10"
                   />
                   <div className="absolute inset-0 z-10 flex flex-col justify-center">
                     <div className="w-full text-right text-white flex flex-col gap-6 p-16">
