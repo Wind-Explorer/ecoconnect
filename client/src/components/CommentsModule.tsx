@@ -55,11 +55,11 @@ export default function CommentsModule() {
                                                 size="md"
                                             />
                                         </div>
-                                        <div className="flex flex-col w-11/12 text-sm ml-3">
+                                        <div className="flex flex-col w-10/12 text-sm ml-3">
                                             <div className="font-bold">Name</div>
                                             <div className="break-words whitespace-pre-wrap">{comment.content}</div>
                                         </div>
-                                        <div className="ml-4">
+                                        <div className="ml-10">
                                             <div className="flex flex-row-reverse justify-center items-center size-7">
                                                 <Dropdown>
                                                     <div>
