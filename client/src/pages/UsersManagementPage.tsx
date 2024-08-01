@@ -35,6 +35,10 @@ export default function UsersManagement() {
       label: "TELEPHONE",
     },
     {
+      key: "townCouncil",
+      label: "TOWN COUNCIL",
+    },
+    {
       key: "accountType",
       label: "ACCOUNT TYPE",
     },

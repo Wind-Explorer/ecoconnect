@@ -21,7 +21,7 @@ import HBContestPage from "./pages/HBContestPage";
 import HBFormPage from "./pages/HBFormPage";
 import DefaultLayout from "./layouts/default";
 import AdministratorLayout from "./layouts/administrator";
-import UsersManagement from "./pages/UsersManagement";
+import UsersManagement from "./pages/UsersManagementPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import RestrictedLayout from "./layouts/restricted";
