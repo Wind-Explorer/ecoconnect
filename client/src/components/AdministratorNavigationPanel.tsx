@@ -148,7 +148,7 @@ export default function AdministratorNavigationPanel() {
                       <AdministratorNavigationPanelNavigationButton
                         text="Posts"
                         icon={<ClipboardDocumentListIcon />}
-                        onClickRef="#"
+                        onClickRef="community-posts"
                       />
                       <AdministratorNavigationPanelNavigationButton
                         text="Tags"

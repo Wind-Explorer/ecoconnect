@@ -29,6 +29,8 @@ import Ranking from "./pages/Ranking";
 import ManageSchedulePage from "./pages/ManageSchedulePage";
 import EditSchedulePage from "./pages/EditSchedulePage";
 import CreateSchedulePage from "./pages/CreateSchedulePage";
+import CommunityPostManagement from "./pages/CommunityPostManagement";
+
 
 function App() {
   return (
@@ -104,6 +106,10 @@ function App() {
             <Route index element={<ManageSchedulePage />} />
             <Route path="create-schedule" element={<CreateSchedulePage />} />
             <Route path="edit-schedule/:id" element={<EditSchedulePage />} />
+          </Route>
+
+          <Route path="community-posts">
+            <Route index element={<CommunityPostManagement />} />
           </Route>
         </Route>
       </Route>
