@@ -60,55 +60,51 @@ const EventDetailsPage = () => {
         Back to Events
       </Button>
       <Card className="bg-white rounded-lg overflow-hidden border">
-        <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
-          <h4 className="font-bold text-large">{event.title}</h4>
-        </CardHeader>
-        <CardBody className="pb-0 pt-2 px-4 flex-col items-start">
-        {event.evtPicture && (
-          <div style={{
-            width: '100px',
-            height: '100px',
-            overflow: 'hidden',
-            borderRadius: '8px',
-            position: 'relative'
-            }}>
+        <div className="flex">
+          {/* Event Image Section */}
+          {event.evtPicture && (
+            <div className="w-1/3 p-4">
               <img
                 src={`${config.serverAddress}/events/evtPicture/${event.id}`}
                 alt="Event Picture"
+                className="w-full h-auto rounded-lg"
                 style={{
-                  width: '100%',
-                  height: '100%',
                   objectFit: 'cover',
-                  position: 'absolute',
-                  top: 0,
-                  left: 0
-               }}
+                }}
               />
+            </div>
+          )}
+          {/* Event Details Section */}
+          <div className="w-2/3 p-4">
+            <CardHeader className="pb-0 pt-2">
+              <h4 className="font-bold text-large">{event.title}</h4>
+            </CardHeader>
+            <CardBody className="pb-0 pt-2">
+              <p className="text-gray-600 mt-4">{event.description}</p>
+              <p className="text-gray-600 mt-2">
+                <strong>Date:</strong> {new Date(event.date).toLocaleDateString()}
+              </p>
+              <p className="text-gray-600 mt-2">
+                <strong>Time:</strong> {event.time}
+              </p>
+              <p className="text-gray-600 mt-2">
+                <strong>Location:</strong> {event.location}
+              </p>
+              <p className="text-gray-600 mt-2">
+                <strong>Category:</strong> {event.category}
+              </p>
+              <p className="text-gray-600 mt-2">
+                <strong>Slots Available:</strong> {event.slotsAvailable}
+              </p>
+              <Button
+                className="mt-4 bg-red-500 text-white rounded px-4 py-2 hover:bg-red-600"
+                onClick={() => navigate(`/events/register/${id}`)}
+              >
+                Register for Event
+              </Button>
+            </CardBody>
           </div>
-        )}
-          <p className="text-gray-600 mt-4">{event.description}</p>
-          <p className="text-gray-600 mt-2">
-            <strong>Date:</strong> {new Date(event.date).toLocaleDateString()}
-          </p>
-          <p className="text-gray-600 mt-2">
-            <strong>Time:</strong> {event.time}
-          </p>
-          <p className="text-gray-600 mt-2">
-            <strong>Location:</strong> {event.location}
-          </p>
-          <p className="text-gray-600 mt-2">
-            <strong>Category:</strong> {event.category}
-          </p>
-          <p className="text-gray-600 mt-2">
-            <strong>Slots Available:</strong> {event.slotsAvailable}
-          </p>
-          <Button
-            className="mt-4 bg-red-500 text-white rounded px-4 py-2 hover:bg-red-600"
-            onClick={() => navigate(`/events/register/${id}`)}
-          >
-            Register for Event
-          </Button>
-        </CardBody>
+        </div>
       </Card>
 
       {/* Similar Events Section */}
