@@ -173,7 +173,7 @@ export default function HBContestPage() {
             </div>
             <div className="flex flex-col gap-2">
               {topUser && (
-                <div className="p-2 border rounded-md bg-red-100 dark:bg-primary-950 flex items-center">
+                <div className="p-4 border rounded-md bg-red-100 dark:bg-primary-950 flex items-center">
                   <TrophyIcon />
                   <p className="text-lg flex-1 text-center font-bold">{topUser.name}</p>
                 </div>
@@ -181,8 +181,8 @@ export default function HBContestPage() {
             </div>
             <div className="grid grid-rows-1 md:grid-rows-2 gap-2">
               {top5Users.map((user, index) => (
-                <div key={user.userId} className="p-3 border rounded-md bg-red-100 dark:bg-primary-950 flex items-center">
-                  <span className="text-lg font-bold w-8">{index + 2}</span>
+                <div key={user.userId} className="p-4 border rounded-md bg-red-100 dark:bg-primary-950 flex items-center">
+                  <span className="text-xl font-bold w-8">{index + 2}</span>
                   <span className="flex-1 text-center">{user.name}</span>
                 </div>
               ))}

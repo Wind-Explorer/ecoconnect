@@ -21,11 +21,21 @@ const validationSchema = Yup.object({
     .positive("Must be a positive value")
     .max(99999.99, "Value is too large")
     .required("Water bill is a required field"),
+  totalBill: Yup.number()
+    .typeError("Must be a number")
+    .positive("Must be a positive value")
+    .max(99999.99, "Value is too large")
+    .required("Total bill is a required field"),
   noOfDependents: Yup.number()
     .typeError("Must be a number")
     .integer("Must be a whole number")
     .positive("Must be a positive value")
     .required("No. of dependents is a required field"),
+  avgBill: Yup.number()
+    .typeError("Must be a number")
+    .positive("Must be a positive value")
+    .max(99999.99, "Value is too large")
+    .required("Average bill is a required field"),
   ebPicture: Yup.mixed().required("Electrical bill picture is required"),
   wbPicture: Yup.mixed().required("Water bill picture is required"),
 });
