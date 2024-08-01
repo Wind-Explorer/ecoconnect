@@ -64,13 +64,28 @@ const EventDetailsPage = () => {
           <h4 className="font-bold text-large">{event.title}</h4>
         </CardHeader>
         <CardBody className="pb-0 pt-2 px-4 flex-col items-start">
-          <img
-            alt={event.title}
-            className="object-cover rounded-xl"
-            src={event.imageUrl}
-            width="100%"
-            height={300}
-          />
+        {event.evtPicture && (
+          <div style={{
+            width: '100px',
+            height: '100px',
+            overflow: 'hidden',
+            borderRadius: '8px',
+            position: 'relative'
+            }}>
+              <img
+                src={`${config.serverAddress}/events/evtPicture/${event.id}`}
+                alt="Event Picture"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0
+               }}
+              />
+          </div>
+        )}
           <p className="text-gray-600 mt-4">{event.description}</p>
           <p className="text-gray-600 mt-2">
             <strong>Date:</strong> {new Date(event.date).toLocaleDateString()}
@@ -114,13 +129,28 @@ const EventDetailsPage = () => {
                   <h4 className="font-bold text-large">{similarEvent.title}</h4>
                 </CardHeader>
                 <CardBody className="pb-0 pt-2 px-4 flex-col items-start">
-                  <img
-                    alt={similarEvent.title}
-                    className="object-cover rounded-xl"
-                    src={similarEvent.imageUrl}
-                    width="100%"
-                    height={180}
-                  />
+                 {similarEvent.evtPicture && (
+                    <div style={{
+                      width: '100px',
+                      height: '100px',
+                      overflow: 'hidden',
+                      borderRadius: '8px',
+                      position: 'relative'
+                    }}>
+                      <img
+                        src={`${config.serverAddress}/events/evtPicture/${similarEvent.id}`}
+                        alt="Event Picture"
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          position: 'absolute',
+                          top: 0,
+                          left: 0
+                        }}
+                      />
+                    </div>
+                  )}
                 </CardBody>
                 <CardFooter className="flex flex-col items-start p-4">
                   <Button

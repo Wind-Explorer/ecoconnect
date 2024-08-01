@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Table,
   TableHeader,
@@ -6,8 +6,12 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Avatar,
   Button,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
 } from "@nextui-org/react";
 import { useNavigate } from "react-router-dom";
 import { PencilSquareIcon, TrashIcon } from "../icons";
@@ -16,12 +20,13 @@ import config from "../config";
 
 const ManageEventsPage = () => {
   const [events, setEvents] = useState<any[]>([]);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const fetchEvents = async () => {
     try {
       const res = await axios.get(config.serverAddress + "/events");
-      console.log("Fetched events data:", res.data); // Debug log
       setEvents(res.data);
     } catch (error) {
       console.error("Failed to fetch events:", error);
@@ -36,10 +41,18 @@ const ManageEventsPage = () => {
     navigate(`editEvent/${id}`);
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDeleteClick = (id: string) => {
+    setSelectedEventId(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const deleteEvent = async () => {
+    if (selectedEventId === null) return;
     try {
-      await axios.delete(`${config.serverAddress}/events/${id}`);
-      setEvents(events.filter((event) => event.id !== id));
+      await axios.delete(`${config.serverAddress}/events/${selectedEventId}`);
+      setEvents(events.filter((event) => event.id !== selectedEventId));
+      setSelectedEventId(null);
+      setIsDeleteModalOpen(false);
     } catch (error) {
       console.error("Failed to delete event:", error);
     }
@@ -64,30 +77,31 @@ const ManageEventsPage = () => {
           {events.map((event) => (
             <TableRow key={event.id}>
               <TableCell>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                {event.evtPicture && (
-                  <div style={{
-                    width: '100px',
-                    height: '100px',
-                    overflow: 'hidden',
-                    borderRadius: '8px',
-                    position: 'relative'
-                  }}>
-                    <img
-                      src={`${config.serverAddress}/events/evtPicture/${event.id}`}
-                      alt="Event Picture"
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                        position: 'absolute',
-                        top: 0,
-                        left: 0
-                      }}
-                    />
+                <div><span>{event.title}</span></div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  {event.evtPicture && (
+                    <div style={{
+                      width: '100px',
+                      height: '100px',
+                      overflow: 'hidden',
+                      borderRadius: '8px',
+                      position: 'relative'
+                    }}>
+                      <img
+                        src={`${config.serverAddress}/events/evtPicture/${event.id}`}
+                        alt="Event Picture"
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          position: 'absolute',
+                          top: 0,
+                          left: 0
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
-                )}
-              </div>
               </TableCell>
               <TableCell>{new Date(event.date).toLocaleDateString()}</TableCell>
               <TableCell>{event.time}</TableCell>
@@ -108,7 +122,7 @@ const ManageEventsPage = () => {
                     size="sm"
                     variant="flat"
                     color="danger"
-                    onPress={() => handleDelete(event.id)}
+                    onPress={() => handleDeleteClick(event.id)}
                   >
                     <TrashIcon />
                   </Button>
@@ -124,6 +138,33 @@ const ManageEventsPage = () => {
       >
         Add events
       </Button>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onOpenChange={setIsDeleteModalOpen}
+        isDismissable={false}
+        isKeyboardDismissDisabled={true}
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">Delete Event</ModalHeader>
+              <ModalBody>
+                <p>Are you sure you want to delete this event?</p>
+              </ModalBody>
+              <ModalFooter>
+                <Button onPress={onClose}>
+                  Cancel
+                </Button>
+                <Button onPress={() => { deleteEvent(); onClose(); }}>
+                  Delete
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </div>
   );
 };
