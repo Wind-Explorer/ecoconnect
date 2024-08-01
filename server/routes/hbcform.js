@@ -5,6 +5,7 @@ const { Op } = require("sequelize");
 const yup = require("yup");
 const multer = require("multer");
 const sharp = require("sharp");
+const { sendThankYouEmail } = require("../connections/mailersend");
 
 
 const upload = multer({ storage: multer.memoryStorage() });
@@ -121,6 +122,18 @@ router.delete("/:id", async (req, res) => {
     } catch (err) {
         console.error("Error deleting form entry:", err);
         res.status(500).json({ message: "Failed to delete form entry", error: err });
+    }
+});
+
+// Endpoint for sending emails related to home bill contest
+router.post('/send-homebill-contest-email', async (req, res) => {
+    const { email, name } = req.body;
+    try {
+        await sendThankYouEmail(email, name);
+        res.status(200).send({ message: "Email sent successfully" });
+    } catch (error) {
+        console.error("Failed to send email:", error);
+        res.status(500).send({ error: "Failed to send email" });
     }
 });
 

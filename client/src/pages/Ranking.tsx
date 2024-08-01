@@ -27,12 +27,12 @@ export default function Ranking() {
     const [formData, setFormData] = useState<FormData[]>([]);
     const [userData, setUserData] = useState<User[]>([]);
     const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
-        column: 'avgBill',
-        direction: 'ascending',
+        column: "avgBill",
+        direction: "ascending",
     });
     const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    const [selectedUser, setSelectedUser] = useState<{ email: string, name: string }>({ email: '', name: '' });
+    const [selectedUser, setSelectedUser] = useState<{ email: string, name: string }>({ email: "", name: "" });
     const [selectedFormId, setSelectedFormId] = useState<number | null>(null);
 
     useEffect(() => {
@@ -63,9 +63,9 @@ export default function Ranking() {
     const sortFormData = (list: FormData[], descriptor: SortDescriptor) => {
         const { column, direction } = descriptor;
 
-        if (column === 'avgBill') {
+        if (column === "avgBill") {
             return [...list].sort((a, b) =>
-                direction === 'ascending' ? a.avgBill - b.avgBill : b.avgBill - a.avgBill
+                direction === "ascending" ? a.avgBill - b.avgBill : b.avgBill - a.avgBill
             );
         }
 
@@ -74,14 +74,14 @@ export default function Ranking() {
 
     const handleSort = () => {
         const { direction } = sortDescriptor;
-        const newDirection = direction === 'ascending' ? 'descending' : 'ascending';
+        const newDirection = direction === "ascending" ? "descending" : "ascending";
 
-        setSortDescriptor({ column: 'avgBill', direction: newDirection });
+        setSortDescriptor({ column: "avgBill", direction: newDirection });
     };
 
     const renderSortIndicator = () => {
-        if (sortDescriptor.column === 'avgBill') {
-            return sortDescriptor.direction === 'ascending' ? <span>&uarr;</span> : <span>&darr;</span>;
+        if (sortDescriptor.column === "avgBill") {
+            return sortDescriptor.direction === "ascending" ? <span>&uarr;</span> : <span>&darr;</span>;
         }
         return null;
     };
@@ -93,8 +93,8 @@ export default function Ranking() {
         const user = userData.find((user) => user.id === data.userId);
         return {
             ...data,
-            userName: user ? `${user.firstName} ${user.lastName}` : 'Unknown User',
-            userEmail: user ? user.email : 'Unknown Email',
+            userName: user ? `${user.firstName} ${user.lastName}` : "Unknown User",
+            userEmail: user ? user.email : "Unknown Email",
         };
     });
 
@@ -103,16 +103,19 @@ export default function Ranking() {
         setIsEmailModalOpen(true);
     };
 
-    const sendEmail = () => {
-        const subject = "Home Bill Contest";
-        const body = `Dear ${selectedUser.name},
-        \nPlease submit another submission for the home bill contest with correct documents.
-        \nThank you for your cooperation.
-        \nYour Sincerely, 
-        Admin from Ecoconnect.gov`;
-        window.location.href = `mailto:${selectedUser.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-        setIsEmailModalOpen(false);
+    const sendEmail = async () => {
+        try {
+            const response = await instance.post(`${config.serverAddress}/hbcform/send-homebill-contest-email`, {
+                email: selectedUser.email,
+                name: selectedUser.name,
+            });
+            console.log(response.data.message);
+            setIsEmailModalOpen(false);
+        } catch (error) {
+            console.error("Failed to send email:", error);
+        }
     };
+
 
     const handleDeleteClick = (id: number) => {
         setSelectedFormId(id);
@@ -143,7 +146,7 @@ export default function Ranking() {
                         <TableColumn>Electrical Bill</TableColumn>
                         <TableColumn>Water Bill</TableColumn>
                         <TableColumn>Total Bill</TableColumn>
-                        <TableColumn>Number of Dependents</TableColumn>
+                        <TableColumn>Dependents</TableColumn>
                         <TableColumn onClick={handleSort}>
                             Average Bill {renderSortIndicator()}
                         </TableColumn>
@@ -169,8 +172,8 @@ export default function Ranking() {
                                     {data.wbPicture && <img src={`${config.serverAddress}/hbcform/wbPicture/${data.id}`} alt="Water Bill" className="w-full" />}
                                 </TableCell>
                                 <TableCell className="flex flex-row">
-                                    <Button isIconOnly variant="light" onClick={() => handleEmailClick(data.userEmail, data.userName)}><EmailIcon /></Button>
-                                    <Button isIconOnly variant="light" onClick={() => handleDeleteClick(data.id)}><TrashDeleteIcon /></Button>
+                                    <Button isIconOnly variant="light" className="text-blue-500" onClick={() => handleEmailClick(data.userEmail, data.userName)}><EmailIcon /></Button>
+                                    <Button isIconOnly variant="light" color="danger" onClick={() => handleDeleteClick(data.id)}><TrashDeleteIcon /></Button>
                                 </TableCell>
                             </TableRow>
                         ))}
