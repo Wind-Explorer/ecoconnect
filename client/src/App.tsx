@@ -47,9 +47,9 @@ function App() {
             {/* Events Route */}
             <Route path="events">
               <Route index element={<EventsPage />} />
+              <Route element={<EventDetailsPage />} path="view/:id" />
+              <Route element={<RegisterPage />} path="register/:id" />
             </Route>
-            <Route element={<EventDetailsPage />} path="event/:id" />
-            <Route path="/register/:id" element={<RegisterPage />} />
 
             {/* Karang Guni Schedules Route */}
             <Route path="karang-guni-schedules">

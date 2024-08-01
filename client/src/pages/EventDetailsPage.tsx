@@ -2,7 +2,13 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import instance from "../security/http";
 import config from "../config";
-import { Card, CardHeader, CardBody, Button, CardFooter } from "@nextui-org/react";
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  Button,
+  CardFooter,
+} from "@nextui-org/react";
 import { ArrowUTurnLeftIcon } from "../icons"; // Make sure this path is correct
 
 const EventDetailsPage = () => {
@@ -20,13 +26,17 @@ const EventDetailsPage = () => {
         setEvent(res.data);
 
         // Fetch all events to find similar ones
-        const allEventsRes = await instance.get(`${config.serverAddress}/events`);
+        const allEventsRes = await instance.get(
+          `${config.serverAddress}/events`
+        );
         const allEvents = allEventsRes.data;
 
         // Find similar events based on location and category, excluding the current event
-        const similar = allEvents.filter((e: any) =>
-          e.id !== Number(id) && // Make sure to exclude the current event
-          (e.location === res.data.location || e.category === res.data.category)
+        const similar = allEvents.filter(
+          (e: any) =>
+            e.id !== Number(id) && // Make sure to exclude the current event
+            (e.location === res.data.location ||
+              e.category === res.data.category)
         );
 
         setSimilarEvents(similar);
@@ -44,7 +54,7 @@ const EventDetailsPage = () => {
     <div className="w-full h-full p-8">
       <Button
         className="mb-4 bg-gray-200 text-black rounded px-4 py-2 hover:bg-gray-300"
-        onClick={() => navigate('/events')} // Navigate directly to the events page
+        onClick={() => navigate("/events")} // Navigate directly to the events page
       >
         <ArrowUTurnLeftIcon />
         Back to Events
@@ -79,7 +89,7 @@ const EventDetailsPage = () => {
           </p>
           <Button
             className="mt-4 bg-red-500 text-white rounded px-4 py-2 hover:bg-red-600"
-            onClick={() => navigate(`/register/${id}`)}
+            onClick={() => navigate(`/events/register/${id}`)}
           >
             Register for Event
           </Button>
@@ -88,13 +98,18 @@ const EventDetailsPage = () => {
 
       {/* Similar Events Section */}
       <div className="mt-8">
-        <h2 className="text-2xl font-semibold mb-4">Similar Events You Might Be Interested In</h2>
+        <h2 className="text-2xl font-semibold mb-4">
+          Similar Events You Might Be Interested In
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {similarEvents.length === 0 ? (
             <p className="text-gray-600">No similar events available.</p>
           ) : (
             similarEvents.map((similarEvent: any) => (
-              <Card key={similarEvent.id} className="bg-white rounded-lg overflow-hidden border">
+              <Card
+                key={similarEvent.id}
+                className="bg-white rounded-lg overflow-hidden border"
+              >
                 <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
                   <h4 className="font-bold text-large">{similarEvent.title}</h4>
                 </CardHeader>
@@ -110,7 +125,7 @@ const EventDetailsPage = () => {
                 <CardFooter className="flex flex-col items-start p-4">
                   <Button
                     className="bg-primary-600 text-white rounded px-4 py-2 hover:bg-primary-700"
-                    onClick={() => navigate(`/event/${similarEvent.id}`)}
+                    onClick={() => navigate(`/events/view/${similarEvent.id}`)}
                   >
                     View event details
                   </Button>

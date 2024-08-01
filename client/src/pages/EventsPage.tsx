@@ -17,7 +17,7 @@ interface Event {
   title: string;
   category: string;
   location: string;
-  time: string; 
+  time: string;
   description: string;
   imageUrl: string;
 }
@@ -36,7 +36,9 @@ const EventsPage: React.FC = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const res = await instance.get<Event[]>(`${config.serverAddress}/events`);
+        const res = await instance.get<Event[]>(
+          `${config.serverAddress}/events`
+        );
         console.log("Fetched events data:", res.data);
         setEvents(res.data);
         setFilteredEvents(res.data);
@@ -53,7 +55,9 @@ const EventsPage: React.FC = () => {
 
     const fetchTownCouncils = async () => {
       try {
-        const res = await axios.get(`${config.serverAddress}/users/town-councils-metadata`);
+        const res = await axios.get(
+          `${config.serverAddress}/users/town-councils-metadata`
+        );
         setTownCouncils(JSON.parse(res.data).townCouncils);
       } catch (error) {
         console.error("Failed to fetch town councils:", error);
@@ -67,8 +71,12 @@ const EventsPage: React.FC = () => {
   useEffect(() => {
     // Filter events based on selected criteria
     const filtered = events.filter((event) => {
-      const matchCategory = selectedCategory ? event.category === selectedCategory : true;
-      const matchTownCouncil = selectedTownCouncil ? event.location === selectedTownCouncil : true;
+      const matchCategory = selectedCategory
+        ? event.category === selectedCategory
+        : true;
+      const matchTownCouncil = selectedTownCouncil
+        ? event.location === selectedTownCouncil
+        : true;
       const matchTime = selectedTime ? event.time === selectedTime : true;
 
       return matchCategory && matchTownCouncil && matchTime;
@@ -99,15 +107,15 @@ const EventsPage: React.FC = () => {
 
           {townCouncils.length > 0 && (
             <select
-            value={selectedTownCouncil}
-            onChange={(e) => setSelectedTownCouncil(e.target.value)}
+              value={selectedTownCouncil}
+              onChange={(e) => setSelectedTownCouncil(e.target.value)}
             >
-            <option value="">All location</option>
-            {townCouncils.map((townCouncil) => (
-              <option key={townCouncil} value={townCouncil}>
-                {townCouncil}
-              </option>
-            ))}
+              <option value="">All location</option>
+              {townCouncils.map((townCouncil) => (
+                <option key={townCouncil} value={townCouncil}>
+                  {townCouncil}
+                </option>
+              ))}
             </select>
           )}
 
@@ -128,9 +136,7 @@ const EventsPage: React.FC = () => {
             <p className="text-gray-600">No events available.</p>
           ) : (
             filteredEvents.map((event) => (
-              <Card
-                key={event.id}
-              >
+              <Card key={event.id}>
                 <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
                   <h4 className="font-bold text-large">{event.title}</h4>
                 </CardHeader>
@@ -147,7 +153,7 @@ const EventsPage: React.FC = () => {
                   <p className="text-gray-600 mb-4">{event.description}</p>
                   <Button
                     className="bg-primary-600 text-white rounded px-4 py-2 hover:bg-primary-700"
-                    onClick={() => navigate(`/event/${event.id}`)}
+                    onClick={() => navigate(`/events/view/${event.id}`)}
                   >
                     View event details
                   </Button>
