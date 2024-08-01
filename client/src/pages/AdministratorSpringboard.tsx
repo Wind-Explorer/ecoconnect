@@ -6,6 +6,8 @@ import UserProfilePicture from "../components/UserProfilePicture";
 import { Button, Card } from "@nextui-org/react";
 import { PencilSquareIcon } from "../icons";
 import EcoconnectFullLogo from "../components/EcoconnectFullLogo";
+import UserCountGraph from "../components/UserCountGraph";
+import UserTownCouncilDistributionChart from "../components/UserTownCouncilDistributionChart";
 
 export default function AdministratorSpringboard() {
   const navigate = useNavigate();
@@ -75,28 +77,18 @@ export default function AdministratorSpringboard() {
           <Card className="w-full bg-primary-500 p-8 text-white rounded-r-none">
             <div className="flex flex-col gap-4">
               <p className="font-bold text-4xl">Statistics Overview</p>
-              <div className="h-[500px] w-full bg-primary-600 rounded-2xl flex flex-row p-6">
-                <div className="w-60 flex flex-col justify-between">
-                  <div className="flex flex-col">
-                    <p className="text-2xl">User Count</p>
-                    <p className="opacity-70">(past 30 days)</p>
-                  </div>
-                  <p className="text-lg">
-                    Total: <span className="font-bold">2139</span> users
-                  </p>
-                </div>
-                <div className="w-full h-full bg-white rounded-xl">
-                  {/* TODO: Graph */}
-                  <p className="text-black">GRAPH HERE</p>
+              <div className="w-full h-full bg-primary-600 rounded-2xl flex flex-col gap-4 p-6">
+                <p className="text-3xl">Users Onboard</p>
+                <div className="w-full p-4 bg-white rounded-xl">
+                  <UserCountGraph />
                 </div>
               </div>
-              <div className="h-[500px] w-full bg-primary-600 rounded-2xl flex flex-row p-6">
-                <div className="w-60 flex flex-col justify-between">
-                  <p className="text-2xl">Population Distribution</p>
-                </div>
-                <div className="w-full h-full bg-white rounded-xl">
-                  {/* TODO: Graph */}
-                  <p className="text-black">GRAPH HERE</p>
+              <div className="w-full h-full bg-primary-600 rounded-2xl flex flex-col gap-4 p-6">
+                <p className="text-3xl">Population Distribution</p>
+                <div className="w-full bg-white rounded-xl">
+                  <div className="w-[600px] mx-auto">
+                    <UserTownCouncilDistributionChart />
+                  </div>
                 </div>
               </div>
             </div>
