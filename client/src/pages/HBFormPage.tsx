@@ -139,12 +139,12 @@ export default function HBFormPage() {
 
   return (
     <div className="w-full h-full">
-      <section className="w-7/12 mx-auto">
-        <Button variant="light" onPress={() => navigate(-1)}>
-          <ArrowUTurnLeftIcon />
-        </Button>
-      </section>
-      <section className="w-7/12 mx-auto p-5 bg-red-100 dark:bg-red-950 border border-primary-100 rounded-2xl h-600px">
+      <section className="w-8/12 mx-auto p-6 bg-red-100 dark:bg-red-950 border border-primary-100 rounded-2xl h-600px">
+        <div className="py-2">
+          <Button variant="light" onPress={() => navigate(-1)}>
+            <ArrowUTurnLeftIcon />
+          </Button>
+        </div>
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
@@ -170,7 +170,7 @@ export default function HBFormPage() {
               <Form>
                 <div className="flex flex-col gap-5">
                   <div className="flex flex-row gap-10">
-                    <div className="flex flex-col gap-10">
+                    <div className="flex flex-col gap-5 p-1">
                       <NextUIFormikInput
                         label="Electrical Bill"
                         name="electricalBill"

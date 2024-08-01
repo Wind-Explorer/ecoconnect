@@ -19,7 +19,7 @@ const InsertImage: React.FC<InsertImageProps> = ({ onImageSelected }) => {
     return (
         <div
             className="flex flex-col items-center p-5 bg-white dark:bg-zinc-800 rounded-md"
-            style={{ width: 350, height: 500 }}
+            style={{ width: 400, height: 500 }}
         >
             <input
                 type="file"
@@ -30,7 +30,7 @@ const InsertImage: React.FC<InsertImageProps> = ({ onImageSelected }) => {
                 <img
                     src={previewImage}
                     alt="Selected Image"
-                    className="w-full h-full object-cover rounded-md"
+                    className="w-full h-[410px] object-cover rounded-md"
                 />
             )}
         </div>

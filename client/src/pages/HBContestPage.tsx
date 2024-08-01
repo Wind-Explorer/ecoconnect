@@ -9,6 +9,7 @@ interface User {
   id: string;
   firstName: string;
   lastName: string;
+  townCouncil: string;
 }
 
 interface CombinedData {
@@ -16,6 +17,7 @@ interface CombinedData {
   formId: string;
   name: string;
   avgBill: number;
+  townCouncil: string;
 }
 
 export default function HBContestPage() {
@@ -33,15 +35,11 @@ export default function HBContestPage() {
   };
 
   const [combinedData, setCombinedData] = useState<CombinedData[]>([]);
+  const [filteredData, setFilteredData] = useState<CombinedData[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
-
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
-
-  const handleOpenInfoModal = () => setIsInfoModalOpen(true);
+  const [townCouncils, setTownCouncils] = useState<string[]>([]);
+  const [selectedTownCouncil, setSelectedTownCouncil] = useState<string>("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,6 +59,7 @@ export default function HBContestPage() {
             formId: form.userId,
             name: user ? `${user.firstName} ${user.lastName}` : "Unknown Name",
             avgBill: form.avgBill,
+            townCouncil: user ? user.townCouncil : "Unknown Town Council",
           };
         });
 
@@ -68,6 +67,11 @@ export default function HBContestPage() {
         combined.sort((a, b) => a.avgBill - b.avgBill);
 
         setCombinedData(combined);
+        setFilteredData(combined);
+
+        // Fetch town councils
+        const townCouncilsResponse = await instance.get(`${config.serverAddress}/users/town-councils-metadata`);
+        setTownCouncils(JSON.parse(townCouncilsResponse.data).townCouncils);
       } catch (error) {
         console.log("Failed to fetch data");
       }
@@ -76,8 +80,16 @@ export default function HBContestPage() {
     fetchData();
   }, []);
 
-  const topUser = combinedData.length > 0 ? combinedData[0] : null;
-  const top5Users = combinedData.slice(1, 10);
+  useEffect(() => {
+    // Filter combined data based on selected town council
+    const filtered = combinedData.filter((data) =>
+      selectedTownCouncil ? data.townCouncil === selectedTownCouncil : true
+    );
+    setFilteredData(filtered);
+  }, [selectedTownCouncil, combinedData]);
+
+  const topUser = filteredData.length > 0 ? filteredData[0] : null;
+  const top5Users = filteredData.slice(1, 10);
 
   return (
     <div className="flex flex-col items-center justify-center">
@@ -85,12 +97,12 @@ export default function HBContestPage() {
         <section className="bg-red-50 dark:bg-primary-950 border border-primary-100 p-10 rounded-xl w-full max-w-2xl flex flex-col items-center">
           <div className="w-full flex justify-end">
             <Tooltip content="Information">
-              <Button isIconOnly variant="light" onPress={handleOpenInfoModal}>
+              <Button isIconOnly variant="light" onPress={() => setIsInfoModalOpen(true)}>
                 <InfoIcon />
               </Button>
             </Tooltip>
             <Tooltip content="Leaderboard">
-              <Button isIconOnly variant="light" onPress={handleOpenModal}>
+              <Button isIconOnly variant="light" onPress={() => setIsModalOpen(true)}>
                 <TrophyIcon />
               </Button>
             </Tooltip>
@@ -142,19 +154,35 @@ export default function HBContestPage() {
           <ModalHeader className="flex justify-center items-center font-bold text-2xl text-red-900">
             <span>Leaderboard</span>
           </ModalHeader>
-          <ModalBody className="pb-8"> {/* Add padding-bottom for white space */}
-            <div className="flex flex-col gap-4">
+          <ModalBody className="pb-8">
+            <div className="mb-4">
+              {townCouncils.length > 0 && (
+                <select
+                  value={selectedTownCouncil}
+                  onChange={(e) => setSelectedTownCouncil(e.target.value)}
+                >
+                  <option value="">All locations</option>
+                  {townCouncils.map((townCouncil) => (
+                    <option key={townCouncil} value={townCouncil}>
+                      {townCouncil}
+                    </option>
+                  ))}
+                </select>
+              )}
+
+            </div>
+            <div className="flex flex-col gap-2">
               {topUser && (
-                <div className="p-4 border rounded-md bg-red-100 flex items-center">
+                <div className="p-2 border rounded-md bg-red-100 dark:bg-primary-950 flex items-center">
                   <TrophyIcon />
-                  <p className="text-lg flex-1 text-center font-bold">{topUser.name}</p> {/* Center text */}
+                  <p className="text-lg flex-1 text-center font-bold">{topUser.name}</p>
                 </div>
               )}
             </div>
-            <div className="grid grid-rows-1 md:grid-rows-2 gap-4">
+            <div className="grid grid-rows-1 md:grid-rows-2 gap-2">
               {top5Users.map((user, index) => (
-                <div key={user.userId} className="p-4 border rounded-md bg-red-100 flex items-center">
-                  <span className="text-xl font-bold w-8">{index + 2}</span>
+                <div key={user.userId} className="p-3 border rounded-md bg-red-100 dark:bg-primary-950 flex items-center">
+                  <span className="text-lg font-bold w-8">{index + 2}</span>
                   <span className="flex-1 text-center">{user.name}</span>
                 </div>
               ))}
@@ -178,35 +206,20 @@ export default function HBContestPage() {
             <div className="space-y-4 text-gray-700 dark:text-gray-300">
               <p className="font-semibold">Form Completion:</p>
               <ul className="list-disc list-inside pl-4">
-                Participants must complete the online form, providing the following details
-                <li>Water bill amount</li>
-                <li>Electricity bill amount</li>
-                <li>Number of dependents</li>
+                Participants must fill out all required fields to complete the form.
               </ul>
-
-              <p className="font-semibold">Document Upload</p>
+              <p className="font-semibold">Eligibility:</p>
               <ul className="list-disc list-inside pl-4">
-                <li>Participants must upload clear, legible images of their water and electricity bills.</li>
-                <li>Both documents should clearly show the bill amount and date.</li>
+                Residents must be registered with the town council to be eligible.
               </ul>
-
-              <p className="font-semibold">Data Accuracy</p>
+              <p className="font-semibold">Submission Deadline:</p>
               <ul className="list-disc list-inside pl-4">
-                <li>All provided information must be accurate and truthful. Inaccurate or misleading information will result in disqualification.</li>
-                <li>All submitted bills and details will be subject to verification.</li>
-              </ul>
-
-              <p className="font-semibold">Privacy and Data Handling</p>
-              <ul className="list-disc list-inside pl-4">
-                <li>All personal data and bill images submitted will be handled in accordance with privacy regulations and will not be shared with third parties without consent.</li>
-                <li>Data will be used solely for contest purposes and to verify the validity of entries.</li>
+                Ensure to submit the form before the end of the month.
               </ul>
             </div>
           </ModalBody>
         </ModalContent>
       </Modal>
-
-
-    </div >
+    </div>
   );
 }
