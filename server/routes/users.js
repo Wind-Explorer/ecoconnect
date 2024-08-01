@@ -25,6 +25,7 @@ let validationSchema = yup.object({
     .trim()
     .matches(/^[0-9]{8}$/, "Must be exactly 8 digits")
     .required(),
+  townCouncil: yup.string().trim().max(30).required(),
   password: yup.string().trim().max(100).required(),
   profilePicture: yup.string().trim().max(255),
 });
@@ -37,6 +38,7 @@ let optionalValidationSchema = yup.object({
     .string()
     .trim()
     .matches(/^[0-9]{8}$/, "Must be exactly 8 digits"),
+  townCouncil: yup.string().trim().max(30),
   password: yup.string().trim().max(100),
   profilePicture: yup.string().trim().max(255),
 });
