@@ -9,6 +9,7 @@ import NextUIFormikTextarea from "../components/NextUIFormikTextarea";
 import config from "../config";
 import instance from "../security/http";
 import { ArrowUTurnLeftIcon } from "../icons";
+import InsertPostImage from "../components/InsertPostImage";
 
 const validationSchema = Yup.object({
   title: Yup.string()
@@ -29,20 +30,26 @@ const validationSchema = Yup.object({
       "Only letters, numbers, commas, spaces, exclamation marks, quotations, and common symbols are allowed"
     )
     .required("Content is required"),
+  postImage: Yup.mixed(),
 });
 
-function editPost() {
+function EditPostPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [post, setPost] = useState({
     title: "",
     content: "",
+    postImage: null,
+    tags: "",
   });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     instance.get(config.serverAddress + `/post/${id}`).then((res) => {
-      setPost(res.data);
+      setPost({
+        ...res.data,
+        postImage: `${config.serverAddress}/post/post-image/${id}`, // Set image URL
+      });
       setLoading(false);
     });
   }, [id]);
@@ -52,13 +59,24 @@ function editPost() {
     { setSubmitting, resetForm, setFieldError }: any
   ) => {
     try {
+      const formData = new FormData();
+      formData.append("title", values.title);
+      formData.append("content", values.content);
+      if (values.postImage) {
+        formData.append("postImage", values.postImage);
+      }
+      formData.append("tags", values.tags);
+
       const response = await instance.put(
         config.serverAddress + `/post/${id}`,
-        values
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
       );
+
       if (response.status === 200) {
         console.log("Post updated successfully:", response.data);
         resetForm();
+        // Set a flag to indicate a refresh is needed
         navigate(-1);
       } else {
         console.error("Error updating post:", response.statusText);
@@ -93,7 +111,7 @@ function editPost() {
             validationSchema={validationSchema}
             onSubmit={handleSubmit}
           >
-            {({ isValid, dirty, isSubmitting }) => (
+            {({ isValid, dirty, isSubmitting, setFieldValue }) => (
               <Form className="flex flex-col gap-5">
                 <div>
                   <NextUIFormikInput
@@ -103,9 +121,6 @@ function editPost() {
                     placeholder="Enter your post title"
                     labelPlacement="inside"
                   />
-                </div>
-                <div className="text-sm">
-                  <p>Image</p>
                 </div>
                 <div>
                   <NextUIFormikTextarea
@@ -123,10 +138,19 @@ function editPost() {
                     labelPlacement="inside"
                   />
                 </div>
+                <div className="text-sm">
+                  <div className="flex flex-row gap-10">
+                    <InsertPostImage
+                      onImageSelected={(file) => {
+                        setFieldValue("postImage", file);
+                      }}
+                    />
+                  </div>
+                </div>
                 <div className="flex flex-row-reverse">
                   <Button
                     type="submit"
-                    className="bg-primary-color text-white text-xl w-1/6"
+                    className="bg-primary-950 text-white text-xl w-1/6"
                     disabled={!isValid || !dirty || isSubmitting}
                   >
                     <p>Update</p>
@@ -141,4 +165,4 @@ function editPost() {
   );
 }
 
-export default editPost;
+export default EditPostPage;

@@ -50,6 +50,7 @@ const PostPage: React.FC = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [userInformation, setUserInformation] = useState<Record<string, User>>({});
+  const [imageErrorFlags, setImageErrorFlags] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     if (id) {
@@ -57,7 +58,7 @@ const PostPage: React.FC = () => {
         .then((res) => setPost(res.data))
         .catch((error) => console.error("Error fetching post:", error));
     }
-  }, [id]);
+  }, []);
 
   useEffect(() => {
     if (post) {
@@ -112,6 +113,13 @@ const PostPage: React.FC = () => {
   };
   const profilePictureUrl = post ? getProfilePicture(post.userId) : "";
 
+  const handleImageError = (postId: string) => {
+    setImageErrorFlags((prevFlags) => ({
+      ...prevFlags,
+      [postId]: true,
+    }));
+  };
+
   return (
     <div className="w-full h-full">
       <section className="flex">
@@ -147,8 +155,8 @@ const PostPage: React.FC = () => {
                       </div>
                       <div className="flex flex-row-reverse justify-center items-center">
                         <Dropdown>
-                          <DropdownTrigger 
-                          className="justify-center items-center">
+                          <DropdownTrigger
+                            className="justify-center items-center">
                             <Button isIconOnly variant="light">
                               <EllipsisHorizontalIcon />
                             </Button>
@@ -179,15 +187,14 @@ const PostPage: React.FC = () => {
                     <div>
                       <p>{post.content}</p>
                     </div>
-                    <div>
-                      <p>Image</p>
-                      {/* {userInformation && (
-                                    <UserPostImage
-                                        userId={userInformation}
-                                        editable={true}
-                                    />
-                                    )} */}
-                    </div>
+                    {!imageErrorFlags[post.id] && post.postImage && post.postImage !== null && (
+                      <div>
+                        <img src={`${config.serverAddress}/post/post-image/${post.id}`}
+                          alt="PostImage"
+                          className="w-[300px] h-auto rounded-lg object-cover"
+                          onError={() => handleImageError(post.id)} />
+                      </div>
+                    )}
                   </div>
                   <div className="flex flex-col gap-2">
                     <div className="flex flex-row gap-2">

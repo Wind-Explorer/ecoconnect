@@ -16,18 +16,21 @@ filter.addWords(...newBadWords);
 let removeWords = [''];
 filter.removeWords(...removeWords);
 
-router.post("/", async (req, res) => {
+const upload = multer({ storage: multer.memoryStorage() });
+
+router.post("/", upload.fields([{ name: 'postImage', maxCount: 1 }]), async (req, res) => {
     let data = req.body;
+    let files = req.files;
+
     // Validate request body
     let validationSchema = yup.object({
-        title: yup.string().trim().min(3).max(200).required(), // yup object to define validation schema
+        title: yup.string().trim().min(3).max(200).required(),
         content: yup.string().trim().min(3).max(500).required(),
+        userId: yup.string().required(),
         postImage: yup.string().trim().max(255),
     });
     try {
-        data = await validationSchema.validate(data, // validate() method is used to validate data against the schema and returns the valid data and any applied transformations
-            { abortEarly: false }); // abortEarly: false means the validation won’t stop when the first error is detected
-        // Process valid data
+        data = await validationSchema.validate(data, { abortEarly: false });
 
         // Check for profanity
         if (filter.isProfane(data.title)) {
@@ -37,13 +40,17 @@ router.post("/", async (req, res) => {
             return res.status(400).json({ field: 'content', error: 'Profane content detected in content' });
         }
 
-        let result = await Post.create(data); //  sequelize method create() is used to insert data into the database table
+        let postImage = files.postImage ? files.postImage[0].buffer : null;
+
+        // Process valid data
+        let result = await Post.create({ ...data, postImage });
         res.json(result);
     }
     catch (err) {
-        res.status(400).json({ errors: err.errors }); // If the error is caught, return the bad request
+        res.status(400).json({ errors: err.errors });
     }
 });
+
 
 // // sequelize method findAll is used to generate a standard SELECT query which will retrieve all entries from the table
 // router.get("/", async (req, res) => {
@@ -85,19 +92,44 @@ router.get("/:id", async (req, res) => {
     res.json(post);
 });
 
-router.put("/:id", async (req, res) => {
+router.get("/post-image/:id", async (req, res) => {
     let id = req.params.id;
+    let post = await Post.findByPk(id);
+
+    if (!post || !post.postImage) {
+        res.sendStatus(404);
+        return;
+    }
+
+    try {
+        res.set("Content-Type", "image/jpeg"); // Adjust the content type as necessary
+        res.send(post.postImage);
+    } catch (err) {
+        res
+            .status(500)
+            .json({ message: "Error retrieving post image", error: err });
+    }
+});
+
+router.put("/:id", upload.fields([{ name: 'postImage', maxCount: 1 }]), async (req, res) => {
+    let id = req.params.id;
+    let files = req.files;
+    
     // Check id not found
     let post = await Post.findByPk(id);
     if (!post) {
         res.sendStatus(404);
         return;
     }
+
     let data = req.body;
+    let postImage = files.postImage ? files.postImage[0].buffer : null;
+
     // Validate request body
     let validationSchema = yup.object({
         title: yup.string().trim().min(3).max(100),
-        content: yup.string().trim().min(3).max(500)
+        content: yup.string().trim().min(3).max(500),
+        postImage: yup.mixed(),
     });
     try {
         data = await validationSchema.validate(data,
@@ -111,14 +143,17 @@ router.put("/:id", async (req, res) => {
             return res.status(400).json({ field: 'content', error: 'Profane content detected in content' });
         }
 
+        // Include the postImage if present
+        if (postImage) {
+            data.postImage = postImage;
+        }
+
         // Process valid data
         let post = await Post.update(data, { // update() updates data based on the where condition, and returns the number of rows affected
             where: { id: id } // If num equals 1, return OK, otherwise return Bad Request
         });
-        if (post == 1) {
-            res.json({
-                message: "Post was updated successfully."
-            });
+        if (post) {
+            res.json({ message: "Post was updated successfully." });
         }
         else {
             res.status(400).json({

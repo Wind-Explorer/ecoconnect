@@ -57,6 +57,7 @@ export default function CommunityPage() {
   const [search, setSearch] = useState(""); // Search Function
   const [userInformation, setUserInformation] = useState<Record<string, User>>({});
   const [currentUserInfo, setCurrentUserInfo] = useState(null);
+  const [imageErrorFlags, setImageErrorFlags] = useState<Record<string, boolean>>({});
 
   let accessToken = localStorage.getItem("accessToken");
   if (!accessToken) {
@@ -80,7 +81,6 @@ export default function CommunityPage() {
       setCommunityList(res.data);
     });
   };
-
   useEffect(() => {
     getPosts();
   }, []);
@@ -165,6 +165,7 @@ export default function CommunityPage() {
     }
   };
 
+
   const handlePostClick = (id: string) => {
     navigate(`post/${id}`);
   };
@@ -172,6 +173,13 @@ export default function CommunityPage() {
   // Get pfp from server directly(no need convert blob to url)
   const getProfilePicture = (userId: string): string => {
     return `${config.serverAddress}/users/profile-image/${userId}`;
+  };
+
+  const handleImageError = (postId: string) => {
+    setImageErrorFlags((prevFlags) => ({
+      ...prevFlags,
+      [postId]: true,
+    }));
   };
 
   return (
@@ -244,9 +252,13 @@ export default function CommunityPage() {
                       <div>
                         <p>{post.content}</p>
                       </div>
-                      <div>
-                        <p>Image</p>
-                      </div>
+                      {!imageErrorFlags[post.id] && post.postImage && post.postImage !== null && (
+                        <div>
+                          <img src={`${config.serverAddress}/post/post-image/${post.id}`}
+                            className="w-[300px] h-auto rounded-lg object-cover"
+                            onError={() => handleImageError(post.id)} />
+                        </div>
+                      )}
                     </div>
                     <div className="flex flex-col gap-2">
                       <div className="flex flex-row gap-2">

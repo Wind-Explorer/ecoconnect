@@ -9,6 +9,7 @@ import config from "../config";
 import { ArrowUTurnLeftIcon } from "../icons";
 import { useEffect, useState } from "react";
 import { retrieveUserInformation } from "../security/users";
+import InsertPostImage from "../components/InsertPostImage";
 
 const validationSchema = Yup.object({
   title: Yup.string()
@@ -29,16 +30,20 @@ const validationSchema = Yup.object({
       "Only letters, numbers, commas, spaces, exclamation marks, quotations, and common symbols are allowed"
     )
     .required("Content is required"),
+  postImage: Yup.mixed(),
 });
 
 function CreatePostPage() {
   const navigate = useNavigate();
   const [userId, setUserId] = useState(null);
+  // Add state for image selection
 
   const initialValues = {
     title: "",
     content: "",
+    postImage: null,
     tags: "",
+    userId: "",
   };
 
   useEffect(() => {
@@ -55,17 +60,30 @@ function CreatePostPage() {
 
   const handleSubmit = async (
     values: any,
-    { setSubmitting, resetForm, setFieldError }: any
+    { setSubmitting, resetForm, setFieldError, setFieldValue }: any
   ) => {
     try {
-      const postData = {
-        ...values,
-        userId: userId
+      const formData = new FormData();
+      formData.append("title", values.title);
+      formData.append("content", values.content);
+      if (values.postImage) {
+        formData.append("postImage", values.postImage);
       }
-      const response = await axios.post(config.serverAddress + "/post", postData); // Assuming an API route
+      formData.append("tags", values.tags);
+      formData.append("userId", userId || ""); // Ensure userId is appended to formData
+
+      console.log("Submitting formData:", formData);
+
+      const response = await axios.post(config.serverAddress + "/post", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
       if (response.status === 200) {
         console.log("Post created successfully:", response.data);
         resetForm(); // Clear form after successful submit
+        setFieldValue("postImage", null);
         navigate(-1);
       } else {
         console.error("Error creating post:", response.statusText);
@@ -99,7 +117,7 @@ function CreatePostPage() {
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
         >
-          {({ isValid, dirty, isSubmitting }) => (
+          {({ isValid, dirty, isSubmitting, setFieldValue }) => (
             <Form className="flex flex-col gap-5">
               <div>
                 <NextUIFormikInput
@@ -109,11 +127,6 @@ function CreatePostPage() {
                   placeholder="Enter your post title"
                   labelPlacement="inside"
                 />
-              </div>
-              <div className="text-sm">
-                <div>
-                  <p>Image</p>
-                </div>
               </div>
               <div>
                 <NextUIFormikTextarea
@@ -131,10 +144,19 @@ function CreatePostPage() {
                   labelPlacement="inside"
                 />
               </div>
+              <div className="text-sm">
+                <div className="flex flex-row gap-10">
+                  <InsertPostImage
+                    onImageSelected={(file) => {
+                      setFieldValue("postImage", file);
+                    }}
+                  />
+                </div>
+              </div>
               <div className="flex flex-row-reverse">
                 <Button
                   type="submit"
-                  className="bg-primary-color text-white text-xl w-1/12"
+                  className="bg-primary-950 text-white text-xl w-1/12"
                   disabled={!isValid || !dirty || isSubmitting}
                 >
                   <p>Post</p>
