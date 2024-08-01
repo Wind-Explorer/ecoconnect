@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import { Button } from "@nextui-org/react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
@@ -8,6 +9,7 @@ import NextUIFormikTextarea from "../components/NextUIFormikTextarea";
 import config from "../config";
 import { ArrowUTurnLeftIcon } from "../icons";
 
+// Validation schema
 const validationSchema = Yup.object({
   title: Yup.string()
     .trim()
@@ -40,7 +42,21 @@ const validationSchema = Yup.object({
 });
 
 const CreateEventsPage = () => {
+  const [townCouncils, setTownCouncils] = useState<string[]>([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchTownCouncils = async () => {
+      try {
+        const res = await axios.get(`${config.serverAddress}/users/town-councils-metadata`);
+        setTownCouncils(JSON.parse(res.data).townCouncils);
+      } catch (error) {
+        console.error("Failed to fetch town councils:", error);
+      }
+    };
+
+    fetchTownCouncils();
+  }, []);
 
   const initialValues = {
     title: "",
@@ -100,7 +116,7 @@ const CreateEventsPage = () => {
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
         >
-          {({ isValid, dirty, isSubmitting }) => (
+          {({ isValid, dirty, isSubmitting, setFieldValue }) => (
             <Form className="flex flex-col gap-5">
               <NextUIFormikInput
                 label="Title"
@@ -128,13 +144,21 @@ const CreateEventsPage = () => {
                 placeholder="Enter event time"
                 labelPlacement="inside"
               />
-              <NextUIFormikInput
-                label="Location"
-                name="location"
-                type="text"
-                placeholder="Enter event location"
-                labelPlacement="inside"
-              />
+              <div>
+                <label className="block text-gray-700">Location</label>
+                <select
+                  name="location"
+                  className="form-select mt-1 block w-full"
+                  onChange={(e) => setFieldValue("location", e.target.value)}
+                >
+                  <option value="">Select a town council</option>
+                  {townCouncils.map((townCouncil, index) => (
+                    <option key={index} value={townCouncil}>
+                      {townCouncil}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <NextUIFormikInput
                 label="Category"
                 name="category"
