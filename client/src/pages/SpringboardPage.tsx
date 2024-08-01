@@ -85,22 +85,22 @@ export default function SpringboardPage() {
               <SpringboardButton
                 title="Community Forums"
                 subtitle="Be involved in discussions among your neighbourhood"
-                linkToPage=""
+                linkToPage="/community-posts"
               ></SpringboardButton>
               <SpringboardButton
                 title="Events"
                 subtitle="Participate in exciting upcoming events around Singapore"
-                linkToPage=""
+                linkToPage="/events"
               ></SpringboardButton>
               <SpringboardButton
                 title="Home Bill Contest"
                 subtitle="Save resources, win vouchers!"
-                linkToPage=""
+                linkToPage="/home-bill-contest"
               ></SpringboardButton>
               <SpringboardButton
                 title="Karang Guni Scheduling"
                 subtitle="Arrange doorstep sales for your old gears with Karang Guni"
-                linkToPage="/schedule"
+                linkToPage="/karang-guni-schedules"
               ></SpringboardButton>
             </div>
             <div className="w-full h-[600px] bg-primary-500"></div>
