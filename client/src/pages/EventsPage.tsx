@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import instance from "../security/http";
 import config from "../config";
+import axios from "axios";
 import {
   Card,
   CardHeader,
@@ -16,7 +17,7 @@ interface Event {
   title: string;
   category: string;
   location: string;
-  time: string; // Assuming time is a string, adjust if necessary
+  time: string; 
   description: string;
   imageUrl: string;
 }
@@ -25,9 +26,9 @@ const EventsPage: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
-  const [locations, setLocations] = useState<string[]>([]);
+  const [townCouncils, setTownCouncils] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
-  const [selectedLocation, setSelectedLocation] = useState<string>("");
+  const [selectedTownCouncil, setSelectedTownCouncil] = useState<string>("");
   const [selectedTime, setSelectedTime] = useState<string>("");
 
   const navigate = useNavigate();
@@ -44,31 +45,37 @@ const EventsPage: React.FC = () => {
         const uniqueCategories = Array.from(
           new Set(res.data.map((event) => event.category).filter(Boolean))
         );
-        const uniqueLocations = Array.from(
-          new Set(res.data.map((event) => event.location).filter(Boolean))
-        );
         setCategories(uniqueCategories);
-        setLocations(uniqueLocations);
       } catch (error) {
         console.error("Failed to fetch events:", error);
       }
     };
 
+    const fetchTownCouncils = async () => {
+      try {
+        const res = await axios.get(`${config.serverAddress}/users/town-councils-metadata`);
+        setTownCouncils(JSON.parse(res.data).townCouncils);
+      } catch (error) {
+        console.error("Failed to fetch town councils:", error);
+      }
+    };
+
     fetchEvents();
+    fetchTownCouncils();
   }, []);
 
   useEffect(() => {
     // Filter events based on selected criteria
     const filtered = events.filter((event) => {
       const matchCategory = selectedCategory ? event.category === selectedCategory : true;
-      const matchLocation = selectedLocation ? event.location === selectedLocation : true;
+      const matchTownCouncil = selectedTownCouncil ? event.location === selectedTownCouncil : true;
       const matchTime = selectedTime ? event.time === selectedTime : true;
 
-      return matchCategory && matchLocation && matchTime;
+      return matchCategory && matchTownCouncil && matchTime;
     });
 
     setFilteredEvents(filtered);
-  }, [selectedCategory, selectedLocation, selectedTime, events]);
+  }, [selectedCategory, selectedTownCouncil, selectedTime, events]);
 
   return (
     <div className="w-full h-full">
@@ -90,17 +97,19 @@ const EventsPage: React.FC = () => {
             ))}
           </select>
 
-          <select
-            value={selectedLocation}
-            onChange={(e) => setSelectedLocation(e.target.value)}
-          >
-            <option value="">All Locations</option>
-            {locations.map((location, index) => (
-              <option key={index} value={location}>
-                {location}
+          {townCouncils.length > 0 && (
+            <select
+            value={selectedTownCouncil}
+            onChange={(e) => setSelectedTownCouncil(e.target.value)}
+            >
+            <option value="">All location</option>
+            {townCouncils.map((townCouncil) => (
+              <option key={townCouncil} value={townCouncil}>
+                {townCouncil}
               </option>
             ))}
-          </select>
+            </select>
+          )}
 
           <select
             value={selectedTime}
