@@ -19,7 +19,7 @@ interface Event {
   location: string;
   time: string;
   description: string;
-  imageUrl: string;
+  evtPicture: string; // Changed to evtPicture
 }
 
 const EventsPage: React.FC = () => {
@@ -110,7 +110,7 @@ const EventsPage: React.FC = () => {
               value={selectedTownCouncil}
               onChange={(e) => setSelectedTownCouncil(e.target.value)}
             >
-              <option value="">All location</option>
+              <option value="">All locations</option>
               {townCouncils.map((townCouncil) => (
                 <option key={townCouncil} value={townCouncil}>
                   {townCouncil}
@@ -136,18 +136,32 @@ const EventsPage: React.FC = () => {
             <p className="text-gray-600">No events available.</p>
           ) : (
             filteredEvents.map((event) => (
-              <Card key={event.id}>
+              <Card key={event.id}
+              style={{
+                maxWidth: '600px',
+                height: 'auto',
+                minHeight: '300px',
+                display: 'flex',
+                flexDirection: 'column',
+              }}>
                 <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
                   <h4 className="font-bold text-large">{event.title}</h4>
                 </CardHeader>
                 <CardBody className="pb-0 pt-2 px-4 flex-col items-start">
-                  <Image
-                    alt={event.title}
-                    className="object-cover rounded-xl"
-                    src={event.imageUrl}
-                    width="100%"
-                    height={180}
-                  />
+                  {event.evtPicture && (
+                    <div className="relative w-full" style={{ paddingBottom: '56.25%' /* 16:9 aspect ratio */ }}>
+                      <Image
+                        alt={event.title}
+                        src={`${config.serverAddress}/events/evtPicture/${event.id}`}
+                        style={{
+                          height: '100%',
+                          width: '100%',
+                          objectFit: 'cover',
+                          borderRadius: '0.375rem',
+                        }}
+                      />
+                    </div>
+                  )}
                 </CardBody>
                 <CardFooter className="flex flex-col items-start p-4">
                   <p className="text-gray-600 mb-4">{event.description}</p>

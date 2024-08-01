@@ -2,40 +2,48 @@ const express = require('express');
 const router = express.Router();
 const { Events } = require('../models');
 const multer = require('multer');
+const { Op } = require("sequelize");
 const path = require('path');
 const yup = require('yup');
+const sharp = require("sharp");
 
-router.post("/", async (req, res) => {
+const upload = multer({ storage: multer.memoryStorage() });
+
+router.post("/", upload.fields([
+    { name: 'evtPicture', maxCount: 1 },
+]), async (req, res) => {
+
     let data = req.body;
-    console.log("Incoming data:", data); // Log incoming data
-    const validationSchema = yup.object({
+    let files = req.files;// Log incoming data
+    
+    let validationSchema = yup.object({
         title: yup.string().trim().min(3).max(100).required(),
         description: yup.string().trim().min(3).max(500).required(),
         date: yup.date().required(),
         time: yup.string().required(),
         location: yup.string().required(),
         category: yup.string().required(),
-        imageUrl: yup.string(),
         slotsAvailable: yup.number().integer().required(),
     });
 
     try {
         data = await validationSchema.validate(data, { abortEarly: false });
-        console.log("Validated data:", data); // Log validated data
-        const result = await Events.create(data);
-        console.log("Event created:", result); // Log successful creation
+
+        // Process valid data
+        let evtPicture = files.evtPicture[0].buffer;
+
+        let result = await Events.create({ ...data, evtPicture });
+
         res.json(result);
     } catch (err) {
         console.error("Validation error:", err); // Log the validation error
         res.status(400).json({ errors: err.errors });
     }
 });
-
-const upload = multer({ storage: multer.memoryStorage() });
   
   router.get("/", async (req, res) => {
     try {
-      const list = await Events.findAll({
+      let list = await Events.findAll({
         order: [['createdAt', 'DESC']],
       });
       res.json(list);
@@ -53,6 +61,25 @@ router.get("/:id", async (req, res) => {
         return;
     }
     res.json(event);
+});
+
+router.get("/evtPicture/:id", async (req, res) => {
+    let id = req.params.id;
+    let events = await Events.findByPk(id);
+
+    if (!events || !events.evtPicture) {
+        res.sendStatus(404);
+        return;
+    }
+
+    try {
+        res.set("Content-Type", "image/jpeg"); 
+        res.send(events.evtPicture);
+    } catch (err) {
+        res
+            .status(500)
+            .json({ message: "Error retrieving image", error: err });
+    }
 });
 
 router.put("/:id", async (req, res) => {

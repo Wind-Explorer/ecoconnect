@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@nextui-org/react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import NextUIFormikInput from "../components/NextUIFormikInput";
 import NextUIFormikTextarea from "../components/NextUIFormikTextarea";
 import config from "../config";
+import InsertImage from "../components/InsertImage";
 import { ArrowUTurnLeftIcon } from "../icons";
 
 // Validation schema
@@ -36,13 +37,12 @@ const validationSchema = Yup.object({
   slotsAvailable: Yup.number()
     .integer()
     .required("Slots Available is required"),
-  imageUrl: Yup.string()
-    .url("Invalid URL format")
-    .required("Image URL is required"),
+  evtPicture: Yup.mixed().required("Event picture is required"),
 });
 
 const CreateEventsPage = () => {
   const [townCouncils, setTownCouncils] = useState<string[]>([]);
+  const [imageFile, setImageFile] = useState<File | null>(null); // State to handle image file
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -66,23 +66,41 @@ const CreateEventsPage = () => {
     location: "",
     category: "",
     slotsAvailable: "",
-    imageUrl: "",
+    evtPicture: null, // Initialize with null
   };
 
   const handleSubmit = async (
     values: any,
     { setSubmitting, resetForm, setFieldError }: any
   ) => {
-    console.log("Submitting form with values:", values); // Debug log
+    const formData = new FormData();
+    formData.append("title", values.title);
+    formData.append("description", values.description);
+    formData.append("date", values.date);
+    formData.append("time", values.time);
+    formData.append("location", values.location);
+    formData.append("category", values.category);
+    formData.append("slotsAvailable", values.slotsAvailable);
+
+    if (imageFile) {
+      formData.append("evtPicture", imageFile); // Append image file to form data
+    }
+
     try {
       const response = await axios.post(
         config.serverAddress + "/events",
-        values
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
       console.log("Server response:", response); // Debug log
       if (response.status === 200 || response.status === 201) {
         console.log("Event created successfully:", response.data);
         resetForm(); // Clear form after successful submit
+        setImageFile(null); // Reset image file state
         navigate(-1);
       } else {
         console.error("Error creating event:", response.statusText);
@@ -173,18 +191,19 @@ const CreateEventsPage = () => {
                 placeholder="Enter slots available"
                 labelPlacement="inside"
               />
-              <NextUIFormikInput
-                label="Image URL"
-                name="imageUrl"
-                type="text"
-                placeholder="Enter image URL"
-                labelPlacement="inside"
-              />
+              <div className="mb-4">
+                <InsertImage
+                  onImageSelected={(file) => {
+                    setImageFile(file); // Set image file
+                    setFieldValue("evtPicture", file); // Set form field value
+                  }}
+                />
+              </div>
               <div className="flex flex-row-reverse border">
                 <Button
                   type="submit"
                   className="bg-red-600 text-white text-xl w-1/6"
-                  disabled={!isValid || !dirty || isSubmitting}
+                  disabled={!isValid || !dirty || isSubmitting || !imageFile}
                 >
                   <p>Create Event</p>
                 </Button>

@@ -29,7 +29,11 @@ module.exports = (sequelize)  => {
     slotsAvailable: {
       type: DataTypes.INTEGER,
       allowNull: false,
-    }
+    },
+    evtPicture: {
+      type: DataTypes.BLOB("long"),
+      allowNull: true,
+    },
   }, {
     tableName: "events",
     timestamps: true,

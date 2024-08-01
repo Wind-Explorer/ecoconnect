@@ -64,13 +64,30 @@ const ManageEventsPage = () => {
           {events.map((event) => (
             <TableRow key={event.id}>
               <TableCell>
-                <div className="flex items-center">
-                  <Avatar
-                    src={`${config.serverAddress}${event.imageUrl}`}
-                    className="mr-4"
-                  />
-                  {event.title}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                {event.evtPicture && (
+                  <div style={{
+                    width: '100px',
+                    height: '100px',
+                    overflow: 'hidden',
+                    borderRadius: '8px',
+                    position: 'relative'
+                  }}>
+                    <img
+                      src={`${config.serverAddress}/events/evtPicture/${event.id}`}
+                      alt="Event Picture"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        position: 'absolute',
+                        top: 0,
+                        left: 0
+                      }}
+                    />
                 </div>
+                )}
+              </div>
               </TableCell>
               <TableCell>{new Date(event.date).toLocaleDateString()}</TableCell>
               <TableCell>{event.time}</TableCell>
