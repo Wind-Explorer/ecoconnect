@@ -77,7 +77,12 @@ const EventsPage: React.FC = () => {
       const matchTownCouncil = selectedTownCouncil
         ? event.location === selectedTownCouncil
         : true;
-      const matchTime = selectedTime ? event.time === selectedTime : true;
+      const matchTime = selectedTime 
+      ? event.time.toLowerCase().trim() === selectedTime.toLowerCase().trim() 
+      : true;
+
+      console.log('Event Time:', event.time);
+      console.log(`Filtering: ${event.title} | Category: ${matchCategory} | Town Council: ${matchTownCouncil} | Time: ${matchTime}`);
 
       return matchCategory && matchTownCouncil && matchTime;
     });

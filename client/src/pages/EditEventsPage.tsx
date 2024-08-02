@@ -54,7 +54,10 @@ const EditEventsPage = () => {
     const fetchEvent = async () => {
       try {
         const response = await axios.get(`${config.serverAddress}/events/${id}`);
-        setInitialValues(response.data);
+        // Convert the date to the correct format for the input field
+        const event = response.data;
+        event.date = new Date(event.date).toISOString().split('T')[0];
+        setInitialValues(event);
       } catch (error) {
         console.error("Failed to fetch event data:", error);
       }
@@ -155,13 +158,6 @@ const EditEventsPage = () => {
                 name="slotsAvailable"
                 type="number"
                 placeholder="Enter slots available"
-                labelPlacement="inside"
-              />
-              <NextUIFormikInput
-                label="Image URL"
-                name="imageUrl"
-                type="text"
-                placeholder="Enter image URL"
                 labelPlacement="inside"
               />
               <div className="flex flex-row-reverse border">
