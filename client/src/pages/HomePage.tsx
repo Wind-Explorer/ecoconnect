@@ -1,11 +1,25 @@
 import { useNavigate } from "react-router-dom";
 import { ChevronDoubleDownIcon } from "../icons";
-import { Card, ScrollShadow } from "@nextui-org/react";
+import { Button, button, Card, Chip, ScrollShadow } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { retrieveUserInformation } from "../security/users";
+import instance from "../security/http";
+import config from "../config";
 export default function HomePage() {
+  // TODO: Move all interfaces into a single file
+  interface Event {
+    id: number;
+    title: string;
+    category: string;
+    location: string;
+    time: string;
+    description: string;
+    evtPicture: string; // Changed to evtPicture
+  }
+
   const navigate = useNavigate();
   const [userInformation, setUserInformation] = useState<any>();
+  const [events, setEvents] = useState<Event[]>([]);
 
   useEffect(() => {
     retrieveUserInformation()
@@ -13,6 +27,13 @@ export default function HomePage() {
         setUserInformation(value);
       })
       .catch();
+    try {
+      instance.get<Event[]>(`${config.serverAddress}/events`).then((res) => {
+        setEvents(res.data);
+      });
+    } catch (error) {
+      console.error("Failed to fetch events:", error);
+    }
   });
   return (
     <div className="w-full h-full flex flex-col">
@@ -61,23 +82,54 @@ export default function HomePage() {
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-2">
             <p className="text-3xl font-semibold px-8 pt-8">
-              Trending events right now
+              Events happening right now
             </p>
             <ScrollShadow className="flex flex-row gap-6 w-full p-8">
-              {[...Array(8)].map((_, index) => (
+              {events.map((event, index) => (
                 <Card
                   key={index}
-                  className="p-4 min-w-80 h-64 flex flex-col gap-4"
+                  className="p-4 min-w-80 flex flex-col justify-between gap-4"
                 >
-                  <div className="border-2 rounded-xl h-full"></div>
-                  <div className="flex flex-col">
-                    <p className="text-xl font-bold">
-                      Sample event {index + 1}
-                    </p>
-                    <p>Description of the sample event {index + 1}</p>
+                  <div className="flex flex-col gap-4">
+                    <img
+                      alt={event.title}
+                      src={`${config.serverAddress}/events/evtPicture/${event.id}`}
+                      className="rounded-xl h-48 object-cover"
+                    />
+                    <div className="flex flex-col gap-2">
+                      <p className="text-xl font-bold text-wrap overflow-hidden overflow-ellipsis whitespace-nowrap">
+                        {event.title}
+                      </p>
+                      <p className="text-wrap overflow-hidden overflow-ellipsis line-clamp-2">
+                        {event.description}
+                      </p>
+                      <div className="flex flex-row gap-2">
+                        <Chip>{event.category}</Chip>
+                        <Chip>{event.time}</Chip>
+                      </div>
+                    </div>
                   </div>
+                  <Button
+                    color="primary"
+                    variant="flat"
+                    onClick={() => {
+                      navigate(`/events/view/${event.id}`);
+                    }}
+                  >
+                    Visit
+                  </Button>
                 </Card>
               ))}
+              <Button
+                size="lg"
+                color="primary"
+                className="my-auto"
+                onPress={() => {
+                  navigate("/events");
+                }}
+              >
+                See all →
+              </Button>
             </ScrollShadow>
           </div>
         </div>
