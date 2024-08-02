@@ -123,10 +123,19 @@ export default function CommunityPostManagement() {
     }
   };
 
+  // Function to safely render item values
+  const renderCellValue = (item: any, columnKey: any) => {
+    const value = getKeyValue(item, columnKey);
+    if (typeof value === "object" && value !== null) {
+      return JSON.stringify(value); // Convert object to string
+    }
+    return value;
+  };
+
   return (
     <div>
       {mergedList.length > 0 && (
-        <div className="flex flex-col gap-8 p-8">
+        <div className="flex flex-col p-8">
           <p className="text-4xl font-bold">Community Post</p>
           <Table aria-label="User Information Table">
             <TableHeader columns={columns}>
@@ -137,51 +146,63 @@ export default function CommunityPostManagement() {
             <TableBody items={mergedList}>
               {(item) => (
                 <TableRow key={item.postId}>
-                  {(columnKey) => (
-                    <TableCell>
-                      {columnKey === "profilePicture" ? (
-                        item.profilePicture ? (
-                          <Avatar
-                            src={item.profilePicture}
-                            alt="Profile"
-                            size="lg"
-                          />
+                  {(columnKey) => {
+                    const value = renderCellValue(item, columnKey);
+
+                    return (
+                      <TableCell>
+                        {columnKey === "profilePicture" ? (
+                          item.profilePicture ? (
+                            <Avatar
+                              src={item.profilePicture}
+                              alt="Profile"
+                              size="lg"
+                            />
+                          ) : (
+                            "No Image"
+                          )
+                        ) : columnKey === "postImage" ? (
+                          value ? (
+                            <img src={`${config.serverAddress}/post/post-image/${item.postId}`}
+                            className="w-[150px] h-auto rounded-lg object-cover"/>
+                          ) : (
+                            "No Image"
+                          )
+                        ) : columnKey === "actions" ? (
+                          <div className="flex gap-2">
+                            <Tooltip content="Copy ID">
+                              <Button
+                                variant="light"
+                                isIconOnly
+                                onClick={() =>
+                                  handleCopyID(item.postId, item.title)
+                                }
+                                aria-label="Copy postId, title"
+                              >
+                                <ClipboardDocumentIcon />
+                              </Button>
+                            </Tooltip>
+                            <Tooltip content="Delete">
+                              <Button
+                                variant="light"
+                                isIconOnly
+                                aria-label="Delete-Post"
+                                className="text-red-500"
+                                onClick={() => handleDeleteClick(item)}
+                              >
+                                <TrashDeleteIcon />
+                              </Button>
+                            </Tooltip>
+                          </div>
                         ) : (
-                          "No Image"
-                        )
-                      ) : columnKey === "actions" ? (
-                        <div className="flex gap-2">
-                          <Tooltip content="Copy ID">
-                            <Button
-                              variant="light"
-                              isIconOnly
-                              onClick={() =>
-                                handleCopyID(item.postId, item.title)
-                              }
-                              aria-label="Copy postId, title"
-                            >
-                              <ClipboardDocumentIcon />
-                            </Button>
-                          </Tooltip>
-                          <Tooltip content="Delete">
-                            <Button
-                              variant="light"
-                              isIconOnly
-                              aria-label="Delete-Post"
-                              className="text-red-500"
-                              onClick={() => handleDeleteClick(item)}
-                            >
-                              <TrashDeleteIcon />
-                            </Button>
-                          </Tooltip>
-                        </div>
-                      ) : (
-                        <p className={item.isArchived ? "opacity-50" : ""}>
-                          {getKeyValue(item, columnKey)}
-                        </p>
-                      )}
-                    </TableCell>
-                  )}
+                          <p>
+                            {value}
+                          </p>
+                        )}
+
+                      </TableCell>
+                    );
+                  }}
                 </TableRow>
               )}
             </TableBody>
