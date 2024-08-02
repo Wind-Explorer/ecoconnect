@@ -139,22 +139,22 @@ const EventsPage: React.FC = () => {
               <Card key={event.id}
               style={{
                 maxWidth: '600px',
-                height: 'auto',
                 minHeight: '300px',
                 display: 'flex',
                 flexDirection: 'column',
+                justifyContent: 'space-between',
               }}>
                 <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
                   <h4 className="font-bold text-large">{event.title}</h4>
                 </CardHeader>
                 <CardBody className="pb-0 pt-2 px-4 flex-col items-start">
                   {event.evtPicture && (
-                    <div className="relative w-full" style={{ paddingBottom: '56.25%' /* 16:9 aspect ratio */ }}>
+                    <div className="relative w-full" style={{ paddingBottom: '0%', overflow: "hidden",marginBottom: '0px' /* 16:9 aspect ratio */ }}>
                       <Image
                         alt={event.title}
                         src={`${config.serverAddress}/events/evtPicture/${event.id}`}
                         style={{
-                          height: '100%',
+                          height: '430px',
                           width: '100%',
                           objectFit: 'cover',
                           borderRadius: '0.375rem',
@@ -163,7 +163,7 @@ const EventsPage: React.FC = () => {
                     </div>
                   )}
                 </CardBody>
-                <CardFooter className="flex flex-col items-start p-4">
+                <CardFooter className="flex flex-col items-start p-4"style={{ paddingTop: '0px' }}>
                   <p className="text-gray-600 mb-4">{event.description}</p>
                   <Button
                     className="bg-primary-600 text-white rounded px-4 py-2 hover:bg-primary-700"

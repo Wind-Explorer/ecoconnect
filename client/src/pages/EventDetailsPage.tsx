@@ -127,8 +127,8 @@ const EventDetailsPage = () => {
                 <CardBody className="pb-0 pt-2 px-4 flex-col items-start">
                  {similarEvent.evtPicture && (
                     <div style={{
-                      width: '100px',
-                      height: '100px',
+                      width: '450px',
+                      height: '300px',
                       overflow: 'hidden',
                       borderRadius: '8px',
                       position: 'relative'
