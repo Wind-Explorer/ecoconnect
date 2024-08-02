@@ -240,8 +240,6 @@ async function sendPasswordResetEmail(email, firstName, resetToken) {
   );
 }
 
-module.exports = { sendPasswordResetEmail };
-
 async function sendThankYouEmail(recipientEmail, firstName) {
   let dateTimeNow = new Date().toLocaleString();
   let emailContent = `
@@ -443,4 +441,4 @@ async function sendThankYouEmail(recipientEmail, firstName) {
   );
 }
 
-module.exports = { sendThankYouEmail };
+module.exports = { sendPasswordResetEmail, sendThankYouEmail };
