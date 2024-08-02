@@ -77,12 +77,14 @@ const EventsPage: React.FC = () => {
       const matchTownCouncil = selectedTownCouncil
         ? event.location === selectedTownCouncil
         : true;
-      const matchTime = selectedTime 
-      ? event.time.toLowerCase().trim() === selectedTime.toLowerCase().trim() 
-      : true;
+      const matchTime = selectedTime
+        ? event.time.toLowerCase().trim() === selectedTime.toLowerCase().trim()
+        : true;
 
-      console.log('Event Time:', event.time);
-      console.log(`Filtering: ${event.title} | Category: ${matchCategory} | Town Council: ${matchTownCouncil} | Time: ${matchTime}`);
+      console.log("Event Time:", event.time);
+      console.log(
+        `Filtering: ${event.title} | Category: ${matchCategory} | Town Council: ${matchTownCouncil} | Time: ${matchTime}`
+      );
 
       return matchCategory && matchTownCouncil && matchTime;
     });
@@ -141,34 +143,44 @@ const EventsPage: React.FC = () => {
             <p className="text-gray-600">No events available.</p>
           ) : (
             filteredEvents.map((event) => (
-              <Card key={event.id}
-              style={{
-                maxWidth: '600px',
-                minHeight: '300px',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-              }}>
+              <Card
+                key={event.id}
+                style={{
+                  maxWidth: "600px",
+                  minHeight: "300px",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                }}
+              >
                 <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
                   <h4 className="font-bold text-large">{event.title}</h4>
                 </CardHeader>
                 <CardBody className="pb-0 pt-2 px-4 flex-col items-start">
-                  {event.evtPicture && (
-                    <div className="relative w-full" style={{ paddingBottom: '0%', overflow: "hidden",marginBottom: '0px' /* 16:9 aspect ratio */ }}>
-                      <Image
-                        alt={event.title}
-                        src={`${config.serverAddress}/events/evtPicture/${event.id}`}
-                        style={{
-                          height: '430px',
-                          width: '100%',
-                          objectFit: 'cover',
-                          borderRadius: '0.375rem',
-                        }}
-                      />
-                    </div>
-                  )}
+                  <div
+                    className="relative w-full"
+                    style={{
+                      paddingBottom: "0%",
+                      overflow: "hidden",
+                      marginBottom: "0px" /* 16:9 aspect ratio */,
+                    }}
+                  >
+                    <Image
+                      alt={event.title}
+                      src={`${config.serverAddress}/events/evtPicture/${event.id}`}
+                      style={{
+                        height: "430px",
+                        width: "100%",
+                        objectFit: "cover",
+                        borderRadius: "0.375rem",
+                      }}
+                    />
+                  </div>
                 </CardBody>
-                <CardFooter className="flex flex-col items-start p-4"style={{ paddingTop: '0px' }}>
+                <CardFooter
+                  className="flex flex-col items-start p-4"
+                  style={{ paddingTop: "0px" }}
+                >
                   <p className="text-gray-600 mb-4">{event.description}</p>
                   <Button
                     className="bg-primary-600 text-white rounded px-4 py-2 hover:bg-primary-700"

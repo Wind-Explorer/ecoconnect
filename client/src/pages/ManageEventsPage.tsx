@@ -77,30 +77,34 @@ const ManageEventsPage = () => {
           {events.map((event) => (
             <TableRow key={event.id}>
               <TableCell>
-                <div><span>{event.title}</span></div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  {event.evtPicture && (
-                    <div style={{
-                      width: '100px',
-                      height: '100px',
-                      overflow: 'hidden',
-                      borderRadius: '8px',
-                      position: 'relative'
-                    }}>
-                      <img
-                        src={`${config.serverAddress}/events/evtPicture/${event.id}`}
-                        alt="Event Picture"
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover',
-                          position: 'absolute',
-                          top: 0,
-                          left: 0
-                        }}
-                      />
-                    </div>
-                  )}
+                <div>
+                  <span>{event.title}</span>
+                </div>
+                <div
+                  style={{ display: "flex", alignItems: "center", gap: "10px" }}
+                >
+                  <div
+                    style={{
+                      width: "100px",
+                      height: "100px",
+                      overflow: "hidden",
+                      borderRadius: "8px",
+                      position: "relative",
+                    }}
+                  >
+                    <img
+                      src={`${config.serverAddress}/events/evtPicture/${event.id}`}
+                      alt="Event Picture"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                      }}
+                    />
+                  </div>
                 </div>
               </TableCell>
               <TableCell>{new Date(event.date).toLocaleDateString()}</TableCell>
@@ -149,15 +153,20 @@ const ManageEventsPage = () => {
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">Delete Event</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1">
+                Delete Event
+              </ModalHeader>
               <ModalBody>
                 <p>Are you sure you want to delete this event?</p>
               </ModalBody>
               <ModalFooter>
-                <Button onPress={onClose}>
-                  Cancel
-                </Button>
-                <Button onPress={() => { deleteEvent(); onClose(); }}>
+                <Button onPress={onClose}>Cancel</Button>
+                <Button
+                  onPress={() => {
+                    deleteEvent();
+                    onClose();
+                  }}
+                >
                   Delete
                 </Button>
               </ModalFooter>
