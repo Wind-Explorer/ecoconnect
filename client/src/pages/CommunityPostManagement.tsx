@@ -14,6 +14,7 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
+  Image,
 } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import instance from "../security/http";
@@ -35,7 +36,7 @@ export default function CommunityPostManagement() {
     { key: "title", label: "TITLE" },
     { key: "content", label: "CONTENT" },
     { key: "postImage", label: "IMAGE" },
-    { key: "actions", label: "ACTIONS" }
+    { key: "actions", label: "ACTIONS" },
   ];
 
   const populateUserInformationList = () => {
@@ -43,7 +44,7 @@ export default function CommunityPostManagement() {
       .get(`${config.serverAddress}/users/all`)
       .then((response) => {
         const users = response.data;
-        const usersWithProfilePictures = users.map((user: { id: string; }) => ({
+        const usersWithProfilePictures = users.map((user: { id: string }) => ({
           ...user,
           profilePicture: `${config.serverAddress}/users/profile-image/${user.id}`,
         }));
@@ -86,12 +87,12 @@ export default function CommunityPostManagement() {
           userId: user?.id,
           ...post,
           ...user,
-          uniqueKey: `${post.id}-${user?.id}`
+          uniqueKey: `${post.id}-${user?.id}`,
         };
       });
 
       // Remove the duplicate 'id' field from merged data
-      const removeDuplicateId = mergedData.map(item => {
+      const removeDuplicateId = mergedData.map((item) => {
         const { id, ...rest } = item;
         return { ...rest };
       });
@@ -114,7 +115,9 @@ export default function CommunityPostManagement() {
   const handleDeleteConfirm = async () => {
     if (postToDelete) {
       try {
-        await instance.delete(`${config.serverAddress}/post/${postToDelete.postId}`);
+        await instance.delete(
+          `${config.serverAddress}/post/${postToDelete.postId}`
+        );
         populateCommunityPostList();
         setIsModalOpen(false);
       } catch (error) {
@@ -162,12 +165,13 @@ export default function CommunityPostManagement() {
                             "No Image"
                           )
                         ) : columnKey === "postImage" ? (
-                          value ? (
-                            <img src={`${config.serverAddress}/post/post-image/${item.postId}`}
-                            className="w-[150px] h-auto rounded-lg object-cover"/>
-                          ) : (
-                            "No Image"
-                          )
+                          <div className="relative w-48">
+                            <Image
+                              src={`${config.serverAddress}/post/post-image/${item.postId}`}
+                              radius="sm"
+                            />
+                            <p className="absolute inset-0">No image</p>
+                          </div>
                         ) : columnKey === "actions" ? (
                           <div className="flex gap-2">
                             <Tooltip content="Copy ID">
@@ -195,11 +199,8 @@ export default function CommunityPostManagement() {
                             </Tooltip>
                           </div>
                         ) : (
-                          <p>
-                            {value}
-                          </p>
+                          <p>{value}</p>
                         )}
-
                       </TableCell>
                     );
                   }}
@@ -210,17 +211,28 @@ export default function CommunityPostManagement() {
         </div>
       )}
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} isDismissable={false} isKeyboardDismissDisabled={true}>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        isDismissable={false}
+        isKeyboardDismissDisabled={true}
+      >
         <ModalContent>
           <>
             <ModalHeader className="flex flex-col text-danger gap-1">
-              {postToDelete?.title ? `DELETING POST: ${postToDelete.title}` : "Delete Post"}
+              {postToDelete?.title
+                ? `DELETING POST: ${postToDelete.title}`
+                : "Delete Post"}
             </ModalHeader>
             <ModalBody>
               <p>Are you sure you want to delete this post?</p>
             </ModalBody>
             <ModalFooter>
-              <Button color="danger" variant="light" onPress={() => setIsModalOpen(false)}>
+              <Button
+                color="danger"
+                variant="light"
+                onPress={() => setIsModalOpen(false)}
+              >
                 Cancel
               </Button>
               <Button color="danger" onPress={handleDeleteConfirm}>

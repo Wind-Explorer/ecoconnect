@@ -46,7 +46,6 @@ type User = {
   id: string;
   firstName: string;
   lastName: string;
-
 };
 
 export default function CommunityPage() {
@@ -55,24 +54,30 @@ export default function CommunityPage() {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [communityList, setCommunityList] = useState<Post[]>([]);
   const [search, setSearch] = useState(""); // Search Function
-  const [userInformation, setUserInformation] = useState<Record<string, User>>({});
+  const [userInformation, setUserInformation] = useState<Record<string, User>>(
+    {}
+  );
   const [currentUserInfo, setCurrentUserInfo] = useState(null);
-  const [imageErrorFlags, setImageErrorFlags] = useState<Record<string, boolean>>({});
+  const [imageErrorFlags, setImageErrorFlags] = useState<
+    Record<string, boolean>
+  >({});
 
   let accessToken = localStorage.getItem("accessToken");
   if (!accessToken) {
     return (
       setTimeout(() => {
         navigate("/signin");
-      }, 1000)
-      &&
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="text-center">
-          <p className="text-xl font-bold text-primary-500">User is not verified</p>
-          <p className="text-md">Redirecting to sign-in page...</p>
-          <Spinner color="danger" />
+      }, 1000) && (
+        <div className="flex justify-center items-center min-h-screen">
+          <div className="text-center">
+            <p className="text-xl font-bold text-primary-500">
+              User is not verified
+            </p>
+            <p className="text-md">Redirecting to sign-in page...</p>
+            <Spinner color="danger" />
+          </div>
         </div>
-      </div>
+      )
     );
   }
 
@@ -165,7 +170,6 @@ export default function CommunityPage() {
     }
   };
 
-
   const handlePostClick = (id: string) => {
     navigate(`post/${id}`);
   };
@@ -202,17 +206,17 @@ export default function CommunityPage() {
                   onClick={() => handlePostClick(post.id)}
                 >
                   <div onClick={(e) => e.stopPropagation()}>
-                    <Avatar
-                      src={profilePictureUrl}
-                      size="lg"
-                    />
+                    <Avatar src={profilePictureUrl} size="lg" />
                   </div>
                   <div className="flex flex-col gap-8 w-full">
                     <div className="h-full flex flex-col gap-4">
                       <div className="flex flex-row justify-between">
                         <div className="flex flex-col">
                           <p className="text-xl font-bold">{post.title}</p>
-                          <p className="text-md text-neutral-500">{userInformation[post.userId]?.firstName} {userInformation[post.userId]?.lastName}</p>
+                          <p className="text-md text-neutral-500">
+                            {userInformation[post.userId]?.firstName}{" "}
+                            {userInformation[post.userId]?.lastName}
+                          </p>
                         </div>
                         <div className="flex flex-row-reverse justify-center items-center">
                           <Dropdown>
@@ -252,11 +256,13 @@ export default function CommunityPage() {
                       <div>
                         <p>{post.content}</p>
                       </div>
-                      {!imageErrorFlags[post.id] && post.postImage && post.postImage !== null && (
+                      {imageErrorFlags[post.id] ? null : (
                         <div>
-                          <img src={`${config.serverAddress}/post/post-image/${post.id}`}
+                          <img
+                            src={`${config.serverAddress}/post/post-image/${post.id}`}
                             className="w-[300px] h-auto rounded-lg object-cover"
-                            onError={() => handleImageError(post.id)} />
+                            onError={() => handleImageError(post.id)}
+                          />
                         </div>
                       )}
                     </div>
