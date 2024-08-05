@@ -6,40 +6,100 @@ const yup = require("yup");
 const multer = require("multer");
 const sharp = require("sharp");
 const { sendThankYouEmail } = require("../connections/mailersend");
-
-
 const upload = multer({ storage: multer.memoryStorage() });
 
-router.post("/", upload.fields([
-    { name: 'ebPicture', maxCount: 1 },
-    { name: 'wbPicture', maxCount: 1 }
-]), async (req, res) => {
-
-    let data = req.body;
-    let files = req.files;
-
-    // Validate request body
-    let validationSchema = yup.object({
-        electricalBill: yup.number().positive().required(),
-        waterBill: yup.number().positive().required(),
-        totalBill: yup.number().positive().required(),
-        noOfDependents: yup.number().integer().positive().required(),
-        avgBill: yup.number().positive().required(),
-    });
+async function processFile(file) {
     try {
-        data = await validationSchema.validate(data, { abortEarly: false });
+        const { buffer, mimetype } = file;
+        const maxSize = 5 * 1024 * 1024; // 5MB limit for compressed image size
+        let processedBuffer;
 
-        // Process valid data
-        let ebPicture = files.ebPicture[0].buffer;
-        let wbPicture = files.wbPicture[0].buffer;
+        if (mimetype.startsWith('image/')) {
+            // Handle image files
+            const metadata = await sharp(buffer).metadata();
 
-        let result = await HBCform.create({ ...data, ebPicture, wbPicture });
-        res.json(result);
+            // Compress the image based on its format
+            if (metadata.format === 'jpeg') {
+                processedBuffer = await sharp(buffer)
+                    .jpeg({ quality: 80 }) // Compress to JPEG
+                    .toBuffer();
+            } else if (metadata.format === 'png') {
+                processedBuffer = await sharp(buffer)
+                    .png({ quality: 80 }) // Compress to PNG
+                    .toBuffer();
+            } else if (metadata.format === 'webp') {
+                processedBuffer = await sharp(buffer)
+                    .webp({ quality: 80 }) // Compress to WebP
+                    .toBuffer();
+            } else {
+                // For other image formats (e.g., TIFF), convert to JPEG
+                processedBuffer = await sharp(buffer)
+                    .toFormat('jpeg')
+                    .jpeg({ quality: 80 })
+                    .toBuffer();
+            }
+
+            // Check the size of the compressed image
+            if (processedBuffer.length > maxSize) {
+                throw new Error(`Compressed file too large: ${(processedBuffer.length / 1000000).toFixed(2)}MB`);
+            }
+        } else if (mimetype === 'application/pdf') {
+            // Handle PDF files
+            console.log('Processing PDF');
+            processedBuffer = buffer; // Store the PDF as is
+            // Optionally, process PDF using pdf-lib or other libraries
+        } else {
+            throw new Error(`Unsupported file type: ${mimetype}`);
+        }
+
+        return processedBuffer;
     } catch (err) {
-        console.error("Error:", err);
-        res.status(400).json({ errors: err.errors });
+        console.error('Error processing file:', err);
+        throw err;
     }
-});
+}
+
+router.post(
+    '/',
+    upload.fields([
+        { name: 'ebPicture', maxCount: 1 },
+        { name: 'wbPicture', maxCount: 1 },
+    ]),
+    async (req, res) => {
+        let data = req.body;
+        let files = req.files;
+
+        // Validate request body
+        let validationSchema = yup.object({
+            electricalBill: yup.number().positive().required(),
+            waterBill: yup.number().positive().required(),
+            totalBill: yup.number().positive().required(),
+            noOfDependents: yup.number().integer().positive().required(),
+            avgBill: yup.number().positive().required(),
+        });
+
+        try {
+
+            data = await validationSchema.validate(data, { abortEarly: false });
+
+            // Process the files
+            const processedEbPicture = await processFile(files.ebPicture[0]);
+            const processedWbPicture = await processFile(files.wbPicture[0]);
+
+            // Save the form with processed files
+            let result = await HBCform.create({
+                ...data,
+                ebPicture: processedEbPicture,
+                wbPicture: processedWbPicture,
+            });
+
+            res.json(result);
+        } catch (err) {
+            console.error('Error processing request:', err);
+            res.status(400).json({ message: 'Bad request', errors: err.errors || err.message });
+        }
+    }
+);
 
 router.get("/", async (req, res) => {
     let condition = {};

@@ -405,7 +405,7 @@ async function sendThankYouEmail(recipientEmail, firstName) {
           <strong>Click the button below to access the contest page and resubmit your entry:</strong>
         </p>
          <a
-            href="http://localhost:5173/home-bill-contest"
+            href="http://localhost:5173/home-bill-contest/new-submission"
             class="mt-4 rounded-xl border-2 border-red-300 bg-red-500 px-4 py-3 text-white font-bold shadow-md w-max no-underline"
             >GO TO HOME BILL CONTEST</a
           >
