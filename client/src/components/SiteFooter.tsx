@@ -20,7 +20,7 @@ export default function SiteFooter() {
             </div>
           </div>
           <div className="flex flex-col gap-8 *:mx-auto">
-            <p className="text-xl">Connecting neighbourhood together</p>
+            <p className="text-xl">Connecting neighbourhoods together</p>
             <div className="flex flex-col gap-6 *:mx-auto">
               <img
                 src="../assets/gov-footer.png"
