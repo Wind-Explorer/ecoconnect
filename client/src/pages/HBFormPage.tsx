@@ -148,111 +148,115 @@ export default function HBFormPage() {
   };
 
   return (
-    <div className="w-full h-full">
-      <section className="w-8/12 mx-auto p-6 bg-red-100 dark:bg-red-950 border border-primary-100 rounded-2xl h-600px">
+    <div className="w-full h-full pb-12">
+      <div className="w-8/12 mx-auto p-6 bg-red-100 dark:bg-red-950 border border-primary-100 rounded-2xl h-600px">
         <div className="py-2">
           <Button variant="light" onPress={() => navigate(-1)}>
             <ArrowUTurnLeftIcon />
           </Button>
         </div>
-        <Formik
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={handleSubmit}
-        >
-          {({ isValid, dirty, isSubmitting, setFieldValue, values }) => {
-            // Calculate the total bill
-            useEffect(() => {
-              const totalBill = Number(values.electricalBill) + Number(values.waterBill);
-              setFieldValue("totalBill", totalBill.toFixed(2));
+        <div className="flex-grow overflow-y-auto">
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={handleSubmit}
+          >
+            {({ isValid, dirty, isSubmitting, setFieldValue, values }) => {
+              // Calculate the total bill
+              useEffect(() => {
+                const totalBill = Number(values.electricalBill) + Number(values.waterBill);
+                setFieldValue("totalBill", totalBill.toFixed(2));
 
-              const avgBill = Number(values.noOfDependents) > 0
-                ? totalBill / Number(values.noOfDependents)
-                : 0;
-              setFieldValue("avgBill", avgBill.toFixed(2));
+                const avgBill = Number(values.noOfDependents) > 0
+                  ? totalBill / Number(values.noOfDependents)
+                  : 0;
+                setFieldValue("avgBill", avgBill.toFixed(2));
 
-            }, [values.electricalBill, values.waterBill, values.noOfDependents, setFieldValue]);
+              }, [values.electricalBill, values.waterBill, values.noOfDependents, setFieldValue]);
 
-            // Disabled the submit button because the images field are not selected
-            const isSubmitDisabled = !imagesSelected.ebPicture || !imagesSelected.wbPicture;
+              // Disabled the submit button because the images field are not selected
+              const isSubmitDisabled = !imagesSelected.ebPicture || !imagesSelected.wbPicture;
 
-            return (
-              <Form>
-                <div className="flex flex-col gap-5">
-                  <div className="flex flex-row gap-10">
-                    <div className="flex flex-col gap-5 p-1">
-                      <NextUIFormikInput
-                        label="Electrical Bill"
-                        name="electricalBill"
-                        type="text"
-                        placeholder="0.00"
-                        labelPlacement="inside"
-                        setFieldValue={setFieldValue}
-                      />
-                      <NextUIFormikInput
-                        label="Water Bill"
-                        name="waterBill"
-                        type="text"
-                        placeholder="0.00"
-                        labelPlacement="inside"
-                        setFieldValue={setFieldValue}
-                      />
-                      <NextUIFormikInput
-                        label="Total Bill"
-                        name="totalBill"
-                        type="text"
-                        placeholder="0.00"
-                        labelPlacement="inside"
-                        readOnly={true}
-                      />
-                      <NextUIFormikInput
-                        label="Number of dependents"
-                        name="noOfDependents"
-                        type="text"
-                        placeholder="0"
-                        labelPlacement="inside"
-                        setFieldValue={setFieldValue}
-                      />
-                      <NextUIFormikInput
-                        label="Average Bill"
-                        name="avgBill"
-                        type="text"
-                        placeholder="0"
-                        labelPlacement="inside"
-                        readOnly={true}
-                      />
+              return (
+                <Form>
+                  <div className="flex flex-col gap-5">
+                    <div className="flex flex-row gap-5">
+                      <div className="flex flex-col gap-5 p-2 min-w-[180px] ">
+                        <NextUIFormikInput
+                          label="Electrical Bill"
+                          name="electricalBill"
+                          type="text"
+                          placeholder="0.00"
+                          labelPlacement="inside"
+                          setFieldValue={setFieldValue}
+                        />
+                        <NextUIFormikInput
+                          label="Water Bill"
+                          name="waterBill"
+                          type="text"
+                          placeholder="0.00"
+                          labelPlacement="inside"
+                          setFieldValue={setFieldValue}
+                        />
+                        <NextUIFormikInput
+                          label="Total Bill"
+                          name="totalBill"
+                          type="text"
+                          placeholder="0.00"
+                          labelPlacement="inside"
+                          readOnly={true}
+                        />
+                        <NextUIFormikInput
+                          label="Number of dependents"
+                          name="noOfDependents"
+                          type="text"
+                          placeholder="0"
+                          labelPlacement="inside"
+                          setFieldValue={setFieldValue}
+                        />
+                        <NextUIFormikInput
+                          label="Average Bill"
+                          name="avgBill"
+                          type="text"
+                          placeholder="0"
+                          labelPlacement="inside"
+                          readOnly={true}
+                        />
+                      </div>
+                      <div className="flex flex-row gap-10">
+                        <InsertImage
+                          label="Electrical Bill Image"
+                          onImageSelected={(file) => {
+                            setFieldValue("ebPicture", file);
+                            handleImageSelection("ebPicture", file);
+                          }}
+                        />
+                        <InsertImage
+                          label="Water Bill Image"
+                          onImageSelected={(file) => {
+                            setFieldValue("wbPicture", file);
+                            handleImageSelection("wbPicture", file);
+                          }}
+                        />
+                      </div>
                     </div>
-                    <div className="flex flex-row max-w-xs h-[500px] gap-10">
-                      <InsertImage
-                        onImageSelected={(file) => {
-                          setFieldValue("ebPicture", file);
-                          handleImageSelection("ebPicture", file);
-                        }}
-                      />
-                      <InsertImage
-                        onImageSelected={(file) => {
-                          setFieldValue("wbPicture", file);
-                          handleImageSelection("wbPicture", file);
-                        }}
-                      />
+                    <div>
+                      <Button
+                        type="submit"
+                        className="bg-red-400 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-900 text-white"
+                        size="lg"
+                        isDisabled={!isValid || !dirty || isSubmitting || isSubmitDisabled}
+                      >
+                        <p>Submit</p>
+                      </Button>
                     </div>
                   </div>
-                  <div>
-                    <Button
-                      type="submit"
-                      className="bg-red-400 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-900 text-white"
-                      size="lg"
-                      isDisabled={!isValid || !dirty || isSubmitting || isSubmitDisabled}
-                    >
-                      <p>Submit</p>
-                    </Button>
-                  </div>
-                </div>
-              </Form>
-            );
-          }}
-        </Formik>
-      </section>
+                </Form>
+              );
+            }}
+          </Formik>
+        </div>
+      </div>
     </div>
   );
 }
