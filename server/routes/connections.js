@@ -6,16 +6,16 @@ const router = express.Router();
 const nlsPrompt = `
 "/": home
 "/springboard": user dashboard
-"/manage-account": user account management
+"/manage-account": manage user account
 "/events": events
-"/karang-guni-schedules": browse slots
+"/karang-guni-schedules": browse karang guni slots
 "/home-bill-contest": participate in contest & earn vouchers
 "/home-bill-contest/new-submission": submit bill
 "/community-posts": show posts
 "/community-posts/create": create post
 
 based on input, provide appropriate route closest to fulfilling user's needs
-If none matches user query, return empty route.
+If none matches user query, return empty route, however try your best not to.
 in following format:
 
 {"route": "<appropriate route>"}
