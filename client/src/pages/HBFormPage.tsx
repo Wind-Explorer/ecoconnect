@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
-import { Button } from "@nextui-org/react";
+import { useEffect, useState } from "react";
+import { Button, Modal, ModalBody, ModalContent, ModalHeader } from "@nextui-org/react";
 import { ArrowUTurnLeftIcon } from "../icons";
 import { useNavigate } from "react-router-dom";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import config from "../config";
 import NextUIFormikInput from "../components/NextUIFormikInput";
-import axios from "axios";
+import instance from "../security/http";
 import InsertImage from "../components/InsertImage";
 import { retrieveUserInformation } from "../security/users";
 
@@ -81,34 +81,130 @@ export default function HBFormPage() {
     }
   }, [userId]);
 
+  const [hasHandedInForm, setHasHandedInForm] = useState(false);
+
+  useEffect(() => {
+    instance.get(`${config.serverAddress}/hbcform/has-handed-in-form/${userId}`)
+      .then(response => {
+        const hasHandedInForm = response.data.hasHandedInForm;
+        setHasHandedInForm(hasHandedInForm);
+      })
+      .catch(error => {
+        console.error("Error checking if user has handed in form:", error);
+
+      });
+  }, [userId]);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (
     values: any,
     { setSubmitting, resetForm, setFieldError, setFieldValue }: any
   ) => {
-    const formData = new FormData();
-    formData.append("electricalBill", values.electricalBill);
-    formData.append("waterBill", values.waterBill);
-    formData.append("totalBill", values.totalBill);
-    formData.append("noOfDependents", values.noOfDependents);
-    formData.append("avgBill", values.avgBill);
+    if (hasHandedInForm) {
+      setIsModalOpen(true);
+    } else {
+      const formData = new FormData();
+      formData.append("electricalBill", values.electricalBill);
+      formData.append("waterBill", values.waterBill);
+      formData.append("totalBill", values.totalBill);
+      formData.append("noOfDependents", values.noOfDependents);
+      formData.append("avgBill", values.avgBill);
 
-    if (values.ebPicture) {
-      formData.append("ebPicture", values.ebPicture);
+      if (values.ebPicture) {
+        formData.append("ebPicture", values.ebPicture);
+      }
+
+      if (values.wbPicture) {
+        formData.append("wbPicture", values.wbPicture);
+      }
+
+      if (userId != null) {
+        formData.append("userId", userId);
+      }
+
+      try {
+        const response = await instance.post(
+          config.serverAddress + "/hbcform",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        if (response.status === 200) {
+          console.log("Form created successfully:", response.data);
+          resetForm(); // Clear form after successful submit
+          setFieldValue("ebPicture", null);
+          setFieldValue("wbPicture", null);
+          navigate(-1);
+        } else {
+          console.error("Error creating form:", response.statusText);
+        }
+      } catch (error: any) {
+        if (error.response && error.response.data && error.response.data.errors) {
+          const errors = error.response.data.errors;
+          Object.keys(errors).forEach((key) => {
+            setFieldError(key, errors[key]);
+          });
+        } else {
+          console.error("Unexpected error:", error);
+        }
+      } finally {
+        setSubmitting(false);
+      }
     }
+  };
 
-    if (values.wbPicture) {
-      formData.append("wbPicture", values.wbPicture);
-    }
+  // Handler for image selection
+  const handleImageSelection = (name: string, file: File | null) => {
+    setImagesSelected(prevState => ({
+      ...prevState,
+      [name]: !!file,
+    }));
+  };
 
-    if (userId != null) {
-      formData.append("userId", userId);
-    }
-
+  const handleModalSubmit = async ({
+    values,
+    resetForm,
+    setFieldError,
+    setFieldValue
+  }: any) => {
     try {
-      const response = await axios.post(
-        config.serverAddress + "/hbcform",
+      // Fetch the current form ID associated with the userId
+      const responses = await instance.get(`${config.serverAddress}/hbcform/has-handed-in-form/${userId}`);
+      const formId = responses.data.formId; // Make sure your API response includes the formId
+
+      if (formId) {
+        // Delete the form entry using the formId
+        await instance.delete(`${config.serverAddress}/hbcform/${formId}`);
+        console.log("Old form data deleted successfully");
+      }
+      // Prepare the new form data
+      const formData = new FormData();
+      formData.append("electricalBill", values.electricalBill);
+      formData.append("waterBill", values.waterBill);
+      formData.append("totalBill", values.totalBill);
+      formData.append("noOfDependents", values.noOfDependents);
+      formData.append("avgBill", values.avgBill);
+
+      if (values.ebPicture) {
+        formData.append("ebPicture", values.ebPicture);
+      }
+
+      if (values.wbPicture) {
+        formData.append("wbPicture", values.wbPicture);
+      }
+
+      if (userId != null) {
+        formData.append("userId", userId);
+      }
+
+      // Submit the new form data
+      const response = await instance.post(
+        `${config.serverAddress}/hbcform`,
         formData,
         {
           headers: {
@@ -116,6 +212,7 @@ export default function HBFormPage() {
           },
         }
       );
+
       if (response.status === 200) {
         console.log("Form created successfully:", response.data);
         resetForm(); // Clear form after successful submit
@@ -135,16 +232,12 @@ export default function HBFormPage() {
         console.error("Unexpected error:", error);
       }
     } finally {
-      setSubmitting(false);
+      setIsModalOpen(false); // Close the modal after submission
     }
   };
 
-  // Handler for image selection
-  const handleImageSelection = (name: string, file: File | null) => {
-    setImagesSelected(prevState => ({
-      ...prevState,
-      [name]: !!file,
-    }));
+  const handleModalCancel = () => {
+    navigate(-1)
   };
 
   return (
@@ -251,6 +344,44 @@ export default function HBFormPage() {
                       </Button>
                     </div>
                   </div>
+                  <Modal
+                    isOpen={isModalOpen}
+                    onOpenChange={setIsModalOpen}
+                    isDismissable={true}
+                    isKeyboardDismissDisabled={true}
+                  >
+                    <ModalContent className="w-full max-w-[400px]">
+                      <ModalHeader className="flex justify-between items-center font-bold text-2xl text-red-900">
+                        Confirmation
+                      </ModalHeader>
+                      <ModalBody className="pb-8">
+                        <div className="space-y-4 text-gray-700 dark:text-gray-300">
+                          <p className="font-semibold">This form has been submitted before. If you submit again, the previous entry will be deleted. Are you sure you want to resubmit?</p>
+                        </div>
+                        <div className="flex justify-between">
+                          <Button
+                            className="bg-red-400 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-900 text-white"
+                            size="lg"
+                            onPress={() => handleModalSubmit({
+                              values,
+                              setSubmitting: isSubmitting,
+                              resetForm: () => { }, // Pass an empty function as a placeholder
+                              setFieldError: () => { }, // Pass an empty function as a placeholder
+                              setFieldValue
+                            })}>
+                            Yes
+                          </Button>
+                          <Button
+                            className="bg-gray-400 hover:bg-gray-700 dark:bg-gray-700 dark:hover:bg-gray-900 text-white"
+                            size="lg"
+                            onPress={handleModalCancel}
+                          >
+                            No
+                          </Button>
+                        </div>
+                      </ModalBody>
+                    </ModalContent>
+                  </Modal>
                 </Form>
               );
             }}

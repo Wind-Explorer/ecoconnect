@@ -1,6 +1,6 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { HBCform } = require('../models');
+const { HBCform } = require("../models");
 const { Op } = require("sequelize");
 const yup = require("yup");
 const multer = require("multer");
@@ -14,27 +14,27 @@ async function processFile(file) {
         const maxSize = 5 * 1024 * 1024; // 5MB limit for compressed image size
         let processedBuffer;
 
-        if (mimetype.startsWith('image/')) {
+        if (mimetype.startsWith("image/")) {
             // Handle image files
             const metadata = await sharp(buffer).metadata();
 
             // Compress the image based on its format
-            if (metadata.format === 'jpeg') {
+            if (metadata.format === "jpeg") {
                 processedBuffer = await sharp(buffer)
                     .jpeg({ quality: 80 }) // Compress to JPEG
                     .toBuffer();
-            } else if (metadata.format === 'png') {
+            } else if (metadata.format === "png") {
                 processedBuffer = await sharp(buffer)
                     .png({ quality: 80 }) // Compress to PNG
                     .toBuffer();
-            } else if (metadata.format === 'webp') {
+            } else if (metadata.format === "webp") {
                 processedBuffer = await sharp(buffer)
                     .webp({ quality: 80 }) // Compress to WebP
                     .toBuffer();
             } else {
                 // For other image formats (e.g., TIFF), convert to JPEG
                 processedBuffer = await sharp(buffer)
-                    .toFormat('jpeg')
+                    .toFormat("jpeg")
                     .jpeg({ quality: 80 })
                     .toBuffer();
             }
@@ -43,9 +43,9 @@ async function processFile(file) {
             if (processedBuffer.length > maxSize) {
                 throw new Error(`Compressed file too large: ${(processedBuffer.length / 1000000).toFixed(2)}MB`);
             }
-        } else if (mimetype === 'application/pdf') {
+        } else if (mimetype === "application/pdf") {
             // Handle PDF files
-            console.log('Processing PDF');
+            console.log("Processing PDF");
             processedBuffer = buffer; // Store the PDF as is
             // Optionally, process PDF using pdf-lib or other libraries
         } else {
@@ -54,16 +54,16 @@ async function processFile(file) {
 
         return processedBuffer;
     } catch (err) {
-        console.error('Error processing file:', err);
+        console.error("Error processing file:", err);
         throw err;
     }
 }
 
 router.post(
-    '/',
+    "/",
     upload.fields([
-        { name: 'ebPicture', maxCount: 1 },
-        { name: 'wbPicture', maxCount: 1 },
+        { name: "ebPicture", maxCount: 1 },
+        { name: "wbPicture", maxCount: 1 },
     ]),
     async (req, res) => {
         let data = req.body;
@@ -115,7 +115,7 @@ router.get("/", async (req, res) => {
     }
     let list = await HBCform.findAll({
         where: condition,
-        order: [['createdAt', 'ASC']]
+        order: [["createdAt", "ASC"]]
     });
     res.json(list);
 });
@@ -186,7 +186,7 @@ router.delete("/:id", async (req, res) => {
 });
 
 // Endpoint for sending emails related to home bill contest
-router.post('/send-homebill-contest-email', async (req, res) => {
+router.post("/send-homebill-contest-email", async (req, res) => {
     const { email, name } = req.body;
     try {
         await sendThankYouEmail(email, name);
@@ -194,6 +194,21 @@ router.post('/send-homebill-contest-email', async (req, res) => {
     } catch (error) {
         console.error("Failed to send email:", error);
         res.status(500).send({ error: "Failed to send email" });
+    }
+});
+
+router.get("/has-handed-in-form/:userId", async (req, res) => {
+    const userId = req.params.userId;
+    try {
+        const form = await HBCform.findOne({ where: { userId } });
+        if (form) {
+            res.json({ hasHandedInForm: true, formId: form.id });
+        } else {
+            res.json({ hasHandedInForm: false });
+        }
+    } catch (err) {
+        console.error("Error checking if user has handed in form:", err);
+        res.status(500).json({ message: "Failed to check if user has handed in form", error: err });
     }
 });
 
