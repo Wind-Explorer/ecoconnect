@@ -54,10 +54,18 @@ const PostPage: React.FC = () => {
 
   useEffect(() => {
     if (id) {
+      console.log("useEffect for fetching post called, id:", id);
       instance.get(`${config.serverAddress}/post/${id}`)
-        .then((res) => setPost(res.data))
+        .then((res) => {
+          setPost(res.data);
+          console.log("Post fetch successfully");
+        })
         .catch((error) => console.error("Error fetching post:", error));
     }
+  }, [id]);
+
+  useEffect(() => {
+    console.log("PostPage component mounted");
   }, []);
 
   useEffect(() => {
@@ -189,7 +197,8 @@ const PostPage: React.FC = () => {
                     </div>
                     {!imageErrorFlags[post.id] && post.postImage && post.postImage !== null && (
                       <div>
-                        <img src={`${config.serverAddress}/post/post-image/${post.id}`}
+                        <img
+                          src={`${config.serverAddress}/post/post-image/${post.id}`}
                           alt="PostImage"
                           className="w-[300px] h-auto rounded-lg object-cover"
                           onError={() => handleImageError(post.id)} />

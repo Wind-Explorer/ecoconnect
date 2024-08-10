@@ -61,6 +61,17 @@ router.post(
 
       let postImage = files.postImage ? files.postImage[0].buffer : null;
 
+      // Resize and compress image if it exists
+      if (postImage) {
+        postImage = await sharp(postImage)
+          .resize(512, 512, {
+            fit: sharp.fit.inside,
+            withoutEnlargement: true,
+          })
+          .jpeg({ quality: 80 })
+          .toBuffer();
+      }
+
       // Process valid data
       let result = await Post.create({ ...data, postImage });
       res.json(result);
@@ -82,7 +93,6 @@ router.post(
 router.get("/", async (req, res) => {
   let condition = {
     where: {},
-    attributes: { exclude: ["postImage"] },
     order: [["createdAt", "DESC"]],
   };
 
@@ -102,9 +112,8 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   let id = req.params.id;
-  let post = await Post.findByPk(id, {
-    attributes: { exclude: ["postImage"] },
-  });
+  let post = await Post.findByPk(id);
+
   if (!post) {
     res.sendStatus(404);
     return;
@@ -170,8 +179,16 @@ router.put(
         });
       }
 
-      // Include the postImage if present
+      // Include the postImage if present 
       if (postImage) {
+        postImage = await sharp(postImage)
+          .resize(512, 512, {
+            fit: sharp.fit.inside,
+            withoutEnlargement: true,
+          })
+          .jpeg({ quality: 80 })
+          .toBuffer();
+
         data.postImage = postImage;
       }
 

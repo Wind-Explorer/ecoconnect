@@ -261,8 +261,7 @@ export default function CommunityPage() {
                           <img
                             src={`${config.serverAddress}/post/post-image/${post.id}`}
                             className="w-[300px] h-auto rounded-lg object-cover"
-                            onError={() => handleImageError(post.id)}
-                          />
+                            onError={() => handleImageError(post.id)} />
                         </div>
                       )}
                     </div>
