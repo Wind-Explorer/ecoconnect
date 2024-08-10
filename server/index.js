@@ -40,6 +40,9 @@ app.use("/hbcform", HBCformRoute);
 const connections = require("./routes/connections");
 app.use("/connections", connections);
 
+const vouchers = require("./routes/vouchers.js");
+app.use("/vouchers", vouchers);
+
 db.sequelize
   .sync({ alter: true })
   .then(() => {

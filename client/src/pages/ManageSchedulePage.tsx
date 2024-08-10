@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import instance from "../security/http";
 import { PencilSquareIcon, PlusIcon, TrashDeleteIcon } from "../icons";
@@ -18,12 +18,12 @@ export default function ManageSchedulePage() {
     const [scheduleIdToDelete, setScheduleIdToDelete] = useState<number | null>(null);
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
-        column: 'dateTime',
-        direction: 'ascending',
+        column: "dateTime",
+        direction: "ascending",
     });
 
     useEffect(() => {
-        instance.get('/schedule')
+        instance.get("/schedule")
             .then((res) => {
                 const schedules = res.data.map((schedule: Schedule) => ({
                     ...schedule,
@@ -32,7 +32,7 @@ export default function ManageSchedulePage() {
                 setScheduleList(schedules);
             })
             .catch((err) => {
-                console.error('Error fetching schedules:', err);
+                console.error("Error fetching schedules:", err);
             });
     }, []);
 
@@ -51,7 +51,7 @@ export default function ManageSchedulePage() {
                     setScheduleIdToDelete(null);
                 })
                 .catch((err) => {
-                    console.error('Error deleting schedule:', err);
+                    console.error("Error deleting schedule:", err);
                 });
         }
     };
@@ -61,16 +61,16 @@ export default function ManageSchedulePage() {
 
         const sortedList = [...list].sort((a, b) => {
             switch (column) {
-                case 'dateTime':
+                case "dateTime":
                     const dateA = new Date(a.dateTime);
                     const dateB = new Date(b.dateTime);
-                    return direction === 'ascending' ? dateA.getTime() - dateB.getTime() : dateB.getTime() - dateA.getTime();
-                case 'location':
-                    return direction === 'ascending' ? a.location.localeCompare(b.location) : b.location.localeCompare(a.location);
-                case 'postalCode':
-                    return direction === 'ascending' ? a.postalCode.localeCompare(b.postalCode) : b.postalCode.localeCompare(a.postalCode);
-                case 'status':
-                    return direction === 'ascending' ? a.status.localeCompare(b.status) : b.status.localeCompare(a.status);
+                    return direction === "ascending" ? dateA.getTime() - dateB.getTime() : dateB.getTime() - dateA.getTime();
+                case "location":
+                    return direction === "ascending" ? a.location.localeCompare(b.location) : b.location.localeCompare(a.location);
+                case "postalCode":
+                    return direction === "ascending" ? a.postalCode.localeCompare(b.postalCode) : b.postalCode.localeCompare(a.postalCode);
+                case "status":
+                    return direction === "ascending" ? a.status.localeCompare(b.status) : b.status.localeCompare(a.status);
                 default:
                     throw new Error(`Unsupported column: ${column}`);
             }
@@ -81,13 +81,13 @@ export default function ManageSchedulePage() {
 
     const handleSort = () => {
         const { column, direction } = sortDescriptor;
-        const newDirection = direction === 'ascending' ? 'descending' : 'ascending';
+        const newDirection = direction === "ascending" ? "descending" : "ascending";
 
         setSortDescriptor({ column, direction: newDirection });
     };
 
     const renderSortIndicator = () => {
-        if (sortDescriptor.direction === 'ascending') {
+        if (sortDescriptor.direction === "ascending") {
             return <span>&uarr;</span>;
         } else {
             return <span>&darr;</span>;
@@ -100,15 +100,13 @@ export default function ManageSchedulePage() {
         <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
             <div className="inline-block text-center justify-center flex flex-row gap-10">
                 <p className="text-3xl font-bold">Admin Karang Guni Schedule</p>
-                <Link to="/Addschedules">
-                    <Button
-                        isIconOnly
-                        color="primary"
-                        onPress={() => navigate("create-schedule")}
-                    >
-                        <PlusIcon />
-                    </Button>
-                </Link>
+                <Button
+                    isIconOnly
+                    color="primary"
+                    onPress={() => navigate("create-schedule")}
+                >
+                    <PlusIcon />
+                </Button>
             </div>
             <div className="w-full overflow-auto max-w-screen-lg">
                 <Table aria-label="Schedule Table">
@@ -126,7 +124,7 @@ export default function ManageSchedulePage() {
                         {sortedScheduleList.map((schedule) => (
                             <TableRow key={schedule.id}>
                                 <TableCell>{((schedule.dateTime as unknown) as Date).toLocaleDateString()}</TableCell>
-                                <TableCell>{((schedule.dateTime as unknown) as Date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</TableCell>
+                                <TableCell>{((schedule.dateTime as unknown) as Date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</TableCell>
                                 <TableCell>{schedule.location}</TableCell>
                                 <TableCell>{schedule.postalCode}</TableCell>
                                 <TableCell>{schedule.status}</TableCell>
@@ -161,7 +159,7 @@ export default function ManageSchedulePage() {
                                 <p>Are you sure you want to delete this schedule?</p>
                             </ModalBody>
                             <ModalFooter>
-                                <Button color="danger" variant="light" onPress={onClose}>
+                                <Button color="default" variant="light" onPress={onClose}>
                                     Close
                                 </Button>
                                 <Button color="danger" onPress={() => { deleteSchedule(); onClose(); }}>

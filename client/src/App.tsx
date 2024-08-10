@@ -30,6 +30,9 @@ import ManageSchedulePage from "./pages/ManageSchedulePage";
 import EditSchedulePage from "./pages/EditSchedulePage";
 import CreateSchedulePage from "./pages/CreateSchedulePage";
 import CommunityPostManagement from "./pages/CommunityPostManagement";
+import ManageVoucherPage from "./pages/ManageVoucherPage";
+import CreateVoucherPage from "./pages/CreateVoucherPage";
+import EditVoucherPage from "./pages/EditVoucherPage";
 
 
 function App() {
@@ -100,6 +103,12 @@ function App() {
 
           <Route path="ranking">
             <Route index element={<Ranking />} />
+          </Route>
+
+          <Route path="voucher">
+            <Route index element={<ManageVoucherPage />} />
+            <Route path="create-voucher" element={<CreateVoucherPage />} />
+            <Route path="edit-voucher/:id" element={<EditVoucherPage />} />
           </Route>
 
           <Route path="schedules">

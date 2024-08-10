@@ -168,7 +168,7 @@ export default function AdministratorNavigationPanel() {
                       <AdministratorNavigationPanelNavigationButton
                         text="Vouchers"
                         icon={<GiftTopIcon />}
-                        onClickRef="#"
+                        onClickRef="voucher"
                       />
                     </div>
                     <div>
