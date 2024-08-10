@@ -34,7 +34,7 @@ export default function HomePage() {
     } catch (error) {
       console.error("Failed to fetch events:", error);
     }
-  });
+  }, []);
   return (
     <div className="w-full h-full flex flex-col">
       <div className="relative w-full h-screen -mt-16 z-10 text-white flex flex-col">
