@@ -18,8 +18,7 @@ interface FormData {
     totalBill: number;
     noOfDependents: number;
     avgBill: number;
-    ebPicture: string;
-    wbPicture: string;
+    billPicture: string;
     userId: string;
 }
 
@@ -150,8 +149,7 @@ export default function Ranking() {
                         <TableColumn onClick={handleSort}>
                             Average Bill {renderSortIndicator()}
                         </TableColumn>
-                        <TableColumn>Electrical Bill Picture</TableColumn>
-                        <TableColumn>Water Bill Picture</TableColumn>
+                        <TableColumn>Bill Picture</TableColumn>
                         <TableColumn>Actions</TableColumn>
                     </TableHeader>
                     <TableBody>
@@ -166,10 +164,7 @@ export default function Ranking() {
                                 <TableCell>{data.noOfDependents}</TableCell>
                                 <TableCell>${data.avgBill.toFixed(2)}</TableCell>
                                 <TableCell>
-                                    {data.ebPicture && <img src={`${config.serverAddress}/hbcform/ebPicture/${data.id}`} alt="Electrical Bill" className="w-full" />}
-                                </TableCell>
-                                <TableCell>
-                                    {data.wbPicture && <img src={`${config.serverAddress}/hbcform/wbPicture/${data.id}`} alt="Water Bill" className="w-full" />}
+                                    {data.billPicture && <img src={`${config.serverAddress}/hbcform/billPicture/${data.id}`} alt="bill picture" className="w-full" />}
                                 </TableCell>
                                 <TableCell className="flex flex-row">
                                     <Button isIconOnly variant="light" className="text-blue-500" onClick={() => handleEmailClick(data.userEmail, data.userName)}><EmailIcon /></Button>

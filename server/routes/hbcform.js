@@ -62,8 +62,7 @@ async function processFile(file) {
 router.post(
     "/",
     upload.fields([
-        { name: "ebPicture", maxCount: 1 },
-        { name: "wbPicture", maxCount: 1 },
+        { name: "billPicture", maxCount: 1 },
     ]),
     async (req, res) => {
         let data = req.body;
@@ -83,14 +82,12 @@ router.post(
             data = await validationSchema.validate(data, { abortEarly: false });
 
             // Process the files
-            const processedEbPicture = await processFile(files.ebPicture[0]);
-            const processedWbPicture = await processFile(files.wbPicture[0]);
+            const processedbillPicture = await processFile(files.billPicture[0]);
 
             // Save the form with processed files
             let result = await HBCform.create({
                 ...data,
-                ebPicture: processedEbPicture,
-                wbPicture: processedWbPicture,
+                billPicture: processedbillPicture,
             });
 
             res.json(result);
@@ -130,37 +127,18 @@ router.get("/:id", async (req, res) => {
     res.json(hbcform);
 });
 
-router.get("/ebPicture/:id", async (req, res) => {
+router.get("/billPicture/:id", async (req, res) => {
     let id = req.params.id;
     let hbcform = await HBCform.findByPk(id);
 
-    if (!hbcform || !hbcform.ebPicture) {
+    if (!hbcform || !hbcform.billPicture) {
         res.sendStatus(404);
         return;
     }
 
     try {
         res.set("Content-Type", "image/jpeg"); // Adjust the content type as necessary
-        res.send(hbcform.ebPicture);
-    } catch (err) {
-        res
-            .status(500)
-            .json({ message: "Error retrieving electrical bill", error: err });
-    }
-});
-
-router.get("/wbPicture/:id", async (req, res) => {
-    let id = req.params.id;
-    let hbcform = await HBCform.findByPk(id);
-
-    if (!hbcform || !hbcform.wbPicture) {
-        res.sendStatus(404);
-        return;
-    }
-
-    try {
-        res.set("Content-Type", "image/jpeg"); // Adjust the content type as necessary
-        res.send(hbcform.wbPicture);
+        res.send(hbcform.billPicture);
     } catch (err) {
         res
             .status(500)

@@ -36,8 +36,7 @@ const validationSchema = Yup.object({
     .positive("Must be a positive value")
     .max(99999.99, "Value is too large")
     .required("Average bill is a required field"),
-  ebPicture: Yup.mixed().required("Electrical bill picture is required"),
-  wbPicture: Yup.mixed().required("Water bill picture is required"),
+  billPicture: Yup.mixed().required("Bill picture is required"),
 });
 
 export default function HBFormPage() {
@@ -49,15 +48,13 @@ export default function HBFormPage() {
     totalBill: "",
     noOfDependents: "",
     avgBill: "",
-    ebPicture: null,
-    wbPicture: null,
+    billPicture: null,
     userId: "",
   });
 
   // Add state for image selection
   const [imagesSelected, setImagesSelected] = useState({
-    ebPicture: false,
-    wbPicture: false,
+    billPicture: false,
   });
 
   useEffect(() => {
@@ -112,12 +109,8 @@ export default function HBFormPage() {
       formData.append("noOfDependents", values.noOfDependents);
       formData.append("avgBill", values.avgBill);
 
-      if (values.ebPicture) {
-        formData.append("ebPicture", values.ebPicture);
-      }
-
-      if (values.wbPicture) {
-        formData.append("wbPicture", values.wbPicture);
+      if (values.billPicture) {
+        formData.append("billPicture", values.billPicture);
       }
 
       if (userId != null) {
@@ -137,8 +130,7 @@ export default function HBFormPage() {
         if (response.status === 200) {
           console.log("Form created successfully:", response.data);
           resetForm(); // Clear form after successful submit
-          setFieldValue("ebPicture", null);
-          setFieldValue("wbPicture", null);
+          setFieldValue("billPicture", null);
           navigate(-1);
         } else {
           console.error("Error creating form:", response.statusText);
@@ -190,12 +182,8 @@ export default function HBFormPage() {
       formData.append("noOfDependents", values.noOfDependents);
       formData.append("avgBill", values.avgBill);
 
-      if (values.ebPicture) {
-        formData.append("ebPicture", values.ebPicture);
-      }
-
-      if (values.wbPicture) {
-        formData.append("wbPicture", values.wbPicture);
+      if (values.billPicture) {
+        formData.append("billPicture", values.billPicture);
       }
 
       if (userId != null) {
@@ -216,8 +204,7 @@ export default function HBFormPage() {
       if (response.status === 200) {
         console.log("Form created successfully:", response.data);
         resetForm(); // Clear form after successful submit
-        setFieldValue("ebPicture", null);
-        setFieldValue("wbPicture", null);
+        setFieldValue("billPicture", null);
         navigate(-1);
       } else {
         console.error("Error creating form:", response.statusText);
@@ -242,7 +229,7 @@ export default function HBFormPage() {
 
   return (
     <div className="w-full h-full pb-12">
-      <div className="w-8/12 mx-auto p-6 bg-red-100 dark:bg-red-950 border border-primary-100 rounded-2xl h-600px">
+      <div className="w-[680px] mx-auto p-6 bg-red-100 dark:bg-red-950 border border-primary-100 rounded-2xl h-600px">
         <div className="py-2">
           <Button variant="light" onPress={() => navigate(-1)}>
             <ArrowUTurnLeftIcon />
@@ -268,13 +255,13 @@ export default function HBFormPage() {
               }, [values.electricalBill, values.waterBill, values.noOfDependents, setFieldValue]);
 
               // Disabled the submit button because the images field are not selected
-              const isSubmitDisabled = !imagesSelected.ebPicture || !imagesSelected.wbPicture;
+              const isSubmitDisabled = !imagesSelected.billPicture;
 
               return (
                 <Form>
-                  <div className="flex flex-col gap-5">
-                    <div className="flex flex-row gap-5">
-                      <div className="flex flex-col gap-5 p-2 min-w-[180px] ">
+                  <div className="flex flex-col">
+                    <div className="flex flex-row gap-10">
+                      <div className="flex flex-col gap-10 p-2 min-w-[220px]">
                         <NextUIFormikInput
                           label="Electrical Bill"
                           name="electricalBill"
@@ -318,17 +305,10 @@ export default function HBFormPage() {
                       </div>
                       <div className="flex flex-row gap-10">
                         <InsertImage
-                          label="Electrical Bill Image"
+                          label=""
                           onImageSelected={(file) => {
-                            setFieldValue("ebPicture", file);
-                            handleImageSelection("ebPicture", file);
-                          }}
-                        />
-                        <InsertImage
-                          label="Water Bill Image"
-                          onImageSelected={(file) => {
-                            setFieldValue("wbPicture", file);
-                            handleImageSelection("wbPicture", file);
+                            setFieldValue("billPicture", file);
+                            handleImageSelection("billPicture", file);
                           }}
                         />
                       </div>

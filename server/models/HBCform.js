@@ -30,11 +30,7 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.DECIMAL(7, 2),
                 allowNull: false,
             },
-            ebPicture: {
-                type: DataTypes.BLOB("long"),
-                allowNull: true,
-            },
-            wbPicture: {
+            billPicture: {
                 type: DataTypes.BLOB("long"),
                 allowNull: true,
             },
