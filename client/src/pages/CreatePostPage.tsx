@@ -10,6 +10,7 @@ import { ArrowUTurnLeftIcon } from "../icons";
 import { useEffect, useState } from "react";
 import { retrieveUserInformation } from "../security/users";
 import InsertPostImage from "../components/InsertPostImage";
+import TagInput from "../components/TagInput";
 
 const validationSchema = Yup.object({
   title: Yup.string()
@@ -37,6 +38,7 @@ function CreatePostPage() {
   const navigate = useNavigate();
   const [userId, setUserId] = useState(null);
   // Add state for image selection
+  const [tags, setTags] = useState<string[]>([]);
 
   const initialValues = {
     title: "",
@@ -69,7 +71,8 @@ function CreatePostPage() {
       if (values.postImage) {
         formData.append("postImage", values.postImage);
       }
-      formData.append("tags", values.tags);
+      // formData.append("tags", values.tags);
+      formData.append("tags", tags.join(","));
       formData.append("userId", userId || ""); // Ensure userId is appended to formData
 
       console.log("Submitting formData:", formData);
@@ -83,6 +86,7 @@ function CreatePostPage() {
       if (response.status === 200) {
         console.log("Post created successfully:", response.data);
         resetForm(); // Clear form after successful submit
+        setTags([]);
         setFieldValue("postImage", null);
         navigate(-1);
       } else {
@@ -136,13 +140,7 @@ function CreatePostPage() {
                 />
               </div>
               <div>
-                <NextUIFormikInput
-                  label="Tags (Optional)"
-                  name="tags"
-                  type="text"
-                  placeholder="Enter tags"
-                  labelPlacement="inside"
-                />
+                <TagInput tags={tags} setTags={setTags} />
               </div>
               <div className="text-sm">
                 <div className="flex flex-row gap-10">
