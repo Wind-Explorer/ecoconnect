@@ -45,7 +45,7 @@ export default function HomePage() {
           className="absolute object-cover w-full h-screen -z-10 brightness-50"
           src="../assets/hdb-bg.mp4"
         ></video>
-        <div className="p-10 w-full h-full flex flex-col justify-center">
+        <div className="pl-[10vw] w-full h-full flex flex-col justify-center">
           <div className="flex flex-col gap-8">
             <div className="w-60">
               <img
@@ -54,8 +54,10 @@ export default function HomePage() {
                 className="invert hue-rotate-180"
               />
             </div>
-            <p className="text-5xl font-bold max-w-[600px]">
-              Connecting neighbourhoods together
+            <p className="text-5xl font-bold leading-tight">
+              Connecting
+              <br />
+              neighbourhoods together
             </p>
             <div className="flex flex-row gap-4">
               <button
