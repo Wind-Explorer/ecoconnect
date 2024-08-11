@@ -76,9 +76,12 @@ function App() {
               <Route element={<PostPage />} path="post/:id" />
               <Route element={<EditPostPage />} path="edit/:id" />
             </Route>
+
+            {/* Vouchers */}
+            <Route element={<UserVouchersPage />} path="user-voucher" />
           </Route>
 
-          <Route element={<UserVouchersPage />} path="user-voucher" />
+          
 
           {/* Special (Restricted) Routes */}
           <Route element={<RestrictedLayout />}>
