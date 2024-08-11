@@ -6,6 +6,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import NextUIFormikInput from "../components/NextUIFormikInput";
 import NextUIFormikTextarea from "../components/NextUIFormikTextarea";
+import NextUIFormikSelect from "../components/NextUIFormikSelect";
 import config from "../config";
 import InsertImage from "../components/InsertImage";
 import { ArrowUTurnLeftIcon } from "../icons";
@@ -163,19 +164,18 @@ const CreateEventsPage = () => {
                 labelPlacement="inside"
               />
               <div>
-                <label className="block text-gray-700">Location</label>
-                <select
-                  name="location"
-                  className="form-select mt-1 block w-full"
-                  onChange={(e) => setFieldValue("location", e.target.value)}
-                >
-                  <option value="">Select a town council</option>
-                  {townCouncils.map((townCouncil, index) => (
-                    <option key={index} value={townCouncil}>
-                      {townCouncil}
-                    </option>
-                  ))}
-                </select>
+                {townCouncils.length > 0 && (
+                  <NextUIFormikSelect
+                    label="Town council"
+                    name="location"
+                    placeholder="Choose the town council for the event"
+                    labelPlacement="inside"
+                    options={townCouncils.map((townCouncil) => ({
+                      key: townCouncil,
+                      label: townCouncil,
+                    }))}
+                  />
+                )}
               </div>
               <NextUIFormikInput
                 label="Category"
@@ -193,6 +193,7 @@ const CreateEventsPage = () => {
               />
               <div className="mb-4">
                 <InsertImage
+                  label="Event image"
                   onImageSelected={(file) => {
                     setImageFile(file); // Set image file
                     setFieldValue("evtPicture", file); // Set form field value

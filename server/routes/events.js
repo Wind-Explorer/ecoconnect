@@ -6,6 +6,7 @@ const { Op } = require("sequelize");
 const path = require("path");
 const yup = require("yup");
 const sharp = require("sharp");
+const { validateToken } = require("../middlewares/auth");
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -130,10 +131,71 @@ router.get("/evtPicture/:id", async (req, res) => {
   }
 });
 
-router.put("/:id", upload.fields([{ name: "evtPicture", maxCount: 1 }]), async (req, res) => {
+router.put(
+  "/event-image/:id",
+  validateToken,
+  upload.single("image"),
+  async (req, res) => {
+    const id = req.params.id;
+
+    // Check if user exists
+    const user = await Events.findByPk(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Check if file is uploaded
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    try {
+      const { buffer, mimetype, size } = req.file;
+
+      // Validate file type and size (example: max 5MB, only images)
+      const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+      const maxSize = 5 * 1024 * 1024; // 5MB
+
+      if (!allowedTypes.includes(mimetype)) {
+        return res.status(400).json({
+          message:
+            "Invalid file type\nSupported: jpeg, png, gif\nUploaded: " +
+            mimetype.substring(6),
+        });
+      }
+
+      if (size > maxSize) {
+        return res.status(400).json({
+          message:
+            "File too large!\nMaximum: 5MB, Uploaded: " +
+            (size / 1000000).toFixed(2) +
+            "MB",
+        });
+      }
+
+      // Crop the image to a square
+      const croppedBuffer = await sharp(buffer)
+        .resize({ width: 1024, height: 1024, fit: sharp.fit.cover }) // Adjust size as necessary
+        .toBuffer();
+
+      // Update user's profile picture
+      await Events.update(
+        { evtPicture: croppedBuffer },
+        { where: { id: id } }
+      );
+
+      res.json({ message: "Profile image uploaded and cropped successfully." });
+    } catch (err) {
+      res
+        .status(500)
+        .json({ message: "Internal server error", errors: err.errors });
+    }
+  }
+);
+
+router.put("/:id", async (req, res) => {
   const id = req.params.id;
   let data = req.body;
-  let files = req.files;
 
   console.log("Received PUT request to update event with ID:", id);
   console.log("Data received for update:", data);
@@ -156,13 +218,6 @@ router.put("/:id", upload.fields([{ name: "evtPicture", maxCount: 1 }]), async (
     if (!event) {
       console.log("Event not found with ID:", id);
       return res.status(404).json({ message: "Event not found" });
-    }
-
-    let evtPicture = files.evtPicture ? files.evtPicture[0].buffer : null;
-
-    if (evtPicture) {
-      evtPicture = await sharp(evtPicture).resize(800, 600).jpeg().toBuffer();
-      data.evtPicture = evtPicture; // Add the processed image to the update data
     }
 
     await Events.update(data, { where: { id: id } });

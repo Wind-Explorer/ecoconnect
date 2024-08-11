@@ -24,16 +24,16 @@ const ManageEventsPage = () => {
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const res = await axios.get(config.serverAddress + "/events");
-        setEvents(res.data);
-      } catch (error) {
-        console.error("Failed to fetch events:", error);
-      }
-    };
+  const fetchEvents = async () => {
+    try {
+      const res = await axios.get(config.serverAddress + "/events");
+      setEvents(res.data);
+    } catch (error) {
+      console.error("Failed to fetch events:", error);
+    }
+  };
 
+  useEffect(() => {
     fetchEvents();
   }, []);
 
