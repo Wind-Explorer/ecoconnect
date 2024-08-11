@@ -24,6 +24,18 @@ module.exports = (sequelize, DataTypes) => {
     }, {
         tableName: 'post_tags',
         timestamps: false,
+        indexes: [
+            {
+                unique: true,
+                fields: ['postId', 'tagId']  // Composite unique index
+            },
+            {
+                fields: ['postId']  // Index for efficient querying
+            },
+            {
+                fields: ['tagId']  // Index for efficient querying
+            }
+        ]
     });
 
     return PostTag;
