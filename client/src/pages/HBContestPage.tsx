@@ -89,7 +89,7 @@ export default function HBContestPage() {
   }, [selectedTownCouncil, combinedData]);
 
   const topUser = filteredData.length > 0 ? filteredData[0] : null;
-  const top5Users = filteredData.slice(1, 10);
+  const top10Users = filteredData.slice(1, 10);
 
   return (
     <div className="flex flex-col items-center justify-center">
@@ -180,7 +180,7 @@ export default function HBContestPage() {
               )}
             </div>
             <div className="grid grid-rows-1 md:grid-rows-2 gap-2">
-              {top5Users.map((user, index) => (
+              {top10Users.map((user, index) => (
                 <div key={user.userId} className="p-4 border rounded-md bg-red-100 dark:bg-primary-950 flex items-center">
                   <span className="text-xl font-bold w-8">{index + 2}</span>
                   <span className="flex-1 text-center">{user.name}</span>

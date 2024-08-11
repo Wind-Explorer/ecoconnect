@@ -12,6 +12,7 @@ import {
   ArrowRightStartOnRectangleIcon,
   PencilSquareIcon,
   RocketLaunchIcon,
+  VoucherIcon,
 } from "../icons";
 
 import config from "../config";
@@ -153,6 +154,14 @@ export default function NavigationBar() {
                         startContent={<PencilSquareIcon />}
                         onPress={() => {
                           navigate("/manage-account");
+                        }}
+                      />
+                      <DropdownItem
+                        key="user-voucher"
+                        title="Voucher"
+                        startContent={<VoucherIcon />}
+                        onPress={() => {
+                          navigate("/user-voucher");
                         }}
                       />
                     </DropdownSection>

@@ -9,10 +9,11 @@ interface User {
     firstName: string;
     lastName: string;
     email: string;
+    townCouncil: string;
 }
 
 interface FormData {
-    id: number;
+    id: string;
     electricalBill: number;
     waterBill: number;
     totalBill: number;
@@ -22,8 +23,31 @@ interface FormData {
     userId: string;
 }
 
+interface FormDataWithUser extends FormData {
+    userName: string;
+    userEmail: string;
+    userTownCouncil: string;
+}
+
+interface Voucher {
+    id: string;
+    brandLogo: string | null;
+    brand: string;
+    description: string;
+    expirationDate: Date;
+    quantityAvailable: number;
+    code: string;
+}
+
+interface UserVoucher {
+    id: string; // UUID type
+    userId: string;
+    voucherId: string;
+}
+
 export default function Ranking() {
-    const [formData, setFormData] = useState<FormData[]>([]);
+    const [originalFormData, setOriginalFormData] = useState<FormData[]>([]);
+    const [filteredFormData, setFilteredFormData] = useState<FormData[]>([]);
     const [userData, setUserData] = useState<User[]>([]);
     const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
         column: "avgBill",
@@ -32,12 +56,15 @@ export default function Ranking() {
     const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState<{ email: string, name: string }>({ email: "", name: "" });
-    const [selectedFormId, setSelectedFormId] = useState<number | null>(null);
+    const [selectedFormId, setSelectedFormId] = useState<string | null>(null); // Changed to string to match UUID type
+    const [townCouncils, setTownCouncils] = useState<string[]>([]);
+    const [selectedTownCouncil, setSelectedTownCouncil] = useState<string>("");
+    const [top3Users, setTop3Users] = useState<FormDataWithUser[]>([]);
 
+    // Fetch data on component mount
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Fetch form data
                 const formResponse = await instance.get<FormData[]>(`${config.serverAddress}/hbcform`);
                 const processedFormData = formResponse.data.map((data) => ({
                     ...data,
@@ -46,19 +73,57 @@ export default function Ranking() {
                     totalBill: Number(data.totalBill),
                     avgBill: Number(data.avgBill),
                 }));
-                setFormData(processedFormData);
+                setOriginalFormData(processedFormData);
+                setFilteredFormData(processedFormData);
 
-                // Fetch user data
                 const userResponse = await instance.get<User[]>(`${config.serverAddress}/users/all`);
                 setUserData(userResponse.data);
+
+                const townCouncilsResponse = await instance.get(`${config.serverAddress}/users/town-councils-metadata`);
+                setTownCouncils(JSON.parse(townCouncilsResponse.data).townCouncils);
             } catch (error) {
-                console.log("Failed to fetch data");
+                console.log("Failed to fetch data:", error);
             }
         };
 
         fetchData();
     }, []);
 
+    // Filter form data based on selected town council
+    useEffect(() => {
+        const filtered = originalFormData.filter((data) => {
+            const user = userData.find((user) => user.id === data.userId);
+            return selectedTownCouncil ? user?.townCouncil === selectedTownCouncil : true;
+        });
+        setFilteredFormData(filtered);
+    }, [selectedTownCouncil, originalFormData, userData]);
+
+    // Compute top 3 users based on average bill
+    useEffect(() => {
+        const combinedData: FormDataWithUser[] = filteredFormData.map((data) => {
+            const user = userData.find((user) => user.id === data.userId);
+            return {
+                ...data,
+                userName: user ? `${user.firstName} ${user.lastName}` : "Unknown User",
+                userEmail: user ? user.email : "Unknown Email",
+                userTownCouncil: user ? user.townCouncil : "Unknown Town Council",
+            };
+        });
+
+        const townCouncilTopUsers: Record<string, FormDataWithUser> = {};
+        combinedData.forEach((data) => {
+            if (!townCouncilTopUsers[data.userTownCouncil] || data.avgBill > townCouncilTopUsers[data.userTownCouncil].avgBill) {
+                townCouncilTopUsers[data.userTownCouncil] = data;
+            }
+        });
+
+        const topUsers = Object.values(townCouncilTopUsers);
+        const sortedTopUsers = topUsers.sort((a, b) => b.avgBill - a.avgBill).slice(0, 3);
+
+        setTop3Users(sortedTopUsers);
+    }, [filteredFormData, userData]);
+
+    // Sort form data based on descriptor
     const sortFormData = (list: FormData[], descriptor: SortDescriptor) => {
         const { column, direction } = descriptor;
 
@@ -68,7 +133,7 @@ export default function Ranking() {
             );
         }
 
-        return list; // No sorting if the column is not 'avgBill'
+        return list;
     };
 
     const handleSort = () => {
@@ -85,15 +150,15 @@ export default function Ranking() {
         return null;
     };
 
-    const sortedFormData = sortFormData(formData, sortDescriptor);
+    const sortedFormData = sortFormData(filteredFormData, sortDescriptor);
 
-    // Combine form data with user information
-    const combinedData = sortedFormData.map((data) => {
+    const combinedData: FormDataWithUser[] = sortedFormData.map((data) => {
         const user = userData.find((user) => user.id === data.userId);
         return {
             ...data,
             userName: user ? `${user.firstName} ${user.lastName}` : "Unknown User",
             userEmail: user ? user.email : "Unknown Email",
+            userTownCouncil: user ? user.townCouncil : "Unknown Town Council",
         };
     });
 
@@ -115,8 +180,7 @@ export default function Ranking() {
         }
     };
 
-
-    const handleDeleteClick = (id: number) => {
+    const handleDeleteClick = (id: string) => {
         setSelectedFormId(id);
         setIsDeleteModalOpen(true);
     };
@@ -125,7 +189,8 @@ export default function Ranking() {
         if (selectedFormId === null) return;
         try {
             await instance.delete(`${config.serverAddress}/hbcform/${selectedFormId}`);
-            setFormData(formData.filter((data) => data.id !== selectedFormId));
+            setOriginalFormData(originalFormData.filter((data) => data.id !== selectedFormId));
+            setFilteredFormData(filteredFormData.filter((data) => data.id !== selectedFormId));
             setSelectedFormId(null);
             setIsDeleteModalOpen(false);
         } catch (error) {
@@ -133,13 +198,76 @@ export default function Ranking() {
         }
     };
 
+    const fetchVouchers = async (): Promise<Voucher[]> => {
+        try {
+            const response = await instance.get(`${config.serverAddress}/vouchers`);
+            return response.data;
+        } catch (error) {
+            console.error("Failed to fetch vouchers:", error);
+            return [];
+        }
+    };
+
+    const assignVouchersToUsers = async (topUsers: FormDataWithUser[]) => {
+        try {
+            const vouchers = await fetchVouchers();
+            if (vouchers.length === 0) {
+                console.warn("No vouchers available");
+                return;
+            }
+
+            const randomVoucher = (vouchers: Voucher[]) => vouchers[Math.floor(Math.random() * vouchers.length)];
+
+            for (const user of topUsers) {
+                const voucher = randomVoucher(vouchers);
+                if (voucher) {
+                    await instance.post(`${config.serverAddress}/user-vouchers`, {
+                        userId: user.userId,
+                        voucherId: voucher.id,
+                    });
+                }
+            }
+        } catch (error) {
+            console.error("Failed to assign vouchers:", error);
+        }
+    };
+
+    const handleGiveVouchers = async () => {
+        try {
+            await assignVouchersToUsers(top3Users);
+            console.log("Vouchers assigned successfully");
+        } catch (error) {
+            console.error("Failed to give vouchers:", error);
+        }
+    };
+
+
     return (
         <section className="flex flex-col items-center justify-center py-5">
-            <p className="text-xl font-bold">Form Data</p>
+            <div className="flex justify-between w-full">
+                <p className="text-xl font-bold">Form Data</p>
+                {top3Users.length > 0 && (
+                    <Button color="primary" onPress={handleGiveVouchers}>
+                        Give Vouchers
+                    </Button>
+                )}
+            </div>
             <div className="gap-8 p-8">
+                {townCouncils.length > 0 && (
+                    <select
+                        value={selectedTownCouncil}
+                        onChange={(e) => setSelectedTownCouncil(e.target.value)}
+                    >
+                        <option value="">All locations</option>
+                        {townCouncils.map((townCouncil) => (
+                            <option key={townCouncil} value={townCouncil}>
+                                {townCouncil}
+                            </option>
+                        ))}
+                    </select>
+                )}
                 <Table aria-label="Form Data Table">
                     <TableHeader>
-                        <TableColumn>User ID</TableColumn>
                         <TableColumn>User Name</TableColumn>
                         <TableColumn>User Email</TableColumn>
                         <TableColumn>Electrical Bill</TableColumn>
@@ -155,7 +283,6 @@ export default function Ranking() {
                     <TableBody>
                         {combinedData.map((data) => (
                             <TableRow key={data.id}>
-                                <TableCell>{data.userId}</TableCell>
                                 <TableCell>{data.userName}</TableCell>
                                 <TableCell>{data.userEmail}</TableCell>
                                 <TableCell>${data.electricalBill.toFixed(2)}</TableCell>
@@ -182,13 +309,13 @@ export default function Ranking() {
                         <>
                             <ModalHeader className="flex flex-col gap-1">Send Email</ModalHeader>
                             <ModalBody>
-                                <p>Are you sure you want to send this email to {selectedUser.email}?</p>
+                                <p>Are you sure you want to send an email to {selectedUser.name} ({selectedUser.email})?</p>
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="danger" variant="light" onPress={onClose}>
                                     Close
                                 </Button>
-                                <Button color="danger" onPress={() => { sendEmail(); onClose(); }}>
+                                <Button color="primary" onPress={() => { sendEmail(); onClose(); }}>
                                     Send
                                 </Button>
                             </ModalFooter>
@@ -203,11 +330,11 @@ export default function Ranking() {
                         <>
                             <ModalHeader className="flex flex-col gap-1">Delete Entry</ModalHeader>
                             <ModalBody>
-                                <p>Are you sure you want to delete this entry?</p>
+                                <p>Are you sure you want to delete this form entry?</p>
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="danger" variant="light" onPress={onClose}>
-                                    Cancel
+                                    Close
                                 </Button>
                                 <Button color="danger" onPress={() => { deleteForm(); onClose(); }}>
                                     Delete

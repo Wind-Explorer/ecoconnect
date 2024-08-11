@@ -34,6 +34,7 @@ import ManageVoucherPage from "./pages/ManageVoucherPage";
 import CreateVoucherPage from "./pages/CreateVoucherPage";
 import EditVoucherPage from "./pages/EditVoucherPage";
 import FeedbackPage from "./pages/FeedbackPage";
+import UserVouchersPage from "./pages/UserVouchersPage";
 import ManageFeedbacksPage from "./pages/ManageFeedbacksPage";
 import TagManagement from "./pages/TagManagement";
 
@@ -78,6 +79,8 @@ function App() {
               <Route element={<EditPostPage />} path="edit/:id" />
             </Route>
           </Route>
+
+          <Route element={<UserVouchersPage />} path="user-voucher" />
 
           {/* Special (Restricted) Routes */}
           <Route element={<RestrictedLayout />}>

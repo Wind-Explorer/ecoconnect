@@ -104,17 +104,26 @@ export default function ManageVoucherPage() {
                 <div className="flex flex-col gap-8">
                     <Table aria-label="Voucher Table">
                         <TableHeader>
+                            <TableColumn>Brand Logo</TableColumn>
                             <TableColumn>Brand</TableColumn>
                             <TableColumn>Description</TableColumn>
                             <TableColumn>Expiration Date</TableColumn>
                             <TableColumn>Quantity Available</TableColumn>
                             <TableColumn>Code</TableColumn>
-                            <TableColumn>Brand Logo</TableColumn>
                             <TableColumn>Actions</TableColumn>
                         </TableHeader>
                         <TableBody>
                             {voucherList.map((voucher) => (
                                 <TableRow key={voucher.id}>
+                                    <TableCell>
+                                        {brandLogoUrls[voucher.id] && (
+                                            <img
+                                                src={brandLogoUrls[voucher.id]}
+                                                alt={voucher.brand}
+                                                style={{ width: "50px", height: "50px" }}
+                                            />
+                                        )}
+                                    </TableCell>
                                     <TableCell>{voucher.brand}</TableCell>
                                     <TableCell>{voucher.description}</TableCell>
                                     <TableCell>
@@ -122,15 +131,6 @@ export default function ManageVoucherPage() {
                                     </TableCell>
                                     <TableCell>{voucher.quantityAvailable}</TableCell>
                                     <TableCell>{voucher.code}</TableCell>
-                                    <TableCell>
-                                        {brandLogoUrls[voucher.id] && (
-                                            <img
-                                                src={brandLogoUrls[voucher.id]}
-                                                alt={voucher.brand}
-                                                style={{ width: "75px", height: "60px" }}
-                                            />
-                                        )}
-                                    </TableCell>
                                     <TableCell>
                                         <Button
                                             isIconOnly

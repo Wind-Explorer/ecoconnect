@@ -46,6 +46,9 @@ app.use("/vouchers", vouchers);
 const feedback = require("./routes/feedback.js");
 app.use("/feedback", feedback)
 
+const uservoucher = require("./routes/uservoucher.js");
+app.use("/user-vouchers", uservoucher);
+
 db.sequelize
   .sync({ alter: true })
   .then(() => {
