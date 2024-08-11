@@ -167,7 +167,7 @@ export default function UsersManagement() {
                         </div>
                       ) : columnKey == "isArchived" ? (
                         getKeyValue(userEntry, columnKey) ? (
-                          "Archived"
+                          "Inactive"
                         ) : (
                           "Active"
                         )
