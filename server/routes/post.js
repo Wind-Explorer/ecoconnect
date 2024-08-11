@@ -258,7 +258,7 @@ router.delete("/:id", async (req, res) => {
     where: { id: id },
   });
   if (num == 1) {
-    // destry() returns no. of rows affected, that's why if num == 1
+    // destroy() returns no. of rows affected, that's why if num == 1
     res.json({
       message: "Post was deleted successfully.",
     });
@@ -316,5 +316,40 @@ router.get("/:id/getComments", async (req, res) => {
   }
   res.json(comments);
 });
+
+router.get("/tags/all", async (req, res) => {
+  // Check id not found
+  let tags = await Tag.findAll();
+  if (!tags) {
+    res.sendStatus(404);
+    return;
+  }
+  res.json(tags);
+})
+
+router.delete("/tags/:id", async (req, res) => {
+  let id = req.params.id;
+  // Check id not found
+  let tag = await Tag.findByPk(id);
+  if (!tag) {
+    res.sendStatus(404);
+    return;
+  }
+  let num = await Tag.destroy({
+    // destroy() deletes data based on the where condition, and returns the number of rows affected
+    where: { id: id },
+  });
+
+  if (num == 1) {
+    // destroy() returns no. of rows affected, that's why if num == 1
+    res.json({
+      message: "Tag was deleted successfully.",
+    });
+  } else {
+    res.status(400).json({
+      message: `Cannot delete tag with id ${id}.`,
+    });
+  }
+})
 
 module.exports = router;

@@ -35,6 +35,8 @@ import CreateVoucherPage from "./pages/CreateVoucherPage";
 import EditVoucherPage from "./pages/EditVoucherPage";
 import FeedbackPage from "./pages/FeedbackPage";
 import ManageFeedbacksPage from "./pages/ManageFeedbacksPage";
+import TagManagement from "./pages/TagManagement";
+
 
 function App() {
   return (
@@ -122,6 +124,7 @@ function App() {
 
           <Route path="community-posts">
             <Route index element={<CommunityPostManagement />} />
+            <Route path="manage-tag" element={<TagManagement />} />
           </Route>
         </Route>
       </Route>

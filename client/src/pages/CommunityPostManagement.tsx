@@ -181,7 +181,7 @@ export default function CommunityPostManagement() {
                                 onClick={() =>
                                   handleCopyID(item.postId, item.title)
                                 }
-                                aria-label="Copy postId, title"
+                                aria-label="Copy postId"
                               >
                                 <ClipboardDocumentIcon />
                               </Button>

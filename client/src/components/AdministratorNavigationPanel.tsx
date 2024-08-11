@@ -157,7 +157,7 @@ export default function AdministratorNavigationPanel() {
                       <AdministratorNavigationPanelNavigationButton
                         text="Tags"
                         icon={<TagIcon />}
-                        onClickRef="#"
+                        onClickRef="community-posts/manage-tag"
                       />
                     </div>
                     <div>
