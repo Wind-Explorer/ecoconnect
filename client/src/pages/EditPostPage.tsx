@@ -10,6 +10,7 @@ import config from "../config";
 import instance from "../security/http";
 import { ArrowUTurnLeftIcon } from "../icons";
 import InsertPostImage from "../components/InsertPostImage";
+import TagInput from "../components/TagInput";
 
 const validationSchema = Yup.object({
   title: Yup.string()
@@ -36,6 +37,7 @@ const validationSchema = Yup.object({
 function EditPostPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [tags, setTags] = useState<string[]>([]);
   const [post, setPost] = useState({
     title: "",
     content: "",
@@ -45,27 +47,67 @@ function EditPostPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    instance.get(config.serverAddress + `/post/${id}`).then((res) => {
-      setPost({
-        ...res.data,
-        postImage: `${config.serverAddress}/post/post-image/${id}`, // Set image URL
-      });
-      setLoading(false);
-    });
+    async function fetchPost() {
+      try {
+        const response = await instance.get(`${config.serverAddress}/post/${id}`);
+        const postData = response.data;
+        console.log("Fetched data: ", postData)
+        console.log("postData.tags data: ", postData.Tags);
+
+        if (postData && postData.Tags) {
+          // Adjust the structure according to the actual shape of tagObject
+          const postTags = postData.Tags.map((tagObject: any) => {
+            console.log("Tag Object: ", tagObject); // Debug each tagObject
+            return tagObject.tag; // Adjust according to actual key
+          });
+
+          setTags(postTags);
+          console.log("postTags:", postTags);
+
+        } else {
+          console.log("postData.Tags is not available or is undefined");
+        }
+
+        // Set the post data including other fields
+        setPost({
+          ...postData,
+          postImage: postData.postImage ? `${config.serverAddress}/post/post-image/${id}` : null,
+          tags: tags,
+        });
+
+      } catch (error) {
+        console.error("Error fetching post data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchPost();
   }, [id]);
+
+
+  useEffect(() => {
+    console.log("Tags updated: ", tags);
+  }, [tags]);
 
   const handleSubmit = async (
     values: any,
-    { setSubmitting, resetForm, setFieldError }: any
+    { setSubmitting, resetForm, setFieldError, setFieldValue }: any
   ) => {
     try {
       const formData = new FormData();
       formData.append("title", values.title);
       formData.append("content", values.content);
-      if (values.postImage) {
+      // Append postImage only if it exists
+
+      console.log(values.postImage instanceof File); // Should be true if it's a File
+
+      if (values.postImage && values.postImage instanceof File) {
         formData.append("postImage", values.postImage);
       }
-      formData.append("tags", values.tags);
+      formData.append("tags", JSON.stringify(tags)); // This sends tags as a JSON string
+
+      console.log("Updating formData:", formData);
 
       const response = await instance.put(
         config.serverAddress + `/post/${id}`,
@@ -76,7 +118,8 @@ function EditPostPage() {
       if (response.status === 200) {
         console.log("Post updated successfully:", response.data);
         resetForm();
-        // Set a flag to indicate a refresh is needed
+        setTags([]);
+        setFieldValue("postImage", null);
         navigate(-1);
       } else {
         console.error("Error updating post:", response.statusText);
@@ -107,11 +150,11 @@ function EditPostPage() {
       <section className="w-8/12 mx-auto p-5 bg-primary-100 border border-none rounded-2xl">
         {!loading && (
           <Formik
-            initialValues={post}
+            initialValues={{ ...post, tags: tags || [] }}
             validationSchema={validationSchema}
             onSubmit={handleSubmit}
           >
-            {({ isValid, dirty, isSubmitting, setFieldValue }) => (
+            {({ isValid, dirty, isSubmitting, setFieldValue, values }) => (
               <Form className="flex flex-col gap-5">
                 <div>
                   <NextUIFormikInput
@@ -130,12 +173,12 @@ function EditPostPage() {
                   />
                 </div>
                 <div>
-                  <NextUIFormikInput
-                    label="Tags (Optional)"
-                    name="tags"
-                    type="text"
-                    placeholder="Enter tags"
-                    labelPlacement="inside"
+                  <TagInput
+                    tags={tags}
+                    setTags={(newTags) => {
+                      setTags(newTags);
+                      setFieldValue("tags", newTags); // Update Formik's state
+                    }}
                   />
                 </div>
                 <div className="text-sm">

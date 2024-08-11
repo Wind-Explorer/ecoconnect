@@ -37,7 +37,7 @@ interface Post {
   title: string;
   postImage: Blob;
   content: string;
-  tags: string;
+  Tags: Tag[];
   id: string;
   userId: string;
 }
@@ -47,6 +47,11 @@ type User = {
   firstName: string;
   lastName: string;
 };
+
+interface Tag {
+  id: string;
+  tag: string;
+}
 
 export default function CommunityPage() {
   const navigate = useNavigate();
@@ -81,8 +86,8 @@ export default function CommunityPage() {
     );
   }
 
-  const getPosts = () => {
-    instance.get(config.serverAddress + "/post").then((res) => {
+  const getPosts = async () => {
+    await instance.get(config.serverAddress + "/post").then((res) => {
       setCommunityList(res.data);
     });
   };
@@ -267,8 +272,13 @@ export default function CommunityPage() {
                     </div>
                     <div className="flex flex-col gap-2">
                       <div className="flex flex-row gap-2">
-                        <Chip>Tag 1</Chip>
-                        <Chip>Tag 2</Chip>
+                        {post.Tags.length > 0 ? (
+                          post.Tags.map((tag) => (
+                            <Chip key={tag.id}>{tag.tag}</Chip>
+                          ))
+                        ) : (
+                          <p></p>
+                        )}
                       </div>
                       <div className="flex flex-row">
                         <Button

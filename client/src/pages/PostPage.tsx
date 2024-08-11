@@ -32,7 +32,7 @@ interface Post {
   title: string;
   postImage: Blob;
   content: string;
-  tags: string;
+  Tags: Tag[];
   id: string;
   userId: string;
 }
@@ -42,6 +42,11 @@ type User = {
   firstName: string;
   lastName: string;
 };
+
+interface Tag {
+  id: string;
+  tag: string;
+}
 
 const PostPage: React.FC = () => {
   const navigate = useNavigate();
@@ -207,8 +212,13 @@ const PostPage: React.FC = () => {
                   </div>
                   <div className="flex flex-col gap-2">
                     <div className="flex flex-row gap-2">
-                      <Chip>Tag 1</Chip>
-                      <Chip>Tag 2</Chip>
+                      {post.Tags.length > 0 ? (
+                        post.Tags.map((tag) => (
+                          <Chip key={tag.id}>{tag.tag}</Chip>
+                        ))
+                      ) : (
+                        <p></p>
+                      )}
                     </div>
                     <div className="flex flex-row">
                       <Button variant="light" isIconOnly>

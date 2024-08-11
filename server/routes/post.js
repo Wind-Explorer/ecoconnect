@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { Post, Comment, User } = require("../models");
+const { Post, Comment, User, Tag, PostTag } = require("../models");
 const { Op, where } = require("sequelize");
 const yup = require("yup");
 const multer = require("multer");
@@ -35,6 +35,7 @@ router.post(
   async (req, res) => {
     let data = req.body;
     let files = req.files;
+    let tags = req.body.tags ? JSON.parse(req.body.tags) : [];
 
     // Validate request body
     let validationSchema = yup.object({
@@ -74,6 +75,15 @@ router.post(
 
       // Process valid data
       let result = await Post.create({ ...data, postImage });
+
+      // Handle tags
+      for (let tagName of tags) {
+        let [tag, created] = await Tag.findOrCreate({
+          where: { tag: tagName },
+        });
+        await result.addTag(tag); // Associate the tag with the post
+      }
+
       res.json(result);
     } catch (err) {
       res.status(400).json({ errors: err.errors });
@@ -94,6 +104,13 @@ router.get("/", async (req, res) => {
   let condition = {
     where: {},
     order: [["createdAt", "DESC"]],
+    include: [
+      {
+        model: Tag,
+        through: { attributes: [] }, // Exclude attributes from the join table
+        attributes: ["id", "tag"], // Fetch only 'id' and 'tag' attributes
+      },
+    ],
   };
 
   let search = req.query.search;
@@ -112,7 +129,15 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   let id = req.params.id;
-  let post = await Post.findByPk(id);
+  let post = await Post.findByPk(id, {
+    include: [
+      {
+        model: Tag,
+        through: { attributes: [] }, // Exclude attributes from the join table
+        attributes: ["id", "tag"], // Fetch only 'id' and 'tag' attributes
+      },
+    ],
+  });
 
   if (!post) {
     res.sendStatus(404);
@@ -146,6 +171,8 @@ router.put(
   async (req, res) => {
     let id = req.params.id;
     let files = req.files;
+    let data = req.body;
+    let tags = req.body.tags ? JSON.parse(req.body.tags) : [];
 
     // Check id not found
     let post = await Post.findByPk(id);
@@ -154,15 +181,13 @@ router.put(
       return;
     }
 
-    let data = req.body;
-    let postImage = files.postImage ? files.postImage[0].buffer : null;
-
     // Validate request body
     let validationSchema = yup.object({
-      title: yup.string().trim().min(3).max(100),
-      content: yup.string().trim().min(3).max(500),
+      title: yup.string().trim().min(3).max(200).required(),
+      content: yup.string().trim().min(3).max(500).required(),
       postImage: yup.mixed(),
     });
+
     try {
       data = await validationSchema.validate(data, { abortEarly: false });
 
@@ -179,6 +204,7 @@ router.put(
         });
       }
 
+      let postImage = files.postImage ? files.postImage[0].buffer : null;
       // Include the postImage if present 
       if (postImage) {
         postImage = await sharp(postImage)
@@ -192,11 +218,20 @@ router.put(
         data.postImage = postImage;
       }
 
-      // Process valid data
-      let post = await Post.update(data, {
-        // update() updates data based on the where condition, and returns the number of rows affected
-        where: { id: id }, // If num equals 1, return OK, otherwise return Bad Request
-      });
+      // Update post data
+      await post.update(data);
+
+      // Clear existing tags
+      await post.setTags([]);
+
+      // Handle tags
+      for (let tagName of tags) {
+        let [tag, created] = await Tag.findOrCreate({
+          where: { tag: tagName },
+        });
+        await post.addTag(tag); // Associate the tag with the post
+      }
+
       if (post) {
         res.json({ message: "Post was updated successfully." });
       } else {

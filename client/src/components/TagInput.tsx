@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { Button, input } from "@nextui-org/react";
+import { Button } from "@nextui-org/react";
 import NextUIFormikTagInput from "./NextUIFormikTagInput";
 
 type TagInputProps = {
     tags: string[];
-    setTags: React.Dispatch<React.SetStateAction<string[]>>;
+    setTags: (tags: string[]) => void;
 };
 
 const TagInput: React.FC<TagInputProps> = ({ tags, setTags }) => {

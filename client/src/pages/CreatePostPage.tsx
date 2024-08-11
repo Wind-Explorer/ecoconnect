@@ -71,8 +71,7 @@ function CreatePostPage() {
       if (values.postImage) {
         formData.append("postImage", values.postImage);
       }
-      // formData.append("tags", values.tags);
-      formData.append("tags", tags.join(","));
+      formData.append("tags", JSON.stringify(tags));
       formData.append("userId", userId || ""); // Ensure userId is appended to formData
 
       console.log("Submitting formData:", formData);
