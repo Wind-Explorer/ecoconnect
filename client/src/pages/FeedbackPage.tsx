@@ -30,7 +30,7 @@ export default function FeedbackPage() {
     comment: Yup.string()
       .trim()
       .min(1)
-      .max(1024)
+      .max(2048)
       .required("Enter your comments."),
     allowContact: Yup.boolean().oneOf([true, false], "please decide"),
   });

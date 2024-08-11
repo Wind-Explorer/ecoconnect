@@ -34,6 +34,7 @@ import ManageVoucherPage from "./pages/ManageVoucherPage";
 import CreateVoucherPage from "./pages/CreateVoucherPage";
 import EditVoucherPage from "./pages/EditVoucherPage";
 import FeedbackPage from "./pages/FeedbackPage";
+import ManageFeedbacksPage from "./pages/ManageFeedbacksPage";
 
 function App() {
   return (
@@ -91,6 +92,7 @@ function App() {
         <Route path="/admin" element={<AdministratorLayout />}>
           <Route index element={<AdministratorSpringboard />} />
           <Route path="manage-account" element={<ManageUserAccountPage />} />
+          <Route path="manage-feedbacks" element={<ManageFeedbacksPage />} />
           <Route path="users-management">
             <Route index element={<UsersManagement />} />
           </Route>

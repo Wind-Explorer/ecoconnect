@@ -2,14 +2,14 @@ const express = require("express");
 const router = express.Router();
 const yup = require("yup");
 const { validateToken } = require("../middlewares/auth");
-const {Feedback} = require("../models");
+const { Feedback } = require("../models");
 
 let validationSchema = yup.object({
   userId: yup.string().trim().min(36).max(36).required(),
   feedbackCategory: yup.number().min(0).max(2).required(),
   allowContact: yup.boolean().required(),
   subject: yup.string().trim().min(1).max(100).required(),
-  comment: yup.string().trim().min(1).max(100).required(),
+  comment: yup.string().trim().min(1).max(2048).required(),
 });
 
 router.get("/all", validateToken, async (req, res) => {
@@ -53,6 +53,23 @@ router.post("/", validateToken, async (req, res) => {
   } catch (err) {
     console.log("Error caught! Info: " + err);
     res.status(400).json({ errors: err.errors });
+  }
+});
+
+router.delete("/:id", validateToken, async (req, res) => {
+  let id = req.params.id;
+
+  try {
+    let result = await Feedback.destroy({ where: { id } });
+
+    if (result === 0) {
+      res.sendStatus(404);
+    } else {
+      res.sendStatus(204);
+    }
+  } catch (err) {
+    console.log("Error caught! Info: " + err);
+    res.status(500).json({ error: "An error occurred while deleting the feedback." });
   }
 });
 

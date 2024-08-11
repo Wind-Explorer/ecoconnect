@@ -63,8 +63,9 @@ export default function AdministratorNavigationPanel() {
   return (
     <div className="h-full">
       <div
-        className={`fixed transition-all ${isScrolled ? "top-2" : "top-10"
-          } left-2`}
+        className={`fixed transition-all ${
+          isScrolled ? "top-2" : "top-10"
+        } left-2`}
       >
         <div className="bg-white rounded-full z-40">
           <Button
@@ -85,17 +86,20 @@ export default function AdministratorNavigationPanel() {
 
       {/* Panel */}
       <div
-        className={`h-full transition-all z-50 ${panelVisible
-          ? "scale-100 opacity-100 w-[300px] px-2"
-          : "w-0 scale-[98%] opacity-0 px-0"
-          }`}
+        className={`h-full transition-all z-50 ${
+          panelVisible
+            ? "scale-100 opacity-100 w-[300px] px-2"
+            : "w-0 scale-[98%] opacity-0 px-0"
+        }`}
       ></div>
       <div
-        className={`fixed h-full transition-all z-50 ${isScrolled ? "pb-2 -mt-8" : "pb-10"
-          } ${panelVisible
+        className={`fixed h-full transition-all z-50 ${
+          isScrolled ? "pb-2 -mt-8" : "pb-10"
+        } ${
+          panelVisible
             ? "scale-100 opacity-100 w-[300px] p-2"
             : "w-0 scale-[98%] opacity-0 p-0"
-          }`}
+        }`}
       >
         <Card className="h-full w-full">
           <div className="flex flex-col h-full">
@@ -196,7 +200,7 @@ export default function AdministratorNavigationPanel() {
                       <AdministratorNavigationPanelNavigationButton
                         text="Feedbacks"
                         icon={<ChatBubbleOvalLeftIcon />}
-                        onClickRef="#"
+                        onClickRef="manage-feedbacks"
                       />
                     </div>
                   </div>

@@ -27,7 +27,7 @@ module.exports = (sequelize) => {
         allowNull: false,
       },
       comment: {
-        type: DataTypes.STRING(1024),
+        type: DataTypes.STRING(2048),
         allowNull: false,
       },
     },
