@@ -11,13 +11,10 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 router.get("/", async (req, res) => {
   try {
-    // Extract filter criteria from query parameters
     const { category, townCouncil, time } = req.query;
 
-    // Log incoming parameters
     console.log("Filter Parameters:", { category, townCouncil, time });
 
-    // Map time to category
     const timeToCategory = (time) => {
       if (!time) return null;
       const hour = new Date(time).getHours();
@@ -26,19 +23,15 @@ router.get("/", async (req, res) => {
       return "Evening";
     };
 
-    // Convert the time query parameter to a category
     const timeCategory = timeToCategory(time);
 
-    // Construct the filter object
     let filter = {};
     if (category) filter.category = category;
     if (townCouncil) filter.townCouncil = townCouncil;
     if (timeCategory) filter.timeCategory = timeCategory;
 
-    // Log constructed filter object
     console.log("Constructed Filter Object:", filter);
 
-    // Fetch filtered events from the database
     const filteredEvents = await Events.findAll({
       attributes: { exclude: ["evtPicture"] },
       where: {
@@ -50,7 +43,6 @@ router.get("/", async (req, res) => {
       },
     });
 
-    // Respond with the filtered events
     res.json(filteredEvents);
   } catch (error) {
     console.error("Error fetching events:", error);
@@ -63,7 +55,7 @@ router.post(
   upload.fields([{ name: "evtPicture", maxCount: 1 }]),
   async (req, res) => {
     let data = req.body;
-    let files = req.files; // Log incoming data
+    let files = req.files;
 
     let validationSchema = yup.object({
       title: yup.string().trim().min(3).max(100).required(),
@@ -78,7 +70,6 @@ router.post(
     try {
       data = await validationSchema.validate(data, { abortEarly: false });
 
-      // Process valid data
       let evtPicture = files.evtPicture ? files.evtPicture[0].buffer : null;
 
       if (evtPicture) {
@@ -89,7 +80,7 @@ router.post(
 
       res.json(result);
     } catch (err) {
-      console.error("Validation error:", err); // Log the validation error
+      console.error("Validation error:", err);
       res.status(400).json({ errors: err.errors });
     }
   }
@@ -112,7 +103,7 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   const id = req.params.id;
   const event = await Events.findByPk(id, {
-    attributes: { exclude: ["evtPicture"] },
+    attributes: { exclude: [] }, // Exclude evtPicture only if you don't want to include it
   });
   if (!event) {
     res.sendStatus(404);
@@ -123,24 +114,30 @@ router.get("/:id", async (req, res) => {
 
 router.get("/evtPicture/:id", async (req, res) => {
   let id = req.params.id;
-  let events = await Events.findByPk(id);
-
-  if (!events || !events.evtPicture) {
-    res.sendStatus(404);
-    return;
-  }
-
   try {
+    let events = await Events.findByPk(id);
+
+    if (!events || !events.evtPicture) {
+      res.sendStatus(404);
+      return;
+    }
+
     res.set("Content-Type", "image/jpeg");
     res.send(events.evtPicture);
   } catch (err) {
+    console.error("Error retrieving image:", err);
     res.status(500).json({ message: "Error retrieving image", error: err });
   }
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", upload.fields([{ name: "evtPicture", maxCount: 1 }]), async (req, res) => {
   const id = req.params.id;
   let data = req.body;
+  let files = req.files;
+
+  console.log("Received PUT request to update event with ID:", id);
+  console.log("Data received for update:", data);
+
   const validationSchema = yup.object({
     title: yup.string().trim().min(3).max(100),
     description: yup.string().trim().min(3).max(500),
@@ -153,16 +150,54 @@ router.put("/:id", async (req, res) => {
 
   try {
     data = await validationSchema.validate(data, { abortEarly: false });
+    console.log("Data after validation:", data);
+
+    const event = await Events.findByPk(id);
+    if (!event) {
+      console.log("Event not found with ID:", id);
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    let evtPicture = files.evtPicture ? files.evtPicture[0].buffer : null;
+
+    if (evtPicture) {
+      evtPicture = await sharp(evtPicture).resize(800, 600).jpeg().toBuffer();
+      data.evtPicture = evtPicture; // Add the processed image to the update data
+    }
+
+    await Events.update(data, { where: { id: id } });
+    console.log("Event updated successfully with ID:", id);
+
+    res.json({ message: "Event updated successfully" });
+  } catch (err) {
+    console.error("Error during event update:", err);
+    res.status(400).json({ errors: err.errors });
+  }
+});
+
+router.post("/register/:id", async (req, res) => {
+  const id = req.params.id;
+  let data = req.body;
+
+  // Assuming you're associating registration data with an event
+  try {
     const event = await Events.findByPk(id);
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
     }
+
+    // Process registration data (e.g., save to a Registration table or similar)
+    // Here we assume that you might just be updating the event for simplicity
+    // Modify this logic as needed based on your actual requirements
     await Events.update(data, { where: { id: id } });
-    res.json({ message: "Event updated successfully" });
+
+    res.json({ message: "Registration successful" });
   } catch (err) {
+    console.error("Error during registration:", err);
     res.status(400).json({ errors: err.errors });
   }
 });
+
 
 router.delete("/:id", async (req, res) => {
   const id = req.params.id;
