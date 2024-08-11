@@ -33,7 +33,7 @@ import CommunityPostManagement from "./pages/CommunityPostManagement";
 import ManageVoucherPage from "./pages/ManageVoucherPage";
 import CreateVoucherPage from "./pages/CreateVoucherPage";
 import EditVoucherPage from "./pages/EditVoucherPage";
-
+import FeedbackPage from "./pages/FeedbackPage";
 
 function App() {
   return (
@@ -83,6 +83,7 @@ function App() {
               element={<ResetPasswordPage />}
               path="reset-password/:token"
             />
+            <Route element={<FeedbackPage />} path="feedback" />
           </Route>
         </Route>
 

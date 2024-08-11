@@ -1,6 +1,7 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import EcoconnectFullLogo from "../components/EcoconnectFullLogo";
 import { Button, Card } from "@nextui-org/react";
+import { Toaster } from "react-hot-toast";
 
 export default function RestrictedLayout() {
   const navigate = useNavigate();
@@ -29,6 +30,7 @@ export default function RestrictedLayout() {
           </div>
         </div>
       </div>
+      <Toaster />
     </div>
   );
 }

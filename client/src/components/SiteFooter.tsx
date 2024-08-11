@@ -1,12 +1,22 @@
 import { Button, Link } from "@nextui-org/react";
+import { useNavigate } from "react-router-dom";
 
 export default function SiteFooter() {
+  const navigate = useNavigate();
   return (
     <div className="bg-black text-white p-8">
       <div className="flex flex-col text-center *:mx-auto gap-16">
         <div className="flex flex-col gap-4 *:mx-auto">
           <p className="text-2xl font-bold">Have a question?</p>
-          <Button color="primary" variant="solid" className="px-24" size="lg">
+          <Button
+            color="primary"
+            variant="solid"
+            className="px-24"
+            size="lg"
+            onPress={() => {
+              navigate("/feedback");
+            }}
+          >
             Get in touch with us
           </Button>
         </div>
