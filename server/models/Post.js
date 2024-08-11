@@ -21,11 +21,19 @@ module.exports = (sequelize, DataTypes) => {
         userId: {
             type: DataTypes.UUID,
             allowNull: false,
-          },
+        },
     }, {
         tableName: 'posts',
         timestamps: true,
     });
-    
+
+    Post.associate = (models) => {
+        Post.belongsToMany(models.Tag, {
+            through: models.PostTag,
+            foreignKey: 'postId',
+            otherKey: 'tagId',
+        });
+    };
+
     return Post;
-}
+};
