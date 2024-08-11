@@ -97,9 +97,9 @@ export default function ManageSchedulePage() {
     const sortedScheduleList = sortScheduleList(scheduleList, sortDescriptor);
 
     return (
-        <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-            <div className="inline-block text-center justify-center flex flex-row gap-10">
-                <p className="text-3xl font-bold">Admin Karang Guni Schedule</p>
+        <div className="flex flex-col gap-8 p-8">
+            <div className="inline-block text-center justify-between flex flex-row gap-10">
+                <p className="text-4xl font-bold">Karang Guni Schedule</p>
                 <Button
                     isIconOnly
                     color="primary"
@@ -108,7 +108,7 @@ export default function ManageSchedulePage() {
                     <PlusIcon />
                 </Button>
             </div>
-            <div className="w-full overflow-auto max-w-screen-lg">
+            <div>
                 <Table aria-label="Schedule Table">
                     <TableHeader>
                         <TableColumn>
@@ -170,7 +170,7 @@ export default function ManageSchedulePage() {
                     )}
                 </ModalContent>
             </Modal>
-        </section>
+        </div>
     )
 }
 

@@ -6,14 +6,22 @@ import NextUIFormikInput from "../components/NextUIFormikInput";
 import { NextUIFormikDatePicker } from "../components/NextUIFormikDatePicker";
 import instance from "../security/http";
 import { useEffect, useState } from "react";
+import { ArrowUTurnLeftIcon } from "../icons";
 
 // Validation schema
 const validationSchema = Yup.object({
-    brand: Yup.string().trim().required("Brand name is required"),
-    description: Yup.string().trim().required("Description is required"),
-    expirationDate: Yup.date().required("Expiry date is required"),
-    quantityAvailable: Yup.number().typeError("Must be a number").positive("Must be a positive value").required("Quantity is required"),
-    code: Yup.string().trim().required("Code is required"),
+    brand: Yup.string().trim()
+        .required("Brand name is required"),
+    description: Yup.string().trim()
+        .required("Description is required"),
+    expirationDate: Yup.date()
+        .required("Expiry date is required"),
+    quantityAvailable: Yup.number()
+        .typeError("Must be a number")
+        .positive("Must be a positive value")
+        .required("Quantity is required"),
+    code: Yup.string().trim()
+        .required("Code is required"),
 });
 
 export default function EditVoucherPage() {
@@ -74,11 +82,11 @@ export default function EditVoucherPage() {
     };
 
     return (
-        <div className="w-full h-full pb-12">
-            <div className="w-[680px] mx-auto p-6 bg-gray-100 dark:bg-gray-950 border border-primary-100 rounded-2xl">
+        <div className="w-full h-full pb-12 pt-20">
+            <div className="w-[350px] mx-auto p-6 bg-red-50 dark:bg-primary-950 border border-primary-100 rounded-2xl">
                 <div className="py-2">
-                    <Button variant="light" onPress={() => navigate(-1)}>
-                        Back
+                    <Button variant="light" isIconOnly onPress={() => navigate(-1)}>
+                        <ArrowUTurnLeftIcon />
                     </Button>
                 </div>
                 <div className="flex-grow overflow-y-auto">
@@ -90,7 +98,7 @@ export default function EditVoucherPage() {
                     >
                         {({ isValid }) => (
                             <Form className="flex flex-col gap-4">
-                                <div className="flex flex-col gap-4">
+                                <div className="flex flex-col gap-4 w-[280px]">
                                     <NextUIFormikInput
                                         label="Brand name"
                                         name="brand"

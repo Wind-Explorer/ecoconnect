@@ -88,106 +88,106 @@ export default function ManageVoucherPage() {
     };
 
     return (
-        <div className="w-full h-full">
-            <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-                <div className="flex flex-row gap-10">
-                    <p className="text-2xl font-bold">Manage Vouchers</p>
-                    <div>
-                        <Button
-                            isIconOnly
-                            onPress={() => navigate("create-voucher")}
-                        >
-                            <PlusIcon />
-                        </Button>
-                    </div>
+        <div className="flex flex-col gap-8 p-8">
+            <div className="flex flex-row justify-between gap-10">
+                <p className="text-4xl font-bold">Manage Vouchers</p>
+                <div className="flex justify-end">
+                    <Button
+                        isIconOnly
+                        onPress={() => navigate("create-voucher")}
+                        color="primary"
+                        variant="solid"
+                    >
+                        <PlusIcon />
+                    </Button>
                 </div>
-                <div className="flex flex-col gap-8">
-                    <Table aria-label="Voucher Table">
-                        <TableHeader>
-                            <TableColumn>Brand Logo</TableColumn>
-                            <TableColumn>Brand</TableColumn>
-                            <TableColumn>Description</TableColumn>
-                            <TableColumn>Expiration Date</TableColumn>
-                            <TableColumn>Quantity Available</TableColumn>
-                            <TableColumn>Code</TableColumn>
-                            <TableColumn>Actions</TableColumn>
-                        </TableHeader>
-                        <TableBody>
-                            {voucherList.map((voucher) => (
-                                <TableRow key={voucher.id}>
-                                    <TableCell>
-                                        {brandLogoUrls[voucher.id] && (
-                                            <img
-                                                src={brandLogoUrls[voucher.id]}
-                                                alt={voucher.brand}
-                                                style={{ width: "50px", height: "50px" }}
-                                            />
-                                        )}
-                                    </TableCell>
-                                    <TableCell>{voucher.brand}</TableCell>
-                                    <TableCell>{voucher.description}</TableCell>
-                                    <TableCell>
-                                        {voucher.expirationDate.toLocaleDateString()}
-                                    </TableCell>
-                                    <TableCell>{voucher.quantityAvailable}</TableCell>
-                                    <TableCell>{voucher.code}</TableCell>
-                                    <TableCell>
-                                        <Button
-                                            isIconOnly
-                                            variant="light"
-                                            color="success"
-                                            onPress={() => handleEdit(voucher.id)}>
-                                            <PencilSquareIcon />
-                                        </Button>
-                                        <Button
-                                            isIconOnly
-                                            variant="light"
-                                            color="danger"
-                                            onPress={() => handleDelete(voucher.id)}>
-                                            <TrashDeleteIcon />
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </div>
-
-                {/* Confirmation Modal for Deleting */}
-                <Modal
-                    isOpen={showConfirmDelete}
-                    onOpenChange={setShowConfirmDelete}
-                    isDismissable={false}
-                    isKeyboardDismissDisabled={true}
-                >
-                    <ModalContent>
-                        {(onClose) => (
-                            <>
-                                <ModalHeader className="flex flex-col gap-1">
-                                    Delete Voucher
-                                </ModalHeader>
-                                <ModalBody>
-                                    <p>Are you sure you want to delete this voucher?</p>
-                                </ModalBody>
-                                <ModalFooter>
-                                    <Button color="danger" variant="light" onPress={onClose}>
-                                        No
+            </div>
+            <div className="flex flex-col gap-8">
+                <Table aria-label="Voucher Table">
+                    <TableHeader>
+                        <TableColumn>Brand Logo</TableColumn>
+                        <TableColumn>Brand</TableColumn>
+                        <TableColumn>Description</TableColumn>
+                        <TableColumn>Expiration Date</TableColumn>
+                        <TableColumn>Quantity Available</TableColumn>
+                        <TableColumn>Code</TableColumn>
+                        <TableColumn>Actions</TableColumn>
+                    </TableHeader>
+                    <TableBody>
+                        {voucherList.map((voucher) => (
+                            <TableRow key={voucher.id}>
+                                <TableCell>
+                                    {brandLogoUrls[voucher.id] && (
+                                        <img
+                                            src={brandLogoUrls[voucher.id]}
+                                            alt={voucher.brand}
+                                            style={{ width: "40px", height: "40px" }}
+                                        />
+                                    )}
+                                </TableCell>
+                                <TableCell>{voucher.brand}</TableCell>
+                                <TableCell>{voucher.description}</TableCell>
+                                <TableCell>
+                                    {voucher.expirationDate.toLocaleDateString()}
+                                </TableCell>
+                                <TableCell>{voucher.quantityAvailable}</TableCell>
+                                <TableCell>{voucher.code}</TableCell>
+                                <TableCell>
+                                    <Button
+                                        isIconOnly
+                                        variant="light"
+                                        color="success"
+                                        onPress={() => handleEdit(voucher.id)}>
+                                        <PencilSquareIcon />
                                     </Button>
                                     <Button
+                                        isIconOnly
+                                        variant="light"
                                         color="danger"
-                                        onPress={() => {
-                                            deleteVoucher();
-                                            onClose();
-                                        }}
-                                    >
-                                        Yes
+                                        onPress={() => handleDelete(voucher.id)}>
+                                        <TrashDeleteIcon />
                                     </Button>
-                                </ModalFooter>
-                            </>
-                        )}
-                    </ModalContent>
-                </Modal>
-            </section>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </div>
+
+            {/* Confirmation Modal for Deleting */}
+            <Modal
+                isOpen={showConfirmDelete}
+                onOpenChange={setShowConfirmDelete}
+                isDismissable={false}
+                isKeyboardDismissDisabled={true}
+            >
+                <ModalContent>
+                    {(onClose) => (
+                        <>
+                            <ModalHeader className="flex flex-col gap-1">
+                                Delete Voucher
+                            </ModalHeader>
+                            <ModalBody>
+                                <p>Are you sure you want to delete this voucher?</p>
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button color="danger" variant="light" onPress={onClose}>
+                                    No
+                                </Button>
+                                <Button
+                                    color="danger"
+                                    onPress={() => {
+                                        deleteVoucher();
+                                        onClose();
+                                    }}
+                                >
+                                    Yes
+                                </Button>
+                            </ModalFooter>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
         </div>
     );
 }

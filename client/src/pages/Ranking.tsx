@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import config from '../config';
 import instance from '../security/http';
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, SortDescriptor, Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@nextui-org/react';
-import { EmailIcon, TrashDeleteIcon } from '../icons';
+import { EmailIcon, ImageIcon, TrashDeleteIcon } from '../icons';
+import NextUIFormikSelect2 from '../components/NextUIFormikSelect2';
 
 interface User {
     id: string;
@@ -125,29 +126,13 @@ export default function Ranking() {
 
     // Sort form data based on descriptor
     const sortFormData = (list: FormData[], descriptor: SortDescriptor) => {
-        const { column, direction } = descriptor;
+        const { column } = descriptor;
 
         if (column === "avgBill") {
-            return [...list].sort((a, b) =>
-                direction === "ascending" ? a.avgBill - b.avgBill : b.avgBill - a.avgBill
-            );
+            return [...list].sort((a, b) => a.avgBill - b.avgBill);
         }
 
         return list;
-    };
-
-    const handleSort = () => {
-        const { direction } = sortDescriptor;
-        const newDirection = direction === "ascending" ? "descending" : "ascending";
-
-        setSortDescriptor({ column: "avgBill", direction: newDirection });
-    };
-
-    const renderSortIndicator = () => {
-        if (sortDescriptor.column === "avgBill") {
-            return sortDescriptor.direction === "ascending" ? <span>&uarr;</span> : <span>&darr;</span>;
-        }
-        return null;
     };
 
     const sortedFormData = sortFormData(filteredFormData, sortDescriptor);
@@ -161,6 +146,14 @@ export default function Ranking() {
             userTownCouncil: user ? user.townCouncil : "Unknown Town Council",
         };
     });
+
+    const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+    const [modalImageUrl, setModalImageUrl] = useState<string | null>(null);
+
+    const handleImageClick = (imageUrl: string) => {
+        setModalImageUrl(imageUrl);
+        setIsImageModalOpen(true);
+    };
 
     const handleEmailClick = (email: string, name: string) => {
         setSelectedUser({ email, name });
@@ -241,58 +234,76 @@ export default function Ranking() {
         }
     };
 
+    const handleTownCouncilChange = (value: string) => {
+        setSelectedTownCouncil(value);
+    };
 
     return (
-        <section className="flex flex-col items-center justify-center py-5">
-            <div className="flex justify-between w-full">
-                <p className="text-xl font-bold">Form Data</p>
-                {top3Users.length > 0 && (
-                    <Button color="primary" onPress={handleGiveVouchers}>
-                        Give Vouchers
-                    </Button>
-                )}
+        <div className="flex flex-col gap-8 p-8">
+            <div className="flex justify-between items-center gap-5">
+                <div className="flex w-[500px]">
+                    <p className="text-4xl font-bold">Home Bill Contest Form Data</p>
+                </div>
+                <div className="flex flex-row gap-4 ">
+                    <div className="w-[200px]">
+                        {townCouncils.length > 0 && (
+                            <NextUIFormikSelect2
+                                label="Town council"
+                                placeholder="Choose towncouncil"
+                                options={townCouncils.map((townCouncil) => ({
+                                    key: townCouncil,
+                                    label: townCouncil,
+                                }))}
+                                onChange={handleTownCouncilChange}
+                            />
+                        )}
+                    </div>
+                    <div className="w-[130px]">
+                        {top3Users.length > 0 && (
+                            <Button color="primary" onPress={handleGiveVouchers} className="w-full">
+                                Give Vouchers
+                            </Button>
+                        )}
+                    </div>
+                </div>
             </div>
-            <div className="gap-8 p-8">
-                {townCouncils.length > 0 && (
-                    <select
-                        value={selectedTownCouncil}
-                        onChange={(e) => setSelectedTownCouncil(e.target.value)}
-                    >
-                        <option value="">All locations</option>
-                        {townCouncils.map((townCouncil) => (
-                            <option key={townCouncil} value={townCouncil}>
-                                {townCouncil}
-                            </option>
-                        ))}
-                    </select>
-                )}
+
+            <div>
                 <Table aria-label="Form Data Table">
                     <TableHeader>
                         <TableColumn>User Name</TableColumn>
-                        <TableColumn>User Email</TableColumn>
                         <TableColumn>Electrical Bill</TableColumn>
                         <TableColumn>Water Bill</TableColumn>
                         <TableColumn>Total Bill</TableColumn>
                         <TableColumn>Dependents</TableColumn>
-                        <TableColumn onClick={handleSort}>
-                            Average Bill {renderSortIndicator()}
+                        <TableColumn>
+                            Average Bill
                         </TableColumn>
                         <TableColumn>Bill Picture</TableColumn>
                         <TableColumn>Actions</TableColumn>
                     </TableHeader>
+
                     <TableBody>
                         {combinedData.map((data) => (
                             <TableRow key={data.id}>
                                 <TableCell>{data.userName}</TableCell>
-                                <TableCell>{data.userEmail}</TableCell>
                                 <TableCell>${data.electricalBill.toFixed(2)}</TableCell>
                                 <TableCell>${data.waterBill.toFixed(2)}</TableCell>
                                 <TableCell>${data.totalBill.toFixed(2)}</TableCell>
                                 <TableCell>{data.noOfDependents}</TableCell>
                                 <TableCell>${data.avgBill.toFixed(2)}</TableCell>
                                 <TableCell>
-                                    {data.billPicture && <img src={`${config.serverAddress}/hbcform/billPicture/${data.id}`} alt="bill picture" className="w-full" />}
+                                    {data.billPicture ? (
+                                        <Button isIconOnly variant="light" onPress={() => handleImageClick(`${config.serverAddress}/hbcform/billPicture/${data.id}`)}>
+                                            <ImageIcon />
+                                        </Button>
+                                    ) : (
+                                        <Button isIconOnly variant="light">
+                                            <ImageIcon />
+                                        </Button>
+                                    )}
                                 </TableCell>
+
                                 <TableCell className="flex flex-row">
                                     <Button isIconOnly variant="light" className="text-blue-500" onClick={() => handleEmailClick(data.userEmail, data.userName)}><EmailIcon /></Button>
                                     <Button isIconOnly variant="light" color="danger" onClick={() => handleDeleteClick(data.id)}><TrashDeleteIcon /></Button>
@@ -344,6 +355,20 @@ export default function Ranking() {
                     )}
                 </ModalContent>
             </Modal>
-        </section>
+            {/* Open Image Modal */}
+            <Modal
+                isOpen={isImageModalOpen}
+                onOpenChange={setIsImageModalOpen}
+                isDismissable={true}
+            >
+                <ModalContent>
+                    <ModalBody>
+                        {modalImageUrl && (
+                            <img src={modalImageUrl} alt="Bill Picture" style={{ width: '100%', height: 'auto' }} />
+                        )}
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
+        </div >
     );
 }

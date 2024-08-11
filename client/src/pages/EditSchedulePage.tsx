@@ -8,6 +8,7 @@ import NextUIFormikInput from "../components/NextUIFormikInput";
 import { useNavigate, useParams } from "react-router-dom";
 import instance from "../security/http";
 import dayjs from "dayjs";
+import { ArrowUTurnLeftIcon } from "../icons";
 
 
 // Validation schema
@@ -92,73 +93,76 @@ export default function EditSchedulePage() {
     };
 
     return (
-        <section className="flex flex-col items-center justify-center gap-20 py-8 md:py-10">
-            <div className="w-full flex items-start">
-                <Button
-                    variant="light"
-                    onPress={() => navigate(-1)}
-                >
-                    Back
-                </Button>
-                <div className="flex-grow text-center">
-                    <p className="text-3xl font-bold">Add New Schedule</p>
+        <div className="w-full h-full pb-12 pt-10">
+            <div className="w-[400px] mx-auto p-6 bg-red-50 dark:bg-primary-950 border border-primary-100 rounded-2xl">
+                <div>
+                    <Button
+                        isIconOnly
+                        variant="light"
+                        onPress={() => navigate(-1)}
+                    >
+                        <ArrowUTurnLeftIcon />
+                    </Button>
+
+                    <p className="text-3xl font-bold pt-2">Update Schedule</p>
                 </div>
-            </div>
-            <Formik
-                enableReinitialize
-                initialValues={schedule}
-                validationSchema={validationSchema}
-                onSubmit={handleSubmit}
-            >
-                {({ isValid, dirty }) => (
-                    <Form className="flex flex-col gap-4">
-                        <div className="flex gap-8">
-                            <NextUIFormikDatePicker
-                                label="Date"
-                                name="date"
-                                className="max-w-[284px]"
-                            />
-                            <NextUIFormikInput
-                                type='time'
-                                label="Time"
-                                name="time"
-                                placeholder=""
-                            />
-                        </div>
-                        <div className="flex gap-8">
-                            <NextUIFormikInput
-                                type="text"
-                                label="Location"
-                                name="location"
-                                placeholder="Enter the location"
-                            />
-                            <NextUIFormikInput
-                                type="text"
-                                label="Postal Code"
-                                name="postalCode"
-                                placeholder="123456"
-                            />
-                        </div>
-                        <div>
-                            <NextUIFormikRadioGroup
-                                label="Status"
-                                name="status"
-                                className="flex gap-2"
+
+                <Formik
+                    enableReinitialize
+                    initialValues={schedule}
+                    validationSchema={validationSchema}
+                    onSubmit={handleSubmit}
+                >
+                    {({ isValid, dirty }) => (
+                        <Form className="flex flex-col gap-4 pt-5  items-center justify-center">
+                            <div className="flex flex-col gap-5 w-[360px]">
+                                <NextUIFormikDatePicker
+                                    label="Date"
+                                    name="date"
+                                    className="max-w-[360px]"
+                                />
+                                <NextUIFormikInput
+                                    type='time'
+                                    label="Time"
+                                    name="time"
+                                    placeholder=""
+                                />
+                                <NextUIFormikInput
+                                    type="text"
+                                    label="Location"
+                                    name="location"
+                                    placeholder="Enter the location"
+                                />
+                                <NextUIFormikInput
+                                    type="text"
+                                    label="Postal Code"
+                                    name="postalCode"
+                                    placeholder="123456"
+                                />
+                            </div>
+                            <div>
+                                <NextUIFormikRadioGroup
+                                    label="Status"
+                                    name="status"
+                                    className="flex gap-2"
+                                >
+                                    <Radio value="Up coming">Up coming</Radio>
+                                    <Radio value="On going">On going</Radio>
+                                    <Radio value="Ended">Ended</Radio>
+                                </NextUIFormikRadioGroup>
+                            </div>
+                            <Button
+                                type="submit"
+                                color="primary"
+                                className="w-[100px]"
+                                isDisabled={!isValid || !dirty}
                             >
-                                <Radio value="Up coming">Up coming</Radio>
-                                <Radio value="On going">On going</Radio>
-                                <Radio value="Ended">Ended</Radio>
-                            </NextUIFormikRadioGroup>
-                        </div>
-                        <div className="flex gap-5">
-                            <Button type="submit" color="secondary" className="max-w-[100px]">Update</Button>
-                        </div>
-                        {/* Example of using isValid and dirty */}
-                        <p>Form is {isValid ? 'valid' : 'invalid'}</p>
-                        <p>Form has been {dirty ? 'touched' : 'not touched'}</p>
-                    </Form>
-                )}
-            </Formik>
-        </section>
+                                Update
+                            </Button>
+                        </Form>
+                    )}
+                </Formik>
+            </div>
+        </div>
     )
 }
