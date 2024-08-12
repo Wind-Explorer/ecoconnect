@@ -126,7 +126,7 @@ router.get("/", async (req, res) => {
   if (tag) {
     condition.include[0].where = { tag: tag };
   }
-  
+
   // You can add condition for other columns here
   // e.g. condition.columnName = value;
 
@@ -323,6 +323,31 @@ router.get("/:id/getComments", async (req, res) => {
     return;
   }
   res.json(comments);
+});
+
+router.delete("/comments/:id", async (req, res) => {
+  let id = req.params.id;
+  console.log("Deleting comment with ID: ", id)
+  // Check id not found
+  let comment = await Comment.findByPk(id);
+  if (!comment) {
+    res.sendStatus(404);
+    return;
+  }
+  let num = await Comment.destroy({
+    // destroy() deletes data based on the where condition, and returns the number of rows affected
+    where: { id: id },
+  });
+  if (num == 1) {
+    // destroy() returns no. of rows affected, that's why if num == 1
+    res.json({
+      message: "Comment was deleted successfully.",
+    });
+  } else {
+    res.status(400).json({
+      message: `Cannot delete comment with id ${id}.`,
+    });
+  }
 });
 
 router.get("/tags/all", async (req, res) => {
