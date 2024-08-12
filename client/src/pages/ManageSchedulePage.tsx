@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import instance from "../security/http";
 import { PencilSquareIcon, PlusIcon, TrashDeleteIcon } from "../icons";
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, SortDescriptor, Link as NextUILink } from "@nextui-org/react";
+import dayjs from 'dayjs';
 
 interface Schedule {
     id: number;
@@ -11,6 +12,12 @@ interface Schedule {
     postalCode: string;
     status: string;
 }
+
+const determineStatus = (dateTime: string): string => {
+    const now = dayjs();
+    const scheduleDateTime = dayjs(dateTime);
+    return scheduleDateTime.isAfter(now) ? "Up coming" : "Ended";
+};
 
 export default function ManageSchedulePage() {
     const navigate = useNavigate();
@@ -25,33 +32,63 @@ export default function ManageSchedulePage() {
     useEffect(() => {
         instance.get("/schedule")
             .then((res) => {
-                const schedules = res.data.map((schedule: Schedule) => ({
+                const schedules: Schedule[] = res.data.map((schedule: Schedule) => ({
                     ...schedule,
-                    dateTime: new Date(schedule.dateTime), // Convert to Date object
+                    dateTime: new Date(schedule.dateTime),
+                    status: determineStatus(schedule.dateTime),
                 }));
+
                 setScheduleList(schedules);
+
+                // Update status in the database
+                schedules.forEach((schedule: Schedule) => {
+                    instance.patch(`/schedule/${schedule.id}/status`)
+                        .catch((err) => {
+                            console.error(`Error updating status for schedule ${schedule.id}:`, err.response ? err.response.data : err.message);
+                        });
+                });
             })
             .catch((err) => {
-                console.error("Error fetching schedules:", err);
+                console.error("Error fetching schedules:", err.response ? err.response.data : err.message);
             });
     }, []);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setScheduleList(prevSchedules =>
+                prevSchedules.map((schedule: Schedule) => ({
+                    ...schedule,
+                    status: determineStatus(schedule.dateTime),
+                }))
+            );
+
+            // Optionally update status in the database
+            scheduleList.forEach((schedule: Schedule) => {
+                instance.patch(`/schedule/${schedule.id}/status`)
+                    .catch((err) => {
+                        console.error(`Error updating status for schedule ${schedule.id}:`, err.response ? err.response.data : err.message);
+                    });
+            });
+        }, 60000);
+
+        return () => clearInterval(interval);
+    }, [scheduleList]);
 
     const handleEdit = (id: number) => {
         navigate(`edit-schedule/${id}`);
     };
-
 
     const deleteSchedule = () => {
         if (scheduleIdToDelete !== null) {
             instance.delete(`/schedule/${scheduleIdToDelete}`)
                 .then((res) => {
                     console.log(res.data);
-                    setScheduleList((prev) => prev.filter(schedule => schedule.id !== scheduleIdToDelete));
+                    setScheduleList(prev => prev.filter((schedule: Schedule) => schedule.id !== scheduleIdToDelete));
                     onOpenChange();
                     setScheduleIdToDelete(null);
                 })
                 .catch((err) => {
-                    console.error("Error deleting schedule:", err);
+                    console.error("Error deleting schedule:", err.response ? err.response.data : err.message);
                 });
         }
     };
@@ -59,7 +96,7 @@ export default function ManageSchedulePage() {
     const sortScheduleList = (list: Schedule[], descriptor: SortDescriptor) => {
         const { column, direction } = descriptor;
 
-        const sortedList = [...list].sort((a, b) => {
+        const sortedList = [...list].sort((a: Schedule, b: Schedule) => {
             switch (column) {
                 case "dateTime":
                     const dateA = new Date(a.dateTime);
@@ -121,7 +158,7 @@ export default function ManageSchedulePage() {
                         <TableColumn>Action</TableColumn>
                     </TableHeader>
                     <TableBody>
-                        {sortedScheduleList.map((schedule) => (
+                        {sortedScheduleList.map((schedule: Schedule) => (
                             <TableRow key={schedule.id}>
                                 <TableCell>{((schedule.dateTime as unknown) as Date).toLocaleDateString()}</TableCell>
                                 <TableCell>{((schedule.dateTime as unknown) as Date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</TableCell>
@@ -171,6 +208,5 @@ export default function ManageSchedulePage() {
                 </ModalContent>
             </Modal>
         </div>
-    )
+    );
 }
-

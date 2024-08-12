@@ -1,7 +1,6 @@
 import { Formik, Form } from "formik";
 import * as yup from "yup";
-import { Button, Radio } from "@nextui-org/react";
-import { NextUIFormikRadioGroup } from "../components/NextUIFormikRadioButton";
+import { Button } from "@nextui-org/react";
 import { NextUIFormikDatePicker } from "../components/NextUIFormikDatePicker";
 import NextUIFormikInput from "../components/NextUIFormikInput";
 import { useNavigate } from "react-router-dom";
@@ -18,13 +17,14 @@ const validationSchema = yup.object().shape({
     status: yup.string().trim().required()
 });
 
-const initialValues: any = {
+const initialValues = {
     date: "",
     time: "",
     location: "",
     postalCode: "",
-    status: ""
+    status: "Up coming" // Set the default status
 };
+
 
 export default function CreateSchedulePage() {
     const navigate = useNavigate();
@@ -55,14 +55,9 @@ export default function CreateSchedulePage() {
         }
 
         data.dateTime = dateTime.toISOString();
-
         data.location = data.location.trim();
-
-        if (typeof data.postalCode === 'string') {
-            data.postalCode = data.postalCode.trim();
-        }
-
-        data.status = data.status.trim();
+        data.postalCode = data.postalCode.trim();
+        data.status = "Up coming"; // Set status to "Up coming" explicitly
 
         console.log("Data to be sent:", data);
 
@@ -74,8 +69,8 @@ export default function CreateSchedulePage() {
     };
 
     return (
-        <div className="w-full h-full pb-12 pt-10">
-            <div className="w-[400px] mx-auto p-6 bg-red-50 dark:bg-primary-950 border border-primary-100 rounded-2xl">
+        <div className="w-full h-full pb-12 pt-20">
+            <div className="w-[410px] mx-auto p-6 bg-red-50 dark:bg-primary-950 border border-primary-100 rounded-2xl">
                 <div>
                     <Button
                         isIconOnly
@@ -94,7 +89,7 @@ export default function CreateSchedulePage() {
                     onSubmit={handleSubmit}
                 >
                     {({ isValid, dirty }) => (
-                        <Form className="flex flex-col gap-4 pt-5  items-center justify-center">
+                        <Form className="flex flex-col gap-4 pt-5 ">
                             <div className="flex flex-col gap-5 w-[360px]">
                                 <NextUIFormikDatePicker
                                     label="Date"
@@ -120,15 +115,6 @@ export default function CreateSchedulePage() {
                                     placeholder="123456"
                                 />
                             </div>
-                            <NextUIFormikRadioGroup
-                                label="Status"
-                                name="status"
-                                className="flex gap-2"
-                            >
-                                <Radio value="Up coming">Up coming</Radio>
-                                <Radio value="On going">On going</Radio>
-                                <Radio value="Ended">Ended</Radio>
-                            </NextUIFormikRadioGroup>
                             <Button
                                 type="submit"
                                 color="primary"

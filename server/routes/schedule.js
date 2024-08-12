@@ -3,6 +3,7 @@ const router = express.Router();
 const { Schedule } = require('../models');
 const { Op } = require("sequelize");
 const yup = require("yup");
+const dayjs = require('dayjs');
 
 router.post("/", async (req, res) => {
     let data = req.body;
@@ -104,5 +105,27 @@ router.delete("/:id", async (req, res) => {
     }
 });
 
+router.patch("/:id/status", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const schedule = await Schedule.findByPk(id);
+
+        if (!schedule) {
+            return res.status(404).json({ message: 'Schedule not found' });
+        }
+
+        const now = dayjs();
+        const scheduleDateTime = dayjs(schedule.dateTime);
+
+        const newStatus = scheduleDateTime.isAfter(now) ? "Up coming" : "Ended";
+        schedule.status = newStatus;
+
+        await schedule.save();
+        res.status(200).json(schedule);
+    } catch (error) {
+        console.error("Error updating status:", error); // Log the error
+        res.status(500).json({ message: error.message });
+    }
+});
 
 module.exports = router;

@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { Formik, Form } from "formik";
 import * as yup from "yup";
-import { Button, Radio } from "@nextui-org/react";
-import { NextUIFormikRadioGroup } from "../components/NextUIFormikRadioButton";
+import { Button } from "@nextui-org/react";
 import { NextUIFormikDatePicker } from "../components/NextUIFormikDatePicker";
 import NextUIFormikInput from "../components/NextUIFormikInput";
 import { useNavigate, useParams } from "react-router-dom";
@@ -29,7 +28,6 @@ export default function EditSchedulePage() {
         time: "",
         location: "",
         postalCode: "",
-        status: ""
     });
 
     useEffect(() => {
@@ -78,10 +76,6 @@ export default function EditSchedulePage() {
             data.postalCode = data.postalCode.trim();
         }
 
-        data.status = data.status.trim();
-
-        console.log("Data to be sent:", data);
-
         instance.put(`/schedule/${id}`, data)
             .then((res) => {
                 console.log(res.data);
@@ -93,8 +87,8 @@ export default function EditSchedulePage() {
     };
 
     return (
-        <div className="w-full h-full pb-12 pt-10">
-            <div className="w-[400px] mx-auto p-6 bg-red-50 dark:bg-primary-950 border border-primary-100 rounded-2xl">
+        <div className="w-full h-full pb-12 pt-20">
+            <div className="w-[410px] mx-auto p-6 bg-red-50 dark:bg-primary-950 border border-primary-100 rounded-2xl">
                 <div>
                     <Button
                         isIconOnly
@@ -114,7 +108,7 @@ export default function EditSchedulePage() {
                     onSubmit={handleSubmit}
                 >
                     {({ isValid, dirty }) => (
-                        <Form className="flex flex-col gap-4 pt-5  items-center justify-center">
+                        <Form className="flex flex-col gap-4 pt-4">
                             <div className="flex flex-col gap-5 w-[360px]">
                                 <NextUIFormikDatePicker
                                     label="Date"
@@ -139,17 +133,6 @@ export default function EditSchedulePage() {
                                     name="postalCode"
                                     placeholder="123456"
                                 />
-                            </div>
-                            <div>
-                                <NextUIFormikRadioGroup
-                                    label="Status"
-                                    name="status"
-                                    className="flex gap-2"
-                                >
-                                    <Radio value="Up coming">Up coming</Radio>
-                                    <Radio value="On going">On going</Radio>
-                                    <Radio value="Ended">Ended</Radio>
-                                </NextUIFormikRadioGroup>
                             </div>
                             <Button
                                 type="submit"
