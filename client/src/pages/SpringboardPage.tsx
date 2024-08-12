@@ -6,6 +6,8 @@ import SpringboardButton from "../components/SpringboardButton";
 import { getTimeOfDay } from "../utilities";
 import { retrieveUserInformation } from "../security/users";
 import UserProfilePicture from "../components/UserProfilePicture";
+import instance from "../security/http";
+import config from "../config";
 
 export default function SpringboardPage() {
   const navigate = useNavigate();
@@ -15,6 +17,7 @@ export default function SpringboardPage() {
   }
   const [userInformation, setUserInformation] = useState<any>();
   const [accountUnavailable, setAccountUnavaliable] = useState(false);
+  const [events, setEvents] = useState<any[]>([]);
   let timeOfDay = getTimeOfDay();
 
   let greeting = "";
@@ -37,6 +40,10 @@ export default function SpringboardPage() {
       .catch((_) => {
         setAccountUnavaliable(true);
       });
+
+    instance.get("/events").then((response) => {
+      setEvents(response.data);
+    });
     return;
   }, []);
 
@@ -107,7 +114,59 @@ export default function SpringboardPage() {
                 linkToPage="/karang-guni-schedules"
               ></SpringboardButton>
             </div>
-            <div className="w-full h-[600px] bg-primary-500"></div>
+            <div className="w-full  bg-primary-500 text-white">
+              {events.length > 0 && (
+                <div className="p-10 flex flex-col gap-10">
+                  <p className="text-3xl font-bold">Registered events</p>
+                  <div className="flex flex-col gap-4">
+                    {events.map((event, index) => (
+                      <Card
+                        key={index}
+                        className="bg-primary-700 border-2 border-primary-400"
+                      >
+                        <div className="flex flex-row justify-between *:my-auto p-2 pr-8">
+                          <div className="flex flex-row gap-4 *:my-auto">
+                            <img
+                              className="w-20 h-20 object-cover rounded-xl"
+                              src={`${config.serverAddress}/events/evtPicture/${event.id}`}
+                              alt="event"
+                            />
+                            <div className="flex flex-col gap-2">
+                              <p className="text-lg">{event.title}</p>
+                              <p className="text-sm opacity-70">
+                                Happening on{" "}
+                                <span className="font-bold">
+                                  {new Date(event.date).toDateString()}
+                                </span>
+                              </p>
+                            </div>
+                          </div>
+                          <Button
+                            variant="flat"
+                            onPress={() => {
+                              navigate(`/events/view/${event.id}`);
+                            }}
+                          >
+                            View
+                          </Button>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                  <div className="w-full *:mx-auto text-center flex flex-col gap-4">
+                    <p>Need to get in touch regarding your attendance?</p>
+                    <Button
+                      className="bg-white text-primary-500"
+                      onPress={() => {
+                        navigate("/feedback");
+                      }}
+                    >
+                      Contact the group
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>
