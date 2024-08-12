@@ -66,6 +66,8 @@ export default function CommunityPage() {
   const [imageErrorFlags, setImageErrorFlags] = useState<
     Record<string, boolean>
   >({});
+  const [tags, setTags] = useState<Tag[]>([]);
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
   let accessToken = localStorage.getItem("accessToken");
   if (!accessToken) {
@@ -87,13 +89,43 @@ export default function CommunityPage() {
   }
 
   const getPosts = async () => {
-    await instance.get(config.serverAddress + "/post").then((res) => {
+    let query = config.serverAddress + "/post";
+    if (selectedTag) {
+      query += `?tag=${selectedTag}`;
+    } else if (search) {
+      query += `?search=${search}`;
+    }
+
+    try {
+      const res = await instance.get(query);
       setCommunityList(res.data);
-    });
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    }
   };
   useEffect(() => {
     getPosts();
+  }, [selectedTag, search]);
+
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const res = await instance.get(config.serverAddress + "/post/tags/all");
+        setTags(res.data);
+      } catch (error) {
+        console.error("Error fetching tags:", error);
+      }
+    };
+    fetchTags();
   }, []);
+
+  const handleTagClick = (tag: string) => {
+    setSelectedTag(tag);
+  };
+
+  const handleClearFilter = () => {
+    setSelectedTag(null);
+  };
 
   useEffect(() => {
     const fetchUserInformation = async (userId: string) => {
@@ -134,6 +166,7 @@ export default function CommunityPage() {
   };
 
   const searchPosts = () => {
+    setSelectedTag(null); // Clear tag filter on search
     instance
       .get(config.serverAddress + `/post?search=${search}`)
       .then((res) => {
@@ -337,6 +370,30 @@ export default function CommunityPage() {
               </div>
             }
           />
+          <div>
+            <p>Filter by Tags</p>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {tags.map((tag) => (
+                <Chip
+                  key={tag.id}
+                  onClick={() => handleTagClick(tag.tag)}
+                  className={selectedTag === tag.tag ? "bg-primary-500 text-white" : ""}
+                >
+                  {tag.tag}
+                </Chip>
+              ))}
+            </div>
+            <div>
+              {selectedTag && (
+                <Button
+                  className="mt-2"
+                  onPress={handleClearFilter}
+                >
+                  Clear Filter
+                </Button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 

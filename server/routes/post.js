@@ -114,12 +114,19 @@ router.get("/", async (req, res) => {
   };
 
   let search = req.query.search;
+  let tag = req.query.tag;
+
   if (search) {
     condition.where[Op.or] = [
       { title: { [Op.like]: `%${search}%` } },
       { content: { [Op.like]: `%${search}%` } },
     ];
   }
+
+  if (tag) {
+    condition.include[0].where = { tag: tag };
+  }
+  
   // You can add condition for other columns here
   // e.g. condition.columnName = value;
 
