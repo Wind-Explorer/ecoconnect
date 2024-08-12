@@ -52,13 +52,13 @@ const TagInput: React.FC<TagInputProps> = ({ tags, setTags }) => {
                     onChange={handleInputChange} // Use the dynamic check handler
                 />
                 {error && <div className="text-red-500 mt-2">{error}</div>}
-                <Button onPress={handleAddTag} disabled={!!error}>Add</Button>
+                <Button onPress={handleAddTag} disabled={!!error} className="mt-2 bg-primary-50 dark:bg-primary-800">Add</Button>
             </div>
             <div className="flex gap-2 flex-wrap mt-4">
                 {tags.map((tag, index) => (
                     <div
                         key={index}
-                        className="flex items-center gap-1 bg-gray-200 p-2 rounded"
+                        className="flex items-center gap-1 bg-primary-50 dark:bg-primary-800 p-2 rounded"
                     >
                         <span>{tag}</span>
                         <button

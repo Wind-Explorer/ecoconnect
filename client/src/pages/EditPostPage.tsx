@@ -147,14 +147,14 @@ function EditPostPage() {
           <ArrowUTurnLeftIcon />
         </Button>
       </section>
-      <section className="w-8/12 mx-auto p-5 bg-primary-100 border border-none rounded-2xl">
+      <section className="w-8/12 mx-auto p-5 bg-primary-100 dark:bg-primary-950 border border-none rounded-2xl">
         {!loading && (
           <Formik
             initialValues={{ ...post, tags: tags || [] }}
             validationSchema={validationSchema}
             onSubmit={handleSubmit}
           >
-            {({ isValid, dirty, isSubmitting, setFieldValue, values }) => (
+            {({ isValid, dirty, isSubmitting, setFieldValue }) => (
               <Form className="flex flex-col gap-5">
                 <div>
                   <NextUIFormikInput
@@ -193,7 +193,7 @@ function EditPostPage() {
                 <div className="flex flex-row-reverse">
                   <Button
                     type="submit"
-                    className="bg-primary-950 text-white text-xl w-1/6"
+                    className="bg-primary-950 dark:bg-primary-600 text-white text-xl w-1/6"
                     disabled={!isValid || !dirty || isSubmitting}
                   >
                     <p>Update</p>
