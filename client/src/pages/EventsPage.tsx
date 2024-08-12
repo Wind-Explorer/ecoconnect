@@ -68,6 +68,14 @@ const EventsPage: React.FC = () => {
     fetchTownCouncils();
   }, []);
 
+  const getTimePeriod = (time: string): string => {
+    const [hours] = time.split(':').map(Number);
+    if (hours >= 5 && hours < 12) return 'morning';
+    if (hours >= 12 && hours < 17) return 'afternoon';
+    if (hours >= 17 || hours < 5) return 'evening';
+    return ''; // Default case if none of the above match
+  };
+
   useEffect(() => {
     // Filter events based on selected criteria
     const filtered = events.filter((event) => {
@@ -78,7 +86,7 @@ const EventsPage: React.FC = () => {
         ? event.location === selectedTownCouncil
         : true;
       const matchTime = selectedTime
-        ? event.time.toLowerCase().trim() === selectedTime.toLowerCase().trim()
+        ? getTimePeriod(event.time) === selectedTime.toLowerCase().trim()
         : true;
 
       console.log("Event Time:", event.time);

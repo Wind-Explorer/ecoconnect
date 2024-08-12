@@ -12,7 +12,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 router.get("/", async (req, res) => {
   try {
-    const { category, townCouncil, time } = req.query;
+    const { category, townCouncil, time} = req.query;
 
     console.log("Filter Parameters:", { category, townCouncil, time });
 
@@ -26,7 +26,9 @@ router.get("/", async (req, res) => {
 
     const timeCategory = timeToCategory(time);
 
-    let filter = {};
+    let filter = {
+      slotsAvailable: { [Op.gt]: 0 }
+    };
     if (category) filter.category = category;
     if (townCouncil) filter.townCouncil = townCouncil;
     if (timeCategory) filter.timeCategory = timeCategory;
@@ -35,13 +37,7 @@ router.get("/", async (req, res) => {
 
     const filteredEvents = await Events.findAll({
       attributes: { exclude: ["evtPicture"] },
-      where: {
-        [Op.and]: [
-          category ? { category } : {},
-          townCouncil ? { townCouncil } : {},
-          timeCategory ? { timeCategory } : {},
-        ],
-      },
+      where: filter,
     });
 
     res.json(filteredEvents);
@@ -241,18 +237,24 @@ router.post("/register/:id", async (req, res) => {
       return res.status(404).json({ message: "Event not found" });
     }
 
-    // Process registration data (e.g., save to a Registration table or similar)
-    // Here we assume that you might just be updating the event for simplicity
-    // Modify this logic as needed based on your actual requirements
-    await Events.update(data, { where: { id: id } });
+     // Check if there are available slots
+     if (event.slotsAvailable <= 0) {
+      return res.status(400).json({ message: "No available slots for this event" });
+    }
+
+    // Decrease the number of available slots
+    await Events.update(
+      { slotsAvailable: event.slotsAvailable - 1 },
+      { where: { id: id } }
+    );
 
     res.json({ message: "Registration successful" });
   } catch (err) {
     console.error("Error during registration:", err);
     res.status(400).json({ errors: err.errors });
+    res.status(500).json({ message: "Error during registration", error: err.message });
   }
 });
-
 
 router.delete("/:id", async (req, res) => {
   const id = req.params.id;

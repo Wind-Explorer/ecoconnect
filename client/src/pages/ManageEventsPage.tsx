@@ -27,6 +27,7 @@ const ManageEventsPage = () => {
   const fetchEvents = async () => {
     try {
       const res = await axios.get(config.serverAddress + "/events");
+      console.log(res.data);
       setEvents(res.data);
     } catch (error) {
       console.error("Failed to fetch events:", error);
