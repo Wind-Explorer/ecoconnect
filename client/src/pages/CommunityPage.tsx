@@ -23,7 +23,6 @@ import instance from "../security/http";
 import {
   ChatBubbleOvalLeftEllipsisIcon,
   EllipsisHorizontalIcon,
-  HandThumbsUpIcon,
   MagnifyingGlassIcon,
   PlusIcon,
   XMarkIcon,
