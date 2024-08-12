@@ -1,4 +1,5 @@
 const express = require("express");
+const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const db = require("./models");
@@ -18,6 +19,8 @@ app.use(
 );
 
 app.use(express.json());
+app.use(bodyParser.json({ limit: "1000mb" }));
+app.use(bodyParser.urlencoded({ limit: "1000mb", extended: true }));
 
 app.get("/", (req, res) => {
   res.send("Welcome to ecoconnect.");
@@ -44,7 +47,7 @@ const vouchers = require("./routes/vouchers");
 app.use("/vouchers", vouchers);
 
 const feedback = require("./routes/feedback.js");
-app.use("/feedback", feedback)
+app.use("/feedback", feedback);
 
 const uservoucher = require("./routes/uservoucher.js");
 app.use("/user-vouchers", uservoucher);

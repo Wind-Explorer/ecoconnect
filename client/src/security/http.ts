@@ -3,6 +3,8 @@ import config from "../config";
 
 const instance = axios.create({
   baseURL: config.serverAddress,
+  maxContentLength: Infinity,
+  maxBodyLength: Infinity,
 });
 
 // Add a request interceptor

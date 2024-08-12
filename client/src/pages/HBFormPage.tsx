@@ -1,5 +1,14 @@
 import { useEffect, useState } from "react";
-import { Button, Modal, ModalBody, ModalContent, ModalHeader } from "@nextui-org/react";
+import {
+  Button,
+  Card,
+  CircularProgress,
+  Divider,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+} from "@nextui-org/react";
 import { ArrowUTurnLeftIcon } from "../icons";
 import { useNavigate } from "react-router-dom";
 import { Formik, Form } from "formik";
@@ -7,8 +16,8 @@ import * as Yup from "yup";
 import config from "../config";
 import NextUIFormikInput from "../components/NextUIFormikInput";
 import instance from "../security/http";
-import InsertImage from "../components/InsertImage";
 import { retrieveUserInformation } from "../security/users";
+import InsertBillImage from "../components/InsertBillImage";
 
 const validationSchema = Yup.object({
   electricalBill: Yup.number()
@@ -41,12 +50,13 @@ const validationSchema = Yup.object({
 
 export default function HBFormPage() {
   const [userId, setUserId] = useState(null);
+  const [aiProcessing, isAiProcessing] = useState(false);
   const [initialValues, setInitialValues] = useState({
     id: "",
-    electricalBill: "",
-    waterBill: "",
-    totalBill: "",
-    noOfDependents: "",
+    electricalBill: "69",
+    waterBill: "69",
+    totalBill: "0.00",
+    noOfDependents: 1,
     avgBill: "",
     billPicture: null,
     userId: "",
@@ -81,14 +91,14 @@ export default function HBFormPage() {
   const [hasHandedInForm, setHasHandedInForm] = useState(false);
 
   useEffect(() => {
-    instance.get(`${config.serverAddress}/hbcform/has-handed-in-form/${userId}`)
-      .then(response => {
+    instance
+      .get(`${config.serverAddress}/hbcform/has-handed-in-form/${userId}`)
+      .then((response) => {
         const hasHandedInForm = response.data.hasHandedInForm;
         setHasHandedInForm(hasHandedInForm);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("Error checking if user has handed in form:", error);
-
       });
   }, [userId]);
 
@@ -136,7 +146,11 @@ export default function HBFormPage() {
           console.error("Error creating form:", response.statusText);
         }
       } catch (error: any) {
-        if (error.response && error.response.data && error.response.data.errors) {
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.errors
+        ) {
           const errors = error.response.data.errors;
           Object.keys(errors).forEach((key) => {
             setFieldError(key, errors[key]);
@@ -152,7 +166,7 @@ export default function HBFormPage() {
 
   // Handler for image selection
   const handleImageSelection = (name: string, file: File | null) => {
-    setImagesSelected(prevState => ({
+    setImagesSelected((prevState) => ({
       ...prevState,
       [name]: !!file,
     }));
@@ -162,11 +176,13 @@ export default function HBFormPage() {
     values,
     resetForm,
     setFieldError,
-    setFieldValue
+    setFieldValue,
   }: any) => {
     try {
       // Fetch the current form ID associated with the userId
-      const responses = await instance.get(`${config.serverAddress}/hbcform/has-handed-in-form/${userId}`);
+      const responses = await instance.get(
+        `${config.serverAddress}/hbcform/has-handed-in-form/${userId}`
+      );
       const formId = responses.data.formId; // Make sure your API response includes the formId
 
       if (formId) {
@@ -224,18 +240,18 @@ export default function HBFormPage() {
   };
 
   const handleModalCancel = () => {
-    navigate(-1)
+    navigate(-1);
   };
 
   return (
-    <div className="w-full h-full pb-12">
-      <div className="w-[680px] mx-auto p-6 bg-red-100 dark:bg-red-950 border border-primary-100 rounded-2xl h-600px">
-        <div className="py-2">
-          <Button variant="light" onPress={() => navigate(-1)}>
+    <div className="w-full h-full">
+      <Card className="relative max-w-[800px] mx-auto *:mx-auto bg-primary-50 dark:bg-primary-950">
+        <div className="absolute top-2 left-2">
+          <Button variant="light" isIconOnly onPress={() => navigate(-1)}>
             <ArrowUTurnLeftIcon />
           </Button>
         </div>
-        <div className="flex-grow overflow-y-auto">
+        <div className="flex-grow py-8">
           <Formik
             initialValues={initialValues}
             validationSchema={validationSchema}
@@ -244,85 +260,115 @@ export default function HBFormPage() {
             {({ isValid, dirty, isSubmitting, setFieldValue, values }) => {
               // Calculate the total bill
               useEffect(() => {
-                const totalBill = Number(values.electricalBill) + Number(values.waterBill);
-                setFieldValue("totalBill", totalBill.toFixed(2));
-
-                const avgBill = Number(values.noOfDependents) > 0
-                  ? totalBill / Number(values.noOfDependents)
-                  : 0;
+                const avgBill =
+                  Number(values.noOfDependents) > 0
+                    ? Number(values.totalBill) / Number(values.noOfDependents)
+                    : 0;
                 setFieldValue("avgBill", avgBill.toFixed(2));
-
-              }, [values.electricalBill, values.waterBill, values.noOfDependents, setFieldValue]);
+              }, [values.totalBill, values.noOfDependents, setFieldValue]);
 
               // Disabled the submit button because the images field are not selected
               const isSubmitDisabled = !imagesSelected.billPicture;
 
               return (
                 <Form>
-                  <div className="flex flex-col">
-                    <div className="flex flex-row gap-10">
-                      <div className="flex flex-col gap-10 p-2 min-w-[220px]">
-                        <NextUIFormikInput
-                          label="Electrical Bill"
-                          name="electricalBill"
-                          type="text"
-                          placeholder="0.00"
-                          labelPlacement="inside"
-                          setFieldValue={setFieldValue}
-                        />
-                        <NextUIFormikInput
-                          label="Water Bill"
-                          name="waterBill"
-                          type="text"
-                          placeholder="0.00"
-                          labelPlacement="inside"
-                          setFieldValue={setFieldValue}
-                        />
-                        <NextUIFormikInput
-                          label="Total Bill"
-                          name="totalBill"
-                          type="text"
-                          placeholder="0.00"
-                          labelPlacement="inside"
-                          readOnly={true}
-                        />
-                        <NextUIFormikInput
-                          label="Number of dependents"
-                          name="noOfDependents"
-                          type="text"
-                          placeholder="0"
-                          labelPlacement="inside"
-                          setFieldValue={setFieldValue}
-                        />
-                        <NextUIFormikInput
-                          label="Average Bill"
-                          name="avgBill"
-                          type="text"
-                          placeholder="0"
-                          labelPlacement="inside"
-                          readOnly={true}
-                        />
+                  <div className="flex flex-col gap-4 p-4">
+                    <div className="flex flex-row gap-4">
+                      <div className="flex flex-col gap-4 min-w-[220px]">
+                        <div className=" hidden">
+                          <NextUIFormikInput
+                            label="Number of dependents"
+                            name="avgBill"
+                            type="text"
+                            placeholder=""
+                            labelPlacement="inside"
+                            setFieldValue={setFieldValue}
+                          />
+                          <NextUIFormikInput
+                            label="Number of dependents"
+                            name="totalBill"
+                            type="text"
+                            placeholder=""
+                            labelPlacement="inside"
+                            setFieldValue={setFieldValue}
+                          />
+                          <NextUIFormikInput
+                            label="Number of dependents"
+                            name="waterBill"
+                            type="text"
+                            placeholder=""
+                            labelPlacement="inside"
+                            setFieldValue={setFieldValue}
+                          />
+                          <NextUIFormikInput
+                            label="Number of dependents"
+                            name="electricalBill"
+                            type="text"
+                            placeholder=""
+                            labelPlacement="inside"
+                            setFieldValue={setFieldValue}
+                          />
+                        </div>
+                        <Card className="flex flex-col gap-2 p-4">
+                          <p className="text-md font-semibold">
+                            How many people lives in your unit?
+                          </p>
+                          <NextUIFormikInput
+                            label="Number of dependents"
+                            name="noOfDependents"
+                            type="text"
+                            placeholder=""
+                            labelPlacement="inside"
+                            setFieldValue={setFieldValue}
+                          />
+                        </Card>
+                        <Card className="p-4 flex flex-col gap-4">
+                          <div>
+                            <p className="opacity-70">Total amount payable:</p>
+                            {aiProcessing && (
+                              <div className="w-full *:mx-auto pt-4">
+                                <CircularProgress label="Analyzing..." />
+                              </div>
+                            )}
+                            {!aiProcessing && (
+                              <p className="text-2xl font-semibold">
+                                S${values.totalBill}
+                              </p>
+                            )}
+                          </div>
+                          <Divider />
+                          <div>
+                            <p className="opacity-70">Cost per dependent:</p>
+                            <p className="text-3xl font-bold">
+                              S${values.avgBill}
+                            </p>
+                          </div>
+                        </Card>
                       </div>
-                      <div className="flex flex-row gap-10">
-                        <InsertImage
+                      <div className="flex flex-row">
+                        <InsertBillImage
                           label=""
                           onImageSelected={(file) => {
                             setFieldValue("billPicture", file);
                             handleImageSelection("billPicture", file);
                           }}
+                          onAmountResolved={(totalAmount) => {
+                            setFieldValue("totalBill", totalAmount);
+                          }}
+                          onAiProcessingChange={isAiProcessing}
                         />
                       </div>
                     </div>
-                    <div>
-                      <Button
-                        type="submit"
-                        className="bg-red-400 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-900 text-white"
-                        size="lg"
-                        isDisabled={!isValid || !dirty || isSubmitting || isSubmitDisabled}
-                      >
-                        <p>Submit</p>
-                      </Button>
-                    </div>
+                    <Button
+                      type="submit"
+                      className="bg-red-400 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-900 text-white"
+                      size="lg"
+                      isDisabled={
+                        !isValid || !dirty || isSubmitting || isSubmitDisabled
+                      }
+                    >
+                      <p>Submit</p>
+                    </Button>
                   </div>
                   <Modal
                     isOpen={isModalOpen}
@@ -336,19 +382,26 @@ export default function HBFormPage() {
                       </ModalHeader>
                       <ModalBody className="pb-8">
                         <div className="space-y-4 text-gray-700 dark:text-gray-300">
-                          <p className="font-semibold">This form has been submitted before. If you submit again, the previous entry will be deleted. Are you sure you want to resubmit?</p>
+                          <p className="font-semibold">
+                            This form has been submitted before. If you submit
+                            again, the previous entry will be deleted. Are you
+                            sure you want to resubmit?
+                          </p>
                         </div>
                         <div className="flex justify-between">
                           <Button
                             className="bg-red-400 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-900 text-white"
                             size="lg"
-                            onPress={() => handleModalSubmit({
-                              values,
-                              setSubmitting: isSubmitting,
-                              resetForm: () => { }, // Pass an empty function as a placeholder
-                              setFieldError: () => { }, // Pass an empty function as a placeholder
-                              setFieldValue
-                            })}>
+                            onPress={() =>
+                              handleModalSubmit({
+                                values,
+                                setSubmitting: isSubmitting,
+                                resetForm: () => {}, // Pass an empty function as a placeholder
+                                setFieldError: () => {}, // Pass an empty function as a placeholder
+                                setFieldValue,
+                              })
+                            }
+                          >
                             Yes
                           </Button>
                           <Button
@@ -367,7 +420,7 @@ export default function HBFormPage() {
             }}
           </Formik>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }
