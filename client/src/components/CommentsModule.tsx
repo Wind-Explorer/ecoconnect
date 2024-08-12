@@ -73,37 +73,6 @@ export default function CommentsModule() {
                                             <div className="font-bold">{user.firstName} {user.lastName}</div>
                                             <div className="break-words whitespace-pre-wrap">{comment.content}</div>
                                         </div>
-                                        <div className="flex-shrink-0 ml-10">
-                                            <div className="flex flex-row-reverse justify-center items-center size-7">
-                                                <Dropdown>
-                                                    <div>
-                                                        <DropdownTrigger
-                                                            className="justify-center items-center"
-                                                        >
-                                                            <Button isIconOnly variant="light">
-                                                                <EllipsisHorizontalIcon />
-                                                            </Button>
-                                                        </DropdownTrigger>
-                                                    </div>
-                                                    <DropdownMenu aria-label="Static Actions">
-                                                        <DropdownItem
-                                                            key="edit"
-                                                            textValue="Edit"
-                                                        >
-                                                            Edit
-                                                        </DropdownItem>
-                                                        <DropdownItem
-                                                            key="delete"
-                                                            textValue="Delete"
-                                                            className="text-danger"
-                                                            color="danger"
-                                                        >
-                                                            Delete
-                                                        </DropdownItem>
-                                                    </DropdownMenu>
-                                                </Dropdown>
-                                            </div>
-                                        </div>
                                     </div>
                                     <div className="flex flex-row ml-14 mt-2 gap-3 w-11/12">
                                         <div className="h-2"></div>
