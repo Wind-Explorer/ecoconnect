@@ -25,7 +25,11 @@ interface Event {
 const EventsPage: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<string[]>([
+    "Events",
+    "Workshops",
+    "Educational Talks"
+  ]);
   const [townCouncils, setTownCouncils] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedTownCouncil, setSelectedTownCouncil] = useState<string>("");
@@ -48,11 +52,6 @@ const EventsPage: React.FC = () => {
         setEvents(futureEvents);
         setFilteredEvents(futureEvents);
 
-        // Extract unique categories and locations from events
-        const uniqueCategories = Array.from(
-          new Set(res.data.map((event) => event.category).filter(Boolean))
-        );
-        setCategories(uniqueCategories);
       } catch (error) {
         console.error("Failed to fetch events:", error);
       }
@@ -124,7 +123,6 @@ const EventsPage: React.FC = () => {
               </option>
             ))}
           </select>
-
           {townCouncils.length > 0 && (
             <select
               value={selectedTownCouncil}
@@ -166,10 +164,10 @@ const EventsPage: React.FC = () => {
                   justifyContent: "space-between",
                 }}
               >
-                <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
+                <CardHeader>
                   <h4 className="font-bold text-large">{event.title}</h4>
                 </CardHeader>
-                <CardBody className="pb-0 pt-2 px-4 flex-col items-start">
+                <CardBody>
                   <div
                     className="relative w-full"
                     style={{
@@ -194,7 +192,7 @@ const EventsPage: React.FC = () => {
                   className="flex flex-col items-start p-4"
                   style={{ paddingTop: "0px" }}
                 >
-                  <p className="text-gray-600 mb-4">{event.description}</p>
+                  <p className="text-white-600 mb-4 opacity-70">{event.description}</p>
                   <Button
                     className="bg-primary-600 text-white rounded px-4 py-2 hover:bg-primary-700"
                     onClick={() => navigate(`/events/view/${event.id}`)}

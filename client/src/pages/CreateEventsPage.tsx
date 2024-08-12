@@ -36,9 +36,12 @@ const validationSchema = Yup.object({
     .required("Date is required"),
   time: Yup.string().required("Time is required"),
   location: Yup.string().required("Location is required"),
-  category: Yup.string().required("Category is required"),
+  category: Yup.string()
+    .oneOf(["Events", "Workshops", "Educational Talks"], "Invalid category")
+    .required("Category is required"),
   slotsAvailable: Yup.number()
     .integer()
+    .positive("Slots Avaliable must be greater than zero")
     .required("Slots Available is required"),
   evtPicture: Yup.mixed().required("Event picture is required"),
 });
@@ -179,12 +182,16 @@ const CreateEventsPage = () => {
                   />
                 )}
               </div>
-              <NextUIFormikInput
+              <NextUIFormikSelect
                 label="Category"
                 name="category"
-                type="text"
                 placeholder="Enter event category"
                 labelPlacement="inside"
+                options={[
+                  { key: "Events", label: "Events" },
+                  { key: "Workshops", label: "Workshops" },
+                  { key: "Educational Talks", label: "Educational Talks" },
+                ]}
               />
               <NextUIFormikInput
                 label="Slots Available"
