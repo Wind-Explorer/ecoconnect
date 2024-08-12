@@ -20,7 +20,7 @@ import { useEffect, useState } from "react";
 import instance from "../security/http";
 import config from "../config";
 import { popErrorToast, popToast } from "../utilities";
-import { ClipboardDocumentIcon, TrashDeleteIcon } from "../icons";
+import { ClipboardDocumentIcon, TrashDeleteIcon, EyeIcon } from "../icons";
 
 export default function CommunityPostManagement() {
   const [userInformationList, setUserInformationList] = useState<any[]>([]);
@@ -28,6 +28,11 @@ export default function CommunityPostManagement() {
   const [mergedList, setMergedList] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [postToDelete, setPostToDelete] = useState<any>(null);
+  const [isCommentsModalOpen, setIsCommentsModalOpen] = useState(false);
+  const [comments, setComments] = useState<any[]>([]);
+  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+  const [selectedPostTitle, setSelectedPostTitle] = useState<string | null>(null);
+  const [commentsWithUserInfo, setCommentsWithUserInfo] = useState<any[]>([]);
 
   const columns = [
     { key: "profilePicture", label: "PROFILE PICTURE" },
@@ -126,6 +131,47 @@ export default function CommunityPostManagement() {
     }
   };
 
+  const handleCommentsClick = async (postId: string) => {
+    try {
+      const postResponse = await instance.get(`${config.serverAddress}/post/${postId}`);
+      const post = postResponse.data;
+
+      const commentsResponse = await instance.get(
+        `${config.serverAddress}/post/${postId}/getComments`
+      );
+
+      const commentsWithInfo = commentsResponse.data.map((comment: any) => {
+        const user = userInformationList.find((user) => user.id === comment.userId);
+        return {
+          ...comment,
+          firstName: user?.firstName,
+          lastName: user?.lastName,
+        };
+      });
+
+      setCommentsWithUserInfo(commentsWithInfo);
+      setComments(commentsResponse.data);
+      setSelectedPostId(postId);
+      setSelectedPostTitle(post.title);
+      setIsCommentsModalOpen(true);
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+    }
+  };
+
+  const handleCommentDelete = async (commentId: string, postId: string) => {
+    console.log("Deleting comment with ID: ", commentId)
+    try {
+      await instance.delete(
+        `${config.serverAddress}/post/comments/${commentId}`
+      );
+      handleCommentsClick(postId)
+      popToast("Comment deleted successfully", 1);
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+    }
+  };
+
   // Function to safely render item values
   const renderCellValue = (item: any, columnKey: any) => {
     const value = getKeyValue(item, columnKey);
@@ -174,6 +220,16 @@ export default function CommunityPostManagement() {
                           </div>
                         ) : columnKey === "actions" ? (
                           <div className="flex gap-2">
+                            <Tooltip content="View Comments">
+                              <Button
+                                variant="light"
+                                isIconOnly
+                                onClick={() => handleCommentsClick(item.postId)}
+                                aria-label="View Comments"
+                              >
+                                <EyeIcon />
+                              </Button>
+                            </Tooltip>
                             <Tooltip content="Copy ID">
                               <Button
                                 variant="light"
@@ -211,6 +267,7 @@ export default function CommunityPostManagement() {
         </div>
       )}
 
+      {/* Post Deletion Modal */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -242,6 +299,72 @@ export default function CommunityPostManagement() {
           </>
         </ModalContent>
       </Modal>
-    </div>
+
+      {/* Comments Modal */}
+      <Modal
+        isOpen={isCommentsModalOpen}
+        onClose={() => setIsCommentsModalOpen(false)}
+        isDismissable={false}
+        isKeyboardDismissDisabled={true}
+        className="max-w-6xl max-h-[90vh]" // modal width and height
+      >
+        <ModalContent className="w-full h-full flex flex-col">
+          <ModalHeader>Comments for Post: {selectedPostTitle}</ModalHeader>
+          <ModalBody className="overflow-y-auto flex-1 p-4">
+            {commentsWithUserInfo.length > 0 ? (
+              <div className="w-full overflow-x-auto">
+                <Table aria-label="Comments Table" className="w-full table-fixed">
+                  <TableHeader>
+                    <TableColumn>PROFILE PICTURE</TableColumn>
+                    <TableColumn>FIRST NAME</TableColumn>
+                    <TableColumn>LAST NAME</TableColumn>
+                    <TableColumn>CONTENT</TableColumn>
+                    <TableColumn>ACTIONS</TableColumn>
+                  </TableHeader>
+                  <TableBody items={commentsWithUserInfo}>
+                    {(comment) => (
+                      <TableRow key={comment.id}>
+                        <TableCell>
+                          <Avatar
+                            src={`${config.serverAddress}/users/profile-image/${comment.userId}`}
+                            alt="Profile"
+                            size="lg"
+                          />
+                        </TableCell>
+                        <TableCell>{comment.firstName}</TableCell>
+                        <TableCell>{comment.lastName}</TableCell>
+                        <TableCell className="max-w-sm break-words">{comment.content}</TableCell>
+                        <TableCell>
+                          <Button
+                            variant="light"
+                            isIconOnly
+                            aria-label="Delete-Comment"
+                            className="text-red-500"
+                            onClick={() => handleCommentDelete(comment.id, comment.postId)}
+                          >
+                            <TrashDeleteIcon />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            ) : (
+              <div className="flex w-full justify-center m-auto p-20 text-gray-500">No comments... It's so lonely 🥹</div>
+            )}
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              color="primary"
+              variant="light"
+              onPress={() => setIsCommentsModalOpen(false)}
+            >
+              Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </div >
   );
 }

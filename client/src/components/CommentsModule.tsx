@@ -1,4 +1,3 @@
-import * as Yup from "yup";
 import instance from "../security/http";
 import config from "../config";
 import { useParams } from "react-router-dom";
