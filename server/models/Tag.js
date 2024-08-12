@@ -9,11 +9,17 @@ module.exports = (sequelize, DataTypes) => {
         tag: {
             type: DataTypes.STRING(30),
             allowNull: false,
-            unique: true,  // Ensure tags are unique
         },
     }, {
         tableName: 'tags',
         timestamps: false,
+        // indexes: [
+        //     {
+        //         unique: true,
+        //         fields: ['tag'],  // Unique index on the tag column
+        //         name: 'unique_tag_index',  // Explicitly naming the index
+        //     }
+        // ]
     });
 
     Tag.associate = (models) => {
