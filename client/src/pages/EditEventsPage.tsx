@@ -37,10 +37,9 @@ const validationSchema = Yup.object({
     .required("Date is required"),
   time: Yup.string().required("Time is required"),
   location: Yup.string().required("Location is required"),
-  category: Yup.string().required("Category is required"),
-  slotsAvailable: Yup.number()
-    .integer()
-    .required("Slots Available is required"),
+  category: Yup.string()
+    .oneOf(["Events", "Workshops", "Educational Talks"], "Invalid category")
+    .required("Category is required"),
   evtPicture: Yup.mixed(), // Make this optional if not required
 });
 
@@ -81,7 +80,6 @@ const EditEventsPage = () => {
     time: eventData?.time || "",
     location: eventData?.location || "",
     category: eventData?.category || "",
-    slotsAvailable: eventData?.slotsAvailable || "",
   };
 
   const handleSubmit = async (
@@ -173,19 +171,16 @@ const EditEventsPage = () => {
                   />
                 )}
               </div>
-              <NextUIFormikInput
+              <NextUIFormikSelect
                 label="Category"
                 name="category"
-                type="text"
                 placeholder="Enter event category"
                 labelPlacement="inside"
-              />
-              <NextUIFormikInput
-                label="Slots Available"
-                name="slotsAvailable"
-                type="number"
-                placeholder="Enter slots available"
-                labelPlacement="inside"
+                options={[
+                  { key: 'Events', label: 'Events' },
+                  { key: 'Workshops', label: 'Workshops' },
+                  { key: 'Educational Talks', label: 'Educational Talks' },
+                ]}
               />
               <div className="mb-4 flex flex-col ">
                 <EventsPicture eventId={id as string} editable/>

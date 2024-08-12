@@ -131,13 +131,13 @@ const EventDetailsPage = () => {
     <>
       {event && <div className="w-full h-full p-8">
         <Button
-          className="mb-4 bg-gray-200 text-black rounded px-4 py-2 hover:bg-gray-300"
+          className="mb-4 bg-gray-200 text-black hover:bg-gray-300"
           onClick={() => navigate("/events")} // Navigate directly to the events page
         >
           <ArrowUTurnLeftIcon />
           Back to Events
         </Button>
-        <Card className="bg-white rounded-lg overflow-hidden border">
+        <Card>
           <div className="flex">
             {/* Event Image Section */}
             {event.evtPicture && (
@@ -154,28 +154,28 @@ const EventDetailsPage = () => {
             )}
             {/* Event Details Section */}
             <div className="w-2/3 p-4">
-              <CardHeader className="pb-0 pt-2">
+              <CardHeader className="opacity-75">
                 <h4 className="font-bold text-large">{event.title}</h4>
               </CardHeader>
-              <CardBody className="pb-0 pt-2">
-                <p className="text-gray-600 mt-4">{event.description}</p>
-                <p className="text-gray-600 mt-2">
+              <CardBody>
+                <p className="text-white-600 mt-4 opacity-75">{event.description}</p>
+                <p className="text-white-600 mt-2 opacity-75">
                   <strong>Date:</strong> {new Date(event.date).toLocaleDateString()}
                 </p>
-                <p className="text-gray-600 mt-2">
+                <p className="text-white-600 mt-2 opacity-75">
                   <strong>Time:</strong> {event.time}
                 </p>
-                <p className="text-gray-600 mt-2">
+                <p className="text-white-600 mt-2 opacity-75">
                   <strong>Location:</strong> {event.location}
                 </p>
-                <p className="text-gray-600 mt-2">
+                <p className="text-white-600 mt-2 opacity-75">
                   <strong>Category:</strong> {event.category}
                 </p>
-                <p className="text-gray-600 mt-2">
+                <p className="text-white-600 mt-2 opacity-75">
                   <strong>Slots Available:</strong> {event.slotsAvailable}
                 </p>
                 <Button
-                  className="mt-4 bg-red-500 text-white rounded px-4 py-2 hover:bg-red-600"
+                  className="mt-4 bg-red-500 text-white hover:bg-red-600"
                   onClick={() => handleRegister()}
                   disabled={isRegistering}
                 >
@@ -193,17 +193,16 @@ const EventDetailsPage = () => {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {similarEvents.length === 0 ? (
-              <p className="text-gray-600">No similar events available.</p>
+              <p className="text-white-600 opacity-75">No similar events available.</p>
             ) : (
               similarEvents.map((similarEvent: any) => (
                 <Card
                   key={similarEvent.id}
-                  className="bg-white rounded-lg overflow-hidden border"
                 >
-                  <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
+                  <CardHeader className="opacity-75">
                     <h4 className="font-bold text-large">{similarEvent.title}</h4>
                   </CardHeader>
-                  <CardBody className="pb-0 pt-2 px-4 flex-col items-start">
+                  <CardBody>
                     {similarEvent.evtPicture && (
                       <div style={{
                         width: '450px',
@@ -232,7 +231,7 @@ const EventDetailsPage = () => {
                   </CardBody>
                   <CardFooter className="flex flex-col items-start p-4">
                     <Button
-                      className="bg-primary-600 text-white rounded px-4 py-2 hover:bg-primary-700"
+                       className="bg-primary-600 text-white py-2 hover:bg-primar"
                       onClick={() => {
                         console.log(`Navigating to event details for ID: ${similarEvent.id}`);
                         console.log("Access Token:", localStorage.getItem("accessToken"));
