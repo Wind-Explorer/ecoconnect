@@ -7,6 +7,7 @@ import {
   Modal,
   ModalBody,
   ModalContent,
+  ModalFooter,
   ModalHeader,
 } from "@nextui-org/react";
 import { ArrowUTurnLeftIcon } from "../icons";
@@ -274,76 +275,93 @@ export default function HBFormPage() {
                 <Form>
                   <div className="flex flex-col gap-4 p-4">
                     <div className="flex flex-row gap-4">
-                      <div className="flex flex-col gap-4 min-w-[220px]">
-                        <div className=" hidden">
-                          <NextUIFormikInput
-                            label="Number of dependents"
-                            name="avgBill"
-                            type="text"
-                            placeholder=""
-                            labelPlacement="inside"
-                            setFieldValue={setFieldValue}
-                          />
-                          <NextUIFormikInput
-                            label="Number of dependents"
-                            name="totalBill"
-                            type="text"
-                            placeholder=""
-                            labelPlacement="inside"
-                            setFieldValue={setFieldValue}
-                          />
-                          <NextUIFormikInput
-                            label="Number of dependents"
-                            name="waterBill"
-                            type="text"
-                            placeholder=""
-                            labelPlacement="inside"
-                            setFieldValue={setFieldValue}
-                          />
-                          <NextUIFormikInput
-                            label="Number of dependents"
-                            name="electricalBill"
-                            type="text"
-                            placeholder=""
-                            labelPlacement="inside"
-                            setFieldValue={setFieldValue}
-                          />
-                        </div>
-                        <Card className="flex flex-col gap-2 p-4">
-                          <p className="text-md font-semibold">
-                            How many people lives in your unit?
-                          </p>
-                          <NextUIFormikInput
-                            label="Number of dependents"
-                            name="noOfDependents"
-                            type="text"
-                            placeholder=""
-                            labelPlacement="inside"
-                            setFieldValue={setFieldValue}
-                          />
-                        </Card>
-                        <Card className="p-4 flex flex-col gap-4">
-                          <div>
-                            <p className="opacity-70">Total amount payable:</p>
-                            {aiProcessing && (
-                              <div className="w-full *:mx-auto pt-4">
-                                <CircularProgress label="Analyzing..." />
-                              </div>
-                            )}
-                            {!aiProcessing && (
-                              <p className="text-2xl font-semibold">
-                                S${values.totalBill}
-                              </p>
-                            )}
+                      <div className="flex flex-col gap-4 justify-between">
+                        <div className="flex flex-col gap-4 min-w-[220px]">
+                          <div className=" hidden">
+                            <NextUIFormikInput
+                              label="Number of dependents"
+                              name="avgBill"
+                              type="text"
+                              placeholder=""
+                              labelPlacement="inside"
+                              setFieldValue={setFieldValue}
+                            />
+                            <NextUIFormikInput
+                              label="Number of dependents"
+                              name="totalBill"
+                              type="text"
+                              placeholder=""
+                              labelPlacement="inside"
+                              setFieldValue={setFieldValue}
+                            />
+                            <NextUIFormikInput
+                              label="Number of dependents"
+                              name="waterBill"
+                              type="text"
+                              placeholder=""
+                              labelPlacement="inside"
+                              setFieldValue={setFieldValue}
+                            />
+                            <NextUIFormikInput
+                              label="Number of dependents"
+                              name="electricalBill"
+                              type="text"
+                              placeholder=""
+                              labelPlacement="inside"
+                              setFieldValue={setFieldValue}
+                            />
                           </div>
-                          <Divider />
-                          <div>
-                            <p className="opacity-70">Cost per dependent:</p>
-                            <p className="text-3xl font-bold">
-                              S${values.avgBill}
+                          <Card className="flex flex-col gap-2 p-4">
+                            <p className="text-md font-semibold">
+                              How many people lives in your unit?
                             </p>
-                          </div>
-                        </Card>
+                            <NextUIFormikInput
+                              label="Number of dependents"
+                              name="noOfDependents"
+                              type="text"
+                              placeholder=""
+                              labelPlacement="inside"
+                              setFieldValue={setFieldValue}
+                            />
+                          </Card>
+                          <Card className="p-4 flex flex-col gap-4">
+                            <div>
+                              <p className="opacity-70">
+                                Total amount payable:
+                              </p>
+                              {aiProcessing && (
+                                <div className="w-full *:mx-auto pt-4">
+                                  <CircularProgress label="Analyzing..." />
+                                </div>
+                              )}
+                              {!aiProcessing && (
+                                <p className="text-2xl font-semibold">
+                                  S${values.totalBill}
+                                </p>
+                              )}
+                            </div>
+                            <Divider />
+                            <div>
+                              <p className="opacity-70">Cost per dependent:</p>
+                              <p className="text-3xl font-bold">
+                                S${values.avgBill}
+                              </p>
+                            </div>
+                          </Card>
+                        </div>
+                        <Button
+                          type="submit"
+                          className="bg-red-400 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-900 text-white"
+                          size="lg"
+                          isDisabled={
+                            !isValid ||
+                            !dirty ||
+                            isSubmitting ||
+                            isSubmitDisabled
+                          }
+                        >
+                          <p>Submit</p>
+                        </Button>
                       </div>
                       <div className="flex flex-row">
                         <InsertBillImage
@@ -359,16 +377,6 @@ export default function HBFormPage() {
                         />
                       </div>
                     </div>
-                    <Button
-                      type="submit"
-                      className="bg-red-400 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-900 text-white"
-                      size="lg"
-                      isDisabled={
-                        !isValid || !dirty || isSubmitting || isSubmitDisabled
-                      }
-                    >
-                      <p>Submit</p>
-                    </Button>
                   </div>
                   <Modal
                     isOpen={isModalOpen}
@@ -377,21 +385,19 @@ export default function HBFormPage() {
                     isKeyboardDismissDisabled={true}
                   >
                     <ModalContent className="w-full max-w-[400px]">
-                      <ModalHeader className="flex justify-between items-center font-bold text-2xl text-red-900">
-                        Confirmation
-                      </ModalHeader>
+                      <ModalHeader>Confirmation</ModalHeader>
                       <ModalBody className="pb-8">
-                        <div className="space-y-4 text-gray-700 dark:text-gray-300">
-                          <p className="font-semibold">
+                        <div>
+                          <p>
                             This form has been submitted before. If you submit
                             again, the previous entry will be deleted. Are you
                             sure you want to resubmit?
                           </p>
                         </div>
-                        <div className="flex justify-between">
+                      </ModalBody>
+                      <ModalFooter>
+                        <div className="flex flex-row gap-4">
                           <Button
-                            className="bg-red-400 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-900 text-white"
-                            size="lg"
                             onPress={() =>
                               handleModalSubmit({
                                 values,
@@ -404,15 +410,11 @@ export default function HBFormPage() {
                           >
                             Yes
                           </Button>
-                          <Button
-                            className="bg-gray-400 hover:bg-gray-700 dark:bg-gray-700 dark:hover:bg-gray-900 text-white"
-                            size="lg"
-                            onPress={handleModalCancel}
-                          >
+                          <Button color="primary" onPress={handleModalCancel}>
                             No
                           </Button>
                         </div>
-                      </ModalBody>
+                      </ModalFooter>
                     </ModalContent>
                   </Modal>
                 </Form>
