@@ -222,7 +222,7 @@ export default function UserVoucherPage() {
                         </div>
                     </ModalBody>
                     <div className="flex justify-end p-4 gap-4">
-                        <Button color="danger" variant="light" onClick={handleCancel}>Cancel</Button>
+                        <Button variant="light" onClick={handleCancel}>Cancel</Button>
                         <Button color="danger" onClick={handleConfirm}>Yes</Button>
                     </div>
                 </ModalContent>

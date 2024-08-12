@@ -215,13 +215,11 @@ export default function Ranking() {
                 return;
             }
 
-            // Function to get a random voucher from the available vouchers
             const getRandomVouchers = (count: number): Voucher[] => {
                 const shuffled = vouchers.sort(() => 0.5 - Math.random());
                 return shuffled.slice(0, count);
             };
 
-            // Group users by town council
             const townCouncilGroups: Record<string, FormDataWithUser[]> = {};
             topUsers.forEach(user => {
                 if (!townCouncilGroups[user.userTownCouncil]) {
@@ -230,9 +228,7 @@ export default function Ranking() {
                 townCouncilGroups[user.userTownCouncil].push(user);
             });
 
-            // Iterate over each town council and assign vouchers
             for (const [townCouncil, users] of Object.entries(townCouncilGroups)) {
-                // Sort users by avgBill and pick top 3
                 const top3 = users.sort((a, b) => b.avgBill - a.avgBill).slice(0, 3);
 
                 for (let i = 0; i < top3.length; i++) {
@@ -240,11 +236,11 @@ export default function Ranking() {
                     let voucherCount = 0;
 
                     if (i === 0) {
-                        voucherCount = 3; // Top 1 gets 3 vouchers
+                        voucherCount = 3;
                     } else if (i === 1) {
-                        voucherCount = 2; // Top 2 gets 2 vouchers
+                        voucherCount = 2;
                     } else if (i === 2) {
-                        voucherCount = 1; // Top 3 gets 1 voucher
+                        voucherCount = 1;
                     }
 
                     const vouchersToAssign = getRandomVouchers(voucherCount);
@@ -254,14 +250,28 @@ export default function Ranking() {
                             userId: user.userId,
                             voucherId: voucher.id,
                         });
+
+                        try {
+                            const voucherId = voucher.id;
+                            const response = await instance.put(`${config.serverAddress}/vouchers/update-quantity/${voucherId}`, {
+                                quantityToSubtract: 1
+                            });
+
+                            if (response.status !== 200) {
+                                console.error(`Failed to update voucher quantity for voucherId: ${voucher.id}`);
+                            }
+                        } catch (error) {
+                            console.error(`Error updating voucher quantity for voucherId: ${voucher.id}`, error);
+                            throw new Error(`Failed to update voucher quantity for voucherId: ${voucher.id}`);
+                        }
                     }
                 }
             }
+            console.log("Vouchers assigned successfully");
         } catch (error) {
             console.error("Failed to assign vouchers:", error);
         }
     };
-
 
 
     const handleGiveVouchers = async () => {
@@ -281,7 +291,6 @@ export default function Ranking() {
         key: townCouncil, // Use key instead of value
         label: townCouncil,
     }));
-
 
     return (
         <div className="flex flex-col gap-8 p-8">
@@ -316,8 +325,6 @@ export default function Ranking() {
                 <TableHeader>
                     <TableColumn>Rank</TableColumn>
                     <TableColumn>User Name</TableColumn>
-                    <TableColumn>Electrical Bill</TableColumn>
-                    <TableColumn>Water Bill</TableColumn>
                     <TableColumn>Total Bill</TableColumn>
                     <TableColumn>Dependents</TableColumn>
                     <TableColumn>
@@ -332,8 +339,6 @@ export default function Ranking() {
                         <TableRow key={data.id}>
                             <TableCell>{index + 1}</TableCell>
                             <TableCell>{data.userName}</TableCell>
-                            <TableCell>${data.electricalBill.toFixed(2)}</TableCell>
-                            <TableCell>${data.waterBill.toFixed(2)}</TableCell>
                             <TableCell>${data.totalBill.toFixed(2)}</TableCell>
                             <TableCell>{data.noOfDependents}</TableCell>
                             <TableCell>${data.avgBill.toFixed(2)}</TableCell>

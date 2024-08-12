@@ -22,7 +22,7 @@ const initialValues = {
     time: "",
     location: "",
     postalCode: "",
-    status: "Up coming" // Set the default status
+    status: "Upcoming" // Set the default status
 };
 
 
@@ -57,7 +57,7 @@ export default function CreateSchedulePage() {
         data.dateTime = dateTime.toISOString();
         data.location = data.location.trim();
         data.postalCode = data.postalCode.trim();
-        data.status = "Up coming"; // Set status to "Up coming" explicitly
+        data.status = "Upcoming"; // Set status to "Up coming" explicitly
 
         console.log("Data to be sent:", data);
 

@@ -16,7 +16,7 @@ interface Schedule {
 const determineStatus = (dateTime: string): string => {
     const now = dayjs();
     const scheduleDateTime = dayjs(dateTime);
-    return scheduleDateTime.isAfter(now) ? "Up coming" : "Ended";
+    return scheduleDateTime.isAfter(now) ? "Upcoming" : "Ended";
 };
 
 export default function ManageSchedulePage() {

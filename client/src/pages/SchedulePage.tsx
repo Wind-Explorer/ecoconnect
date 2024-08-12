@@ -160,13 +160,13 @@ export default function SchedulePage() {
               ))}
             </TableBody>
           </Table>
-          <div className="flex flex-row gap-4"> {/* Adjust gap size as needed */}
-            <div className="flex-1 p-4"> {/* Flex 1 for equal sizing and padding */}
-              <Card className="h-full bg-gray-50 shadow-lg border border-gray-200">
+          <div className="flex flex-row gap-4">
+            <div className="flex-1 p-4">
+              <Card className="h-full bg-gray-50 border border-gray-200">
                 <CardBody>
-                  <p className="text-lg font-semibold text-blue-600 mb-2">Paper</p>
+                  <p className="text-2xl font-semibold text-blue-600 mb-2">Paper</p>
                   <p className="text-xl font-bold text-gray-800 mb-4">$0.05 to 0.20/KG</p>
-                  <ul className="list-disc list-inside pl-4 text-gray-700">
+                  <ul className="list-disc list-inside pl-4 text-gray-700 list-none">
                     <li>Cardboard ($0.20/kg)</li>
                     <li>Newspaper and B&W ($0.11/kg)</li>
                     <li>Mix paper ($0.05/kg)</li>
@@ -175,11 +175,11 @@ export default function SchedulePage() {
               </Card>
             </div>
             <div className="flex-1 p-4">
-              <Card className="h-full bg-gray-50 shadow-lg border border-gray-200">
+              <Card className="h-full bg-gray-50 border border-gray-200">
                 <CardBody>
-                  <p className="text-lg font-semibold text-green-600 mb-2">Electronics</p>
+                  <p className="text-2xl font-semibold text-green-600 mb-2">Electronics</p>
                   <p className="text-xl font-bold text-gray-800 mb-4">$2 to 50/KG</p>
-                  <ul className="list-disc list-inside pl-4 text-gray-700">
+                  <ul className="list-disc list-inside pl-4 text-gray-700 list-none">
                     <li>Flat TV ($5++)</li>
                     <li>Laptop ($10++)</li>
                     <li>Smartphone ($10++)</li>
@@ -188,11 +188,11 @@ export default function SchedulePage() {
               </Card>
             </div>
             <div className="flex-1 p-4">
-              <Card className="h-full bg-gray-50 shadow-lg border border-gray-200">
+              <Card className="h-full bg-gray-50 border border-gray-200">
                 <CardBody>
-                  <p className="text-lg font-semibold text-red-600 mb-2">Clothes</p>
+                  <p className="text-2xl font-semibold text-red-600 mb-2">Clothes</p>
                   <p className="text-xl font-bold text-gray-800 mb-4">$0.20/KG</p>
-                  <ul className="list-disc list-inside pl-4 text-gray-700">
+                  <ul className="list-disc list-inside pl-4 text-gray-700 list-none">
                     <li>Shoe</li>
                     <li>Jewellery</li>
                     <li>Bag</li>

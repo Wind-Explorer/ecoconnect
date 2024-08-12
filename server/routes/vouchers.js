@@ -51,7 +51,6 @@ router.post(
     }
 );
 
-
 router.get("/", async (req, res) => {
     let condition = {};
     let search = req.query.search;
@@ -147,6 +146,58 @@ router.delete("/:id", async (req, res) => {
         res.status(400).json({
             message: `Cannot delete voucher with id ${id}.`
         });
+    }
+});
+
+router.patch("/:id/quantity", async (req, res) => {
+    const { id } = req.params;
+    const { decrementBy } = req.body;  // Expecting the decrement amount in the request body
+
+    try {
+        const voucher = await Voucher.findById(id);
+        if (!voucher) {
+            return res.status(404).send("Voucher not found");
+        }
+
+        voucher.quantityAvailable -= decrementBy;
+        await voucher.save();
+
+        res.send({ message: "Voucher quantity updated", voucher });
+    } catch (error) {
+        res.status(500).send("Error updating voucher quantity");
+    }
+});
+router.put("/update-quantity/:id", async (req, res) => {
+    let id = req.params.id;
+
+    let vouchers = await Voucher.findByPk(id);
+    if (!vouchers) {
+        res.sendStatus(404);
+        return;
+    }
+
+    try {
+        let newQuantity = vouchers.quantityAvailable - req.body.quantityToSubtract;
+
+        if (newQuantity < 0) newQuantity = 0;
+
+        let num = await Voucher.update(
+            { quantityAvailable: newQuantity },
+            { where: { id: id } }
+        );
+
+        if (num == 1) {
+            res.json({
+                message: "Voucher quantity was updated successfully.",
+            });
+        } else {
+            res.status(400).json({
+                message: `Cannot update voucher with id ${id}.`,
+            });
+        }
+    } catch (err) {
+        console.error("Error:", err);
+        res.status(400).json({ errors: err.errors });
     }
 });
 

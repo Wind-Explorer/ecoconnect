@@ -111,13 +111,13 @@ router.patch("/:id/status", async (req, res) => {
         const schedule = await Schedule.findByPk(id);
 
         if (!schedule) {
-            return res.status(404).json({ message: 'Schedule not found' });
+            return res.status(404).json({ message: "Schedule not found" });
         }
 
         const now = dayjs();
         const scheduleDateTime = dayjs(schedule.dateTime);
 
-        const newStatus = scheduleDateTime.isAfter(now) ? "Up coming" : "Ended";
+        const newStatus = scheduleDateTime.isAfter(now) ? "Upcoming" : "Ended";
         schedule.status = newStatus;
 
         await schedule.save();
