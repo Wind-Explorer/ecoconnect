@@ -40,8 +40,13 @@ const EventsPage: React.FC = () => {
           `${config.serverAddress}/events`
         );
         console.log("Fetched events data:", res.data);
-        setEvents(res.data);
-        setFilteredEvents(res.data);
+
+        // Filter out past events
+        const now = new Date();
+        const futureEvents = res.data.filter(event => new Date(event.date) > now);
+
+        setEvents(futureEvents);
+        setFilteredEvents(futureEvents);
 
         // Extract unique categories and locations from events
         const uniqueCategories = Array.from(

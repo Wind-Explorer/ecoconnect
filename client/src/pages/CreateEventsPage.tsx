@@ -31,7 +31,9 @@ const validationSchema = Yup.object({
       "Only letters, numbers, commas, spaces, exclamation marks, quotations, and common symbols are allowed"
     )
     .required("Description is required"),
-  date: Yup.date().required("Date is required"),
+  date: Yup.date()
+    .min(new Date(), "Date must be in the future")
+    .required("Date is required"),
   time: Yup.string().required("Time is required"),
   location: Yup.string().required("Location is required"),
   category: Yup.string().required("Category is required"),
