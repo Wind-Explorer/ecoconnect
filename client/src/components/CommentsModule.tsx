@@ -24,6 +24,11 @@ export default function CommentsModule() {
 
     let postId = id
 
+    // Function to get the profile picture URL
+    const getProfilePicture = (userId: string): string => {
+        return `${config.serverAddress}/users/profile-image/${userId}`;
+    };
+
     const getComments = async () => {
         instance
             .get(config.serverAddress + `/post/${postId}/getComments`).then((res) => {
@@ -47,21 +52,26 @@ export default function CommentsModule() {
                 <div className="w-8/12 mx-auto">
                     {commentList.length > 0 ? (
                         commentList.map((comment) => {
-                            // console.log(comment); // Log each comment to verify its structure
-                            // // Check if `comment.user` is defined before accessing properties
-                            // const user = comment.user || { firstName: "Unknown", lastName: "" };
+                            const user = comment.user; // Get the user object from the comment
+
+                            if (!user) {
+                                console.error("User object is undefined for comment:", comment);
+                                return null; // Skip rendering this comment if user is undefined
+                            }
+
+                            const profilePictureUrl = getProfilePicture(user.id); // Get the user's profile picture
                             return (
                                 <div className="flex flex-col w-full bg-primary-50 dark:bg-primary-950 rounded-xl mb-2 p-3 mx-auto"
                                     key={comment.id}>
                                     <div className="flex flex-row flex-shrink-0 w-full">
                                         <div>
                                             <Avatar
-                                                src="https://pbs.twimg.com/media/GOva9x5a0AAK8Bn?format=jpg&name=large"
+                                                src={profilePictureUrl}
                                                 size="md"
                                             />
                                         </div>
                                         <div className="flex flex-col w-10/12 flex-grow text-sm ml-3">
-                                            <div className="font-bold">Name</div>
+                                            <div className="font-bold">{user.firstName} {user.lastName}</div>
                                             <div className="break-words whitespace-pre-wrap">{comment.content}</div>
                                         </div>
                                         <div className="flex-shrink-0 ml-10">

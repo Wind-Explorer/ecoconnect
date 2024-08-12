@@ -309,6 +309,7 @@ router.get("/:id/getComments", async (req, res) => {
     include: [
       {
         model: User,
+        as: "user",
         attributes: ["id", "firstName", "lastName"], // Specify the attributes you need
       },
     ],
