@@ -246,7 +246,7 @@ export default function HBFormPage() {
 
   return (
     <div className="w-full h-full">
-      <Card className="relative max-w-[800px] mx-auto *:mx-auto bg-primary-50 dark:bg-primary-950">
+      <Card className="relative max-w-[800px] mx-auto *:mx-auto bg-primary-50 dark:bg-neutral-950">
         <div className="absolute top-2 left-2">
           <Button variant="light" isIconOnly onPress={() => navigate(-1)}>
             <ArrowUTurnLeftIcon />
