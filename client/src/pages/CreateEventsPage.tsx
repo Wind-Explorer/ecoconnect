@@ -134,7 +134,7 @@ const CreateEventsPage = () => {
           <ArrowUTurnLeftIcon />
         </Button>
       </section>
-      <section className="w-8/12 mx-auto p-5 bg-red-100 border border-none rounded-2xl">
+      <section className="w-8/12 mx-auto p-5 bg-primary-100 border border-none rounded-2xl">
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
@@ -209,10 +209,10 @@ const CreateEventsPage = () => {
                   }}
                 />
               </div>
-              <div className="flex flex-row-reverse border">
+              <div className="flex flex-row-reverse">
                 <Button
                   type="submit"
-                  className="bg-red-600 text-white text-xl w-1/6"
+                  className="bg-primary-600 text-white text-xl w-1/6"
                   disabled={!isValid || !dirty || isSubmitting || !imageFile}
                 >
                   <p>Create Event</p>

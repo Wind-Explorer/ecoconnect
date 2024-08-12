@@ -14,7 +14,7 @@ import {
   ModalFooter,
 } from "@nextui-org/react";
 import { useNavigate } from "react-router-dom";
-import { PencilSquareIcon, TrashIcon } from "../icons";
+import { PencilSquareIcon, TrashDeleteIcon } from "../icons";
 import axios from "axios";
 import config from "../config";
 
@@ -62,7 +62,7 @@ const ManageEventsPage = () => {
   return (
     <div className="w-full h-full">
       <div className="mb-6">
-        <h2 className="text-3xl font-semibold text-red-600">Manage Events</h2>
+        <h2 className="text-3xl font-semibold text-primary-600">Manage Events</h2>
       </div>
       <Table aria-label="Manage Events Table">
         <TableHeader>
@@ -116,20 +116,20 @@ const ManageEventsPage = () => {
               <TableCell>
                 <div className="flex space-x-2">
                   <Button
-                    size="sm"
-                    variant="flat"
-                    color="primary"
+                    isIconOnly
+                    variant="light"
+                    color="success"
                     onPress={() => handleEdit(event.id)}
                   >
                     <PencilSquareIcon />
                   </Button>
                   <Button
-                    size="sm"
-                    variant="flat"
+                    isIconOnly
+                    variant="light"
                     color="danger"
                     onPress={() => handleDeleteClick(event.id)}
                   >
-                    <TrashIcon />
+                    <TrashDeleteIcon />
                   </Button>
                 </div>
               </TableCell>
@@ -138,7 +138,7 @@ const ManageEventsPage = () => {
         </TableBody>
       </Table>
       <Button
-        className="mt-6 bg-red-600 text-white"
+        className="mt-6 bg-primary-600 text-white"
         onPress={() => navigate("createEvent")}
       >
         Add events

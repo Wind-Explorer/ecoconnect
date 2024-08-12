@@ -13,6 +13,8 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
+  Image,
+  Chip
 } from "@nextui-org/react";
 import { ArrowUTurnLeftIcon } from "../icons"; // Make sure this path is correct
 
@@ -140,22 +142,18 @@ const EventDetailsPage = () => {
         <Card>
           <div className="flex">
             {/* Event Image Section */}
-            {event.evtPicture && (
-              <div className="w-1/3 p-4">
+            <div className="w-1/3 p-4">
                 <img
                   src={`${config.serverAddress}/events/evtPicture/${event.id}`}
                   alt="Event Picture"
-                  className="w-full h-auto rounded-lg"
-                  style={{
-                    objectFit: 'cover',
-                  }}
+                  className="w-full h-auto rounded-lg object-cover"
+                  
                 />
               </div>
-            )}
             {/* Event Details Section */}
             <div className="w-2/3 p-4">
               <CardHeader className="opacity-75">
-                <h4 className="font-bold text-large">{event.title}</h4>
+                <h4 className="font-bold text-3xl">{event.title}</h4>
               </CardHeader>
               <CardBody>
                 <p className="text-white-600 mt-4 opacity-75">{event.description}</p>
@@ -175,7 +173,7 @@ const EventDetailsPage = () => {
                   <strong>Slots Available:</strong> {event.slotsAvailable}
                 </p>
                 <Button
-                  className="mt-4 bg-red-500 text-white hover:bg-red-600"
+                  className="mt-4 bg-primary-500 text-white hover:bg-primary-600"
                   onClick={() => handleRegister()}
                   disabled={isRegistering}
                 >
@@ -198,49 +196,36 @@ const EventDetailsPage = () => {
               similarEvents.map((similarEvent: any) => (
                 <Card
                   key={similarEvent.id}
+                  className="p-4 min-w-80 flex flex-col justify-between gap-4"
                 >
-                  <CardHeader className="opacity-75">
-                    <h4 className="font-bold text-large">{similarEvent.title}</h4>
-                  </CardHeader>
-                  <CardBody>
-                    {similarEvent.evtPicture && (
-                      <div style={{
-                        width: '450px',
-                        height: '300px',
-                        overflow: 'hidden',
-                        borderRadius: '8px',
-                        position: 'relative'
-                      }}>
-                        <img
-                          src={`${config.serverAddress}/events/evtPicture/${similarEvent.id}`}
-                          alt="Event Picture"
-                          style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover',
-                            position: 'absolute',
-                            top: 0,
-                            left: 0
-                          }}
-                          onError={(e) => {
-                            e.currentTarget.src = '/path/to/placeholder-image.png'; // Fallback image if loading fails
-                          }}
-                        />
+                  <div className="flex flex-col gap-4">
+                    <img
+                      alt={similarEvent.title}
+                      src={`${config.serverAddress}/events/evtPicture/${similarEvent.id}`}
+                      className="rounded-xl h-48 object-cover"
+                    />
+                    <div className="flex flex-col gap-2">
+                      <p className="text-xl font-bold text-wrap overflow-hidden overflow-ellipsis whitespace-nowrap">
+                        {similarEvent.title}
+                      </p>
+                      <p className="text-wrap overflow-hidden overflow-ellipsis line-clamp-2">
+                        {similarEvent.description}
+                      </p>
+                      <div className="flex flex-row gap-2">
+                        <Chip>{similarEvent.category}</Chip>
+                        <Chip>{similarEvent.time}</Chip>
                       </div>
-                    )}
-                  </CardBody>
-                  <CardFooter className="flex flex-col items-start p-4">
-                    <Button
-                       className="bg-primary-600 text-white py-2 hover:bg-primar"
-                      onClick={() => {
-                        console.log(`Navigating to event details for ID: ${similarEvent.id}`);
-                        console.log("Access Token:", localStorage.getItem("accessToken"));
-                        navigate(`/events/view/${similarEvent.id}`);
-                      }}
-                    >
-                      View event details
-                    </Button>
-                  </CardFooter>
+                    </div>
+                  </div>
+                  <Button
+                    color="primary"
+                    variant="flat"
+                    onClick={() => {
+                      navigate(`/events/view/${similarEvent.id}`);
+                    }}
+                  >
+                    Visit
+                  </Button>
                 </Card>
               ))
             )}

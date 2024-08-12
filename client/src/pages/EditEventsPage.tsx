@@ -122,7 +122,7 @@ const EditEventsPage = () => {
           <ArrowUTurnLeftIcon />
         </Button>
       </section>
-      <section className="w-8/12 mx-auto p-5 bg-red-100 border border-none rounded-2xl">
+      <section className="w-8/12 mx-auto p-5 bg-primary-100 border border-none rounded-2xl">
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
@@ -185,10 +185,10 @@ const EditEventsPage = () => {
               <div className="mb-4 flex flex-col ">
                 <EventsPicture eventId={id as string} editable/>
               </div>
-              <div className="flex flex-row-reverse border">
+              <div className="flex flex-row-reverse">
                 <Button
                   type="submit"
-                  className="bg-red-600 text-white text-xl"
+                  className="bg-primary-600 text-white text-xl"
                   disabled={!isValid || !dirty || isSubmitting}
                 >
                   <p>Save</p>
