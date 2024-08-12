@@ -39,14 +39,19 @@ export default function SignInModule() {
     instance
       .post(config.serverAddress + "/users/login", values)
       .then((response) => {
+        console.log("logging in");
         localStorage.setItem("accessToken", response.data.accessToken);
-        retrieveUserInformation().then((value) => {
-          if (value.accountType == 2) {
-            navigate("/admin");
-          } else {
-            window.location.reload();
-          }
-        });
+        retrieveUserInformation()
+          .then((value) => {
+            if (value.accountType == 2) {
+              navigate("/admin");
+            } else {
+              window.location.reload();
+            }
+          })
+          .catch(() => {
+            navigate("/account-inaccessible");
+          });
       })
       .catch((error) => {
         popErrorToast(error);

@@ -36,7 +36,7 @@ import FeedbackPage from "./pages/FeedbackPage";
 import UserVouchersPage from "./pages/UserVouchersPage";
 import ManageFeedbacksPage from "./pages/ManageFeedbacksPage";
 import TagManagement from "./pages/TagManagement";
-
+import AccoutnInaccessiblePage from "./pages/AccountInaccessiblePage";
 
 function App() {
   return (
@@ -81,8 +81,6 @@ function App() {
             <Route element={<UserVouchersPage />} path="user-voucher" />
           </Route>
 
-          
-
           {/* Special (Restricted) Routes */}
           <Route element={<RestrictedLayout />}>
             <Route element={<ForgotPasswordPage />} path="forgot-password" />
@@ -91,6 +89,10 @@ function App() {
               path="reset-password/:token"
             />
             <Route element={<FeedbackPage />} path="feedback" />
+            <Route
+              element={<AccoutnInaccessiblePage />}
+              path="account-inaccessible"
+            />
           </Route>
         </Route>
 
