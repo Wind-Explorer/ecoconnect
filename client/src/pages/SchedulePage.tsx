@@ -160,47 +160,81 @@ export default function SchedulePage() {
               ))}
             </TableBody>
           </Table>
-          <div className="flex flex-row gap-4">
-            <div className="flex-1 p-4">
-              <Card className="h-full bg-gray-50 border border-gray-200">
-                <CardBody>
-                  <p className="text-2xl font-semibold text-blue-600 mb-2">Paper</p>
-                  <p className="text-xl font-bold text-gray-800 mb-4">$0.05 to 0.20/KG</p>
-                  <ul className="list-disc list-inside pl-4 text-gray-700 list-none">
-                    <li>Cardboard ($0.20/kg)</li>
-                    <li>Newspaper and B&W ($0.11/kg)</li>
-                    <li>Mix paper ($0.05/kg)</li>
-                  </ul>
-                </CardBody>
-              </Card>
-            </div>
-            <div className="flex-1 p-4">
-              <Card className="h-full bg-gray-50 border border-gray-200">
-                <CardBody>
-                  <p className="text-2xl font-semibold text-green-600 mb-2">Electronics</p>
-                  <p className="text-xl font-bold text-gray-800 mb-4">$2 to 50/KG</p>
-                  <ul className="list-disc list-inside pl-4 text-gray-700 list-none">
-                    <li>Flat TV ($5++)</li>
-                    <li>Laptop ($10++)</li>
-                    <li>Smartphone ($10++)</li>
-                  </ul>
-                </CardBody>
-              </Card>
-            </div>
-            <div className="flex-1 p-4">
-              <Card className="h-full bg-gray-50 border border-gray-200">
-                <CardBody>
-                  <p className="text-2xl font-semibold text-red-600 mb-2">Clothes</p>
-                  <p className="text-xl font-bold text-gray-800 mb-4">$0.20/KG</p>
-                  <ul className="list-disc list-inside pl-4 text-gray-700 list-none">
-                    <li>Shoe</li>
-                    <li>Jewellery</li>
-                    <li>Bag</li>
-                  </ul>
-                </CardBody>
-              </Card>
+
+          <div className="flex flex-col gap-8">
+            <div className="p-6 bg-red-50 dark:bg-primary-950 border border-primary-100 rounded-lg">
+              <p className="text-2xl font-bold">Pricing</p>
+              <div className="flex flex-row gap-4">
+                <div className="flex-1 p-4">
+                  <Card className="h-full bg-white dark:bg-gray-800 shadow-md rounded-lg border border-gray-200 dark:border-gray-700">
+                    <CardBody className="p-6">
+                      <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Paper</p>
+                      <p className="text-xl font-bold text-gray-800 dark:text-white mb-4">$0.05 to 0.20/KG</p>
+                      <ul className="list-none pl-0 text-gray-700 dark:text-gray-300 space-y-2">
+                        <li className="flex items-start">
+                          <span className="inline-block w-2 h-2 mr-2 bg-gray-500 dark:bg-gray-400 rounded-full mt-1"></span>
+                          Cardboard ($0.20/kg)
+                        </li>
+                        <li className="flex items-start">
+                          <span className="inline-block w-2 h-2 mr-2 bg-gray-500 dark:bg-gray-400 rounded-full mt-1"></span>
+                          Newspaper and B&W ($0.11/kg)
+                        </li>
+                        <li className="flex items-start">
+                          <span className="inline-block w-2 h-2 mr-2 bg-gray-500 dark:bg-gray-400 rounded-full mt-1"></span>
+                          Mix paper ($0.05/kg)
+                        </li>
+                      </ul>
+                    </CardBody>
+                  </Card>
+                </div>
+                <div className="flex-1 p-4">
+                  <Card className="h-full bg-white dark:bg-gray-800 shadow-md rounded-lg border border-gray-200 dark:border-gray-700">
+                    <CardBody className="p-6">
+                      <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Electronics</p>
+                      <p className="text-xl font-bold text-gray-800 dark:text-white mb-4">$2 to 50/KG</p>
+                      <ul className="list-none pl-0 text-gray-700 dark:text-gray-300 space-y-2">
+                        <li className="flex items-start">
+                          <span className="inline-block w-2 h-2 mr-2 bg-gray-500 dark:bg-gray-400 rounded-full mt-1"></span>
+                          Flat TV ($5++)
+                        </li>
+                        <li className="flex items-start">
+                          <span className="inline-block w-2 h-2 mr-2 bg-gray-500 dark:bg-gray-400 rounded-full mt-1"></span>
+                          Laptop ($10++)
+                        </li>
+                        <li className="flex items-start">
+                          <span className="inline-block w-2 h-2 mr-2 bg-gray-500 dark:bg-gray-400 rounded-full mt-1"></span>
+                          Smartphone ($10++)
+                        </li>
+                      </ul>
+                    </CardBody>
+                  </Card>
+                </div>
+                <div className="flex-1 p-4">
+                  <Card className="h-full bg-white dark:bg-gray-800 shadow-md rounded-lg border border-gray-200 dark:border-gray-700">
+                    <CardBody className="p-6">
+                      <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-2">Clothes</p>
+                      <p className="text-xl font-bold text-gray-800 dark:text-white mb-4">$0.20/KG</p>
+                      <ul className="list-none pl-0 text-gray-700 dark:text-gray-300 space-y-2">
+                        <li className="flex items-start">
+                          <span className="inline-block w-2 h-2 mr-2 bg-gray-500 dark:bg-gray-400 rounded-full mt-1"></span>
+                          Shoe
+                        </li>
+                        <li className="flex items-start">
+                          <span className="inline-block w-2 h-2 mr-2 bg-gray-500 dark:bg-gray-400 rounded-full mt-1"></span>
+                          Jewellery
+                        </li>
+                        <li className="flex items-start">
+                          <span className="inline-block w-2 h-2 mr-2 bg-gray-500 dark:bg-gray-400 rounded-full mt-1"></span>
+                          Bag
+                        </li>
+                      </ul>
+                    </CardBody>
+                  </Card>
+                </div>
+              </div>
             </div>
           </div>
+
         </div>
       </section>
     </div>
