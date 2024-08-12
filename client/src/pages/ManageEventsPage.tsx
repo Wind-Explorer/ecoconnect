@@ -138,7 +138,7 @@ const ManageEventsPage = () => {
         </TableBody>
       </Table>
       <Button
-        className="mt-6 bg-primary-600 text-white"
+        className="mt-6 mb-6 bg-primary-600 text-white"
         onPress={() => navigate("createEvent")}
       >
         Add events

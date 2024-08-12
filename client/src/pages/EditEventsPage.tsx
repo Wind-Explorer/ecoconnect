@@ -183,6 +183,7 @@ const EditEventsPage = () => {
                 ]}
               />
               <div className="mb-4 flex flex-col ">
+                <p className="text-lg font-semibold mb-2 opacity-70">Click the image to change it</p>
                 <EventsPicture eventId={id as string} editable/>
               </div>
               <div className="flex flex-row-reverse">
