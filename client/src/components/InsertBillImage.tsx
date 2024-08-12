@@ -3,6 +3,7 @@ import config from "../config";
 import instance from "../security/http";
 import { AxiosResponse } from "axios";
 import { Card } from "@nextui-org/react";
+import { popToast } from "../utilities";
 
 interface InsertImageProps {
   label: string;
@@ -65,6 +66,13 @@ const InsertBillImage: React.FC<InsertImageProps> = ({
   ) => {
     const selectedFiles = event.target.files as FileList;
     const file = selectedFiles?.[0] || null;
+
+    if (file && !file.type.startsWith("image/")) {
+      console.error("Selected file is not an image.");
+      popToast("Please upload only image.", 2);
+      return;
+    }
+
     setSelectedFile(file);
     setPreviewImage(file ? URL.createObjectURL(file) : "");
     onImageSelected(file);
