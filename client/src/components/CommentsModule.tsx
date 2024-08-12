@@ -106,17 +106,7 @@ export default function CommentsModule() {
                                         </div>
                                     </div>
                                     <div className="flex flex-row ml-14 mt-2 gap-3 w-11/12">
-                                        <Button variant="light" isIconOnly>
-                                            <HandThumbsUpIcon />
-                                        </Button>
-                                        <Button variant="light" isIconOnly className="w-20">
-                                            <div>
-                                                <ChatBubbleOvalLeftEllipsisIcon />
-                                            </div>
-                                            <div>
-                                                Reply
-                                            </div>
-                                        </Button>
+                                        <div className="h-2"></div>
                                     </div>
                                 </div>
                             );

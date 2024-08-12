@@ -317,23 +317,9 @@ export default function CommunityPage() {
                         <Button
                           variant="light"
                           isIconOnly
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <HandThumbsUpIcon />
-                        </Button>
-                        <Button
-                          variant="light"
-                          isIconOnly
-                          onClick={(e) => e.stopPropagation()}
+                          onClick={() => handlePostClick(post.id)}
                         >
                           <ChatBubbleOvalLeftEllipsisIcon />
-                        </Button>
-                        <Button
-                          variant="light"
-                          isIconOnly
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <EllipsisHorizontalIcon />
                         </Button>
                       </div>
                     </div>

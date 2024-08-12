@@ -237,17 +237,6 @@ const PostPage: React.FC = () => {
                         <p></p>
                       )}
                     </div>
-                    <div className="flex flex-row">
-                      <Button variant="light" isIconOnly>
-                        <HandThumbsUpIcon />
-                      </Button>
-                      <Button variant="light" isIconOnly>
-                        <ChatBubbleOvalLeftEllipsisIcon />
-                      </Button>
-                      <Button variant="light" isIconOnly>
-                        <EllipsisHorizontalIcon />
-                      </Button>
-                    </div>
                   </div>
                 </div>
               </section>
