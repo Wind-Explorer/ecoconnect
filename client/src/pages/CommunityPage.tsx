@@ -59,15 +59,11 @@ export default function CommunityPage() {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [communityList, setCommunityList] = useState<Post[]>([]);
   const [search, setSearch] = useState(""); // Search Function
-  const [userInformation, setUserInformation] = useState<Record<string, User>>(
-    {}
-  );
-  const [currentUserInfo, setCurrentUserInfo] = useState(null);
-  const [imageErrorFlags, setImageErrorFlags] = useState<
-    Record<string, boolean>
-  >({});
+  const [userInformation, setUserInformation] = useState<Record<string, User>>({});
+  const [imageErrorFlags, setImageErrorFlags] = useState<Record<string, boolean>>({});
   const [tags, setTags] = useState<Tag[]>([]);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   let accessToken = localStorage.getItem("accessToken");
   if (!accessToken) {
@@ -151,9 +147,9 @@ export default function CommunityPage() {
   useEffect(() => {
     const getCurrentUserInformation = async () => {
       try {
-        const user = await retrieveUserInformation(); // Get the user ID
-        setCurrentUserInfo(user); // Set the user ID in the state
-        console.log(currentUserInfo);
+        const user = await retrieveUserInformation(); // Get the user information
+        console.log(user)
+        setCurrentUserId(user.id); // Store user ID
       } catch (error) {
         console.error(error);
       }
@@ -237,6 +233,8 @@ export default function CommunityPage() {
           <div className="flex flex-col gap-4">
             {communityList.map((post) => {
               const profilePictureUrl = getProfilePicture(post.userId);
+              const canEditOrDelete = currentUserId === post.userId;
+
               return (
                 <section
                   className="flex flex-row gap-4 bg-primary-50 dark:bg-primary-950 border border-none rounded-2xl p-4"
@@ -257,38 +255,40 @@ export default function CommunityPage() {
                           </p>
                         </div>
                         <div className="flex flex-row-reverse justify-center items-center">
-                          <Dropdown>
-                            <div>
-                              <DropdownTrigger
-                                className="justify-center items-center"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <Button isIconOnly variant="light">
-                                  <EllipsisHorizontalIcon />
-                                </Button>
-                              </DropdownTrigger>
-                            </div>
-                            <DropdownMenu aria-label="Static Actions">
-                              <DropdownItem
-                                key="edit"
-                                textValue="Edit"
-                                onClick={() => {
-                                  navigate(`edit/${post.id}`);
-                                }}
-                              >
-                                Edit
-                              </DropdownItem>
-                              <DropdownItem
-                                key="delete"
-                                textValue="Delete"
-                                className="text-danger"
-                                color="danger"
-                                onClick={() => handleDeleteClick(post)}
-                              >
-                                Delete
-                              </DropdownItem>
-                            </DropdownMenu>
-                          </Dropdown>
+                          {canEditOrDelete && (
+                            <Dropdown>
+                              <div>
+                                <DropdownTrigger
+                                  className="justify-center items-center"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <Button isIconOnly variant="light">
+                                    <EllipsisHorizontalIcon />
+                                  </Button>
+                                </DropdownTrigger>
+                              </div>
+                              <DropdownMenu aria-label="Static Actions">
+                                <DropdownItem
+                                  key="edit"
+                                  textValue="Edit"
+                                  onClick={() => {
+                                    navigate(`edit/${post.id}`);
+                                  }}
+                                >
+                                  Edit
+                                </DropdownItem>
+                                <DropdownItem
+                                  key="delete"
+                                  textValue="Delete"
+                                  className="text-danger"
+                                  color="danger"
+                                  onClick={() => handleDeleteClick(post)}
+                                >
+                                  Delete
+                                </DropdownItem>
+                              </DropdownMenu>
+                            </Dropdown>
+                          )}
                         </div>
                       </div>
                       <div>

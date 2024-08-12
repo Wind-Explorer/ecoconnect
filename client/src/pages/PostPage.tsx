@@ -27,6 +27,7 @@ import {
 import { retrieveUserInformationById } from "../security/usersbyid";
 import CommentInputModule from "../components/CommentInputModule";
 import CommentsModule from "../components/CommentsModule";
+import { retrieveUserInformation } from "../security/users";
 
 interface Post {
   title: string;
@@ -56,6 +57,7 @@ const PostPage: React.FC = () => {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [userInformation, setUserInformation] = useState<Record<string, User>>({});
   const [imageErrorFlags, setImageErrorFlags] = useState<Record<string, boolean>>({});
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   useEffect(() => {
     if (id) {
@@ -90,6 +92,19 @@ const PostPage: React.FC = () => {
       fetchUserInformation();
     }
   }, [post]);
+
+  useEffect(() => {
+    const getCurrentUserInformation = async () => {
+      try {
+        const user = await retrieveUserInformation(); // Get the user information
+        console.log(user)
+        setCurrentUserId(user.id); // Store user ID
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getCurrentUserInformation();
+  }, []);
 
   useEffect(() => {
     // Scroll to the top of the page when the component mounts
@@ -167,34 +182,36 @@ const PostPage: React.FC = () => {
                         <p className="text-md text-neutral-500">{userInformation[post.userId]?.firstName} {userInformation[post.userId]?.lastName}</p>
                       </div>
                       <div className="flex flex-row-reverse justify-center items-center">
-                        <Dropdown>
-                          <DropdownTrigger
-                            className="justify-center items-center">
-                            <Button isIconOnly variant="light">
-                              <EllipsisHorizontalIcon />
-                            </Button>
-                          </DropdownTrigger>
-                          <DropdownMenu aria-label="Static Actions">
-                            <DropdownItem
-                              key="edit"
-                              textValue="Edit"
-                              onClick={() => {
-                                navigate(`../edit/${post.id}`);
-                              }}
-                            >
-                              Edit
-                            </DropdownItem>
-                            <DropdownItem
-                              key="delete"
-                              textValue="Delete"
-                              className="text-danger"
-                              color="danger"
-                              onClick={() => handleDeleteClick(post)}
-                            >
-                              Delete
-                            </DropdownItem>
-                          </DropdownMenu>
-                        </Dropdown>
+                        {currentUserId === post.userId && ( // Check if the current user is the post author
+                          <Dropdown>
+                            <DropdownTrigger
+                              className="justify-center items-center">
+                              <Button isIconOnly variant="light">
+                                <EllipsisHorizontalIcon />
+                              </Button>
+                            </DropdownTrigger>
+                            <DropdownMenu aria-label="Static Actions">
+                              <DropdownItem
+                                key="edit"
+                                textValue="Edit"
+                                onClick={() => {
+                                  navigate(`../edit/${post.id}`);
+                                }}
+                              >
+                                Edit
+                              </DropdownItem>
+                              <DropdownItem
+                                key="delete"
+                                textValue="Delete"
+                                className="text-danger"
+                                color="danger"
+                                onClick={() => handleDeleteClick(post)}
+                              >
+                                Delete
+                              </DropdownItem>
+                            </DropdownMenu>
+                          </Dropdown>
+                        )}
                       </div>
                     </div>
                     <div>
