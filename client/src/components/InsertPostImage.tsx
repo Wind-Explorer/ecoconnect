@@ -1,12 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface InsertPostImageProps {
     onImageSelected: (file: File | null) => void;
+    initialImageUrl?: string; // Optional prop for initial image URL
 }
 
-const InsertPostImage: React.FC<InsertPostImageProps> = ({ onImageSelected }) => {
+const InsertPostImage: React.FC<InsertPostImageProps> = ({ onImageSelected, initialImageUrl }) => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [previewImage, setPreviewImage] = useState<string>('');
+
+    useEffect(() => {
+        // Update the preview image if there's an initial image URL
+        if (initialImageUrl) {
+            setPreviewImage(initialImageUrl);
+            setSelectedFile(null); // Clear any file selection
+        }
+    }, [initialImageUrl]);
 
     const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFiles = event.target.files as FileList;
@@ -17,7 +26,7 @@ const InsertPostImage: React.FC<InsertPostImageProps> = ({ onImageSelected }) =>
     };
 
     return (
-        <div className={`flex flex-col dark:bg-zinc-800 rounded-md ${selectedFile ? 'h-auto' : 'h-20'}`}
+        <div className={`flex flex-col dark:bg-zinc-800 rounded-md ${selectedFile || initialImageUrl ? 'h-auto' : 'h-20'}`}
             style={{ width: 300 }}>
             <div>
                 <div className="flex flex-col">
@@ -27,10 +36,10 @@ const InsertPostImage: React.FC<InsertPostImageProps> = ({ onImageSelected }) =>
                         className="mb-3"
                     />
                 </div>
-                {selectedFile && (
+                {(previewImage || initialImageUrl) && (
                     <div>
                         <img
-                            src={previewImage}
+                            src={previewImage || initialImageUrl}
                             alt="Selected Image"
                             className="w-full h-full object-cover rounded-md"
                         />

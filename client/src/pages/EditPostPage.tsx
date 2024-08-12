@@ -41,7 +41,7 @@ function EditPostPage() {
   const [post, setPost] = useState({
     title: "",
     content: "",
-    postImage: null,
+    postImage: "",
     tags: "",
   });
   const [loading, setLoading] = useState(true);
@@ -51,27 +51,15 @@ function EditPostPage() {
       try {
         const response = await instance.get(`${config.serverAddress}/post/${id}`);
         const postData = response.data;
-        console.log("Fetched data: ", postData)
-        console.log("postData.tags data: ", postData.Tags);
 
         if (postData && postData.Tags) {
-          // Adjust the structure according to the actual shape of tagObject
-          const postTags = postData.Tags.map((tagObject: any) => {
-            console.log("Tag Object: ", tagObject); // Debug each tagObject
-            return tagObject.tag; // Adjust according to actual key
-          });
-
+          const postTags = postData.Tags.map((tagObject: any) => tagObject.tag);
           setTags(postTags);
-          console.log("postTags:", postTags);
-
-        } else {
-          console.log("postData.Tags is not available or is undefined");
         }
 
-        // Set the post data including other fields
         setPost({
           ...postData,
-          postImage: postData.postImage ? `${config.serverAddress}/post/post-image/${id}` : null,
+          postImage: postData.postImage ? `${config.serverAddress}/post/post-image/${id}` : "",
           tags: tags,
         });
 
@@ -85,11 +73,6 @@ function EditPostPage() {
     fetchPost();
   }, [id]);
 
-
-  useEffect(() => {
-    console.log("Tags updated: ", tags);
-  }, [tags]);
-
   const handleSubmit = async (
     values: any,
     { setSubmitting, resetForm, setFieldError, setFieldValue }: any
@@ -98,16 +81,11 @@ function EditPostPage() {
       const formData = new FormData();
       formData.append("title", values.title);
       formData.append("content", values.content);
-      // Append postImage only if it exists
-
-      console.log(values.postImage instanceof File); // Should be true if it's a File
 
       if (values.postImage && values.postImage instanceof File) {
         formData.append("postImage", values.postImage);
       }
-      formData.append("tags", JSON.stringify(tags)); // This sends tags as a JSON string
-
-      console.log("Updating formData:", formData);
+      formData.append("tags", JSON.stringify(tags));
 
       const response = await instance.put(
         config.serverAddress + `/post/${id}`,
@@ -116,7 +94,6 @@ function EditPostPage() {
       );
 
       if (response.status === 200) {
-        console.log("Post updated successfully:", response.data);
         resetForm();
         setTags([]);
         setFieldValue("postImage", null);
@@ -184,9 +161,8 @@ function EditPostPage() {
                 <div className="text-sm">
                   <div className="flex flex-row gap-10">
                     <InsertPostImage
-                      onImageSelected={(file) => {
-                        setFieldValue("postImage", file);
-                      }}
+                      onImageSelected={(file) => setFieldValue("postImage", file)}
+                      initialImageUrl={post.postImage} // Pass the image URL here
                     />
                   </div>
                 </div>
