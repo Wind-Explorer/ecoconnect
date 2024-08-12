@@ -99,29 +99,35 @@ export default function Ranking() {
         setFilteredFormData(filtered);
     }, [selectedTownCouncil, originalFormData, userData]);
 
-    // Compute top 3 users based on average bill
+    // Compute top 3 users for each town council
     useEffect(() => {
-        const combinedData: FormDataWithUser[] = filteredFormData.map((data) => {
+        const townCouncilTopUsers: Record<string, FormDataWithUser[]> = {};
+
+        filteredFormData.forEach((data) => {
             const user = userData.find((user) => user.id === data.userId);
-            return {
+            const formDataWithUser: FormDataWithUser = {
                 ...data,
                 userName: user ? `${user.firstName} ${user.lastName}` : "Unknown User",
                 userEmail: user ? user.email : "Unknown Email",
                 userTownCouncil: user ? user.townCouncil : "Unknown Town Council",
             };
-        });
 
-        const townCouncilTopUsers: Record<string, FormDataWithUser> = {};
-        combinedData.forEach((data) => {
-            if (!townCouncilTopUsers[data.userTownCouncil] || data.avgBill > townCouncilTopUsers[data.userTownCouncil].avgBill) {
-                townCouncilTopUsers[data.userTownCouncil] = data;
+            if (!townCouncilTopUsers[formDataWithUser.userTownCouncil]) {
+                townCouncilTopUsers[formDataWithUser.userTownCouncil] = [];
             }
+
+            townCouncilTopUsers[formDataWithUser.userTownCouncil].push(formDataWithUser);
         });
 
-        const topUsers = Object.values(townCouncilTopUsers);
-        const sortedTopUsers = topUsers.sort((a, b) => b.avgBill - a.avgBill).slice(0, 3);
+        // Sort each town council's users by avgBill and pick the top 3
+        const topUsersByTownCouncil: FormDataWithUser[] = [];
 
-        setTop3Users(sortedTopUsers);
+        Object.values(townCouncilTopUsers).forEach((users) => {
+            const top3 = users.sort((a, b) => b.avgBill - a.avgBill).slice(0, 3);
+            topUsersByTownCouncil.push(...top3);
+        });
+
+        setTop3Users(topUsersByTownCouncil);
     }, [filteredFormData, userData]);
 
     // Sort form data based on descriptor
@@ -209,21 +215,54 @@ export default function Ranking() {
                 return;
             }
 
-            const randomVoucher = (vouchers: Voucher[]) => vouchers[Math.floor(Math.random() * vouchers.length)];
+            // Function to get a random voucher from the available vouchers
+            const getRandomVouchers = (count: number): Voucher[] => {
+                const shuffled = vouchers.sort(() => 0.5 - Math.random());
+                return shuffled.slice(0, count);
+            };
 
-            for (const user of topUsers) {
-                const voucher = randomVoucher(vouchers);
-                if (voucher) {
-                    await instance.post(`${config.serverAddress}/user-vouchers`, {
-                        userId: user.userId,
-                        voucherId: voucher.id,
-                    });
+            // Group users by town council
+            const townCouncilGroups: Record<string, FormDataWithUser[]> = {};
+            topUsers.forEach(user => {
+                if (!townCouncilGroups[user.userTownCouncil]) {
+                    townCouncilGroups[user.userTownCouncil] = [];
+                }
+                townCouncilGroups[user.userTownCouncil].push(user);
+            });
+
+            // Iterate over each town council and assign vouchers
+            for (const [townCouncil, users] of Object.entries(townCouncilGroups)) {
+                // Sort users by avgBill and pick top 3
+                const top3 = users.sort((a, b) => b.avgBill - a.avgBill).slice(0, 3);
+
+                for (let i = 0; i < top3.length; i++) {
+                    const user = top3[i];
+                    let voucherCount = 0;
+
+                    if (i === 0) {
+                        voucherCount = 3; // Top 1 gets 3 vouchers
+                    } else if (i === 1) {
+                        voucherCount = 2; // Top 2 gets 2 vouchers
+                    } else if (i === 2) {
+                        voucherCount = 1; // Top 3 gets 1 voucher
+                    }
+
+                    const vouchersToAssign = getRandomVouchers(voucherCount);
+
+                    for (const voucher of vouchersToAssign) {
+                        await instance.post(`${config.serverAddress}/user-vouchers`, {
+                            userId: user.userId,
+                            voucherId: voucher.id,
+                        });
+                    }
                 }
             }
         } catch (error) {
             console.error("Failed to assign vouchers:", error);
         }
     };
+
+
 
     const handleGiveVouchers = async () => {
         try {
@@ -238,6 +277,12 @@ export default function Ranking() {
         setSelectedTownCouncil(value);
     };
 
+    const options = townCouncils.map((townCouncil) => ({
+        key: townCouncil, // Use key instead of value
+        label: townCouncil,
+    }));
+
+
     return (
         <div className="flex flex-col gap-8 p-8">
             <div className="flex justify-between items-center gap-5">
@@ -246,129 +291,108 @@ export default function Ranking() {
                 </div>
                 <div className="flex flex-row gap-4 ">
                     <div className="w-[200px]">
-                        {townCouncils.length > 0 && (
-                            <NextUIFormikSelect2
-                                label="Town council"
-                                placeholder="Choose towncouncil"
-                                options={townCouncils.map((townCouncil) => ({
-                                    key: townCouncil,
-                                    label: townCouncil,
-                                }))}
-                                onChange={handleTownCouncilChange}
-                            />
-                        )}
+                        <NextUIFormikSelect2
+                            label="Town Council"
+                            placeholder="Select a Town Council"
+                            options={options}
+                            onChange={handleTownCouncilChange}
+                        />
                     </div>
                     <div className="w-[130px]">
-                        {top3Users.length > 0 && (
-                            <Button color="primary" onPress={handleGiveVouchers} className="w-full">
-                                Give Vouchers
-                            </Button>
-                        )}
+                        <Button
+                            color="primary"
+                            onPress={handleGiveVouchers}
+                            className="w-full"
+                            isDisabled={!!selectedTownCouncil}
+                        >
+                            Give Vouchers
+                        </Button>
                     </div>
+
                 </div>
             </div>
 
-            <div>
-                <Table aria-label="Form Data Table">
-                    <TableHeader>
-                        <TableColumn>User Name</TableColumn>
-                        <TableColumn>Electrical Bill</TableColumn>
-                        <TableColumn>Water Bill</TableColumn>
-                        <TableColumn>Total Bill</TableColumn>
-                        <TableColumn>Dependents</TableColumn>
-                        <TableColumn>
-                            Average Bill
-                        </TableColumn>
-                        <TableColumn>Bill Picture</TableColumn>
-                        <TableColumn>Actions</TableColumn>
-                    </TableHeader>
+            <Table aria-label="Form Data Table">
+                <TableHeader>
+                    <TableColumn>Rank</TableColumn>
+                    <TableColumn>User Name</TableColumn>
+                    <TableColumn>Electrical Bill</TableColumn>
+                    <TableColumn>Water Bill</TableColumn>
+                    <TableColumn>Total Bill</TableColumn>
+                    <TableColumn>Dependents</TableColumn>
+                    <TableColumn>
+                        Average Bill
+                    </TableColumn>
+                    <TableColumn>Bill Picture</TableColumn>
+                    <TableColumn>Actions</TableColumn>
+                </TableHeader>
 
-                    <TableBody>
-                        {combinedData.map((data) => (
-                            <TableRow key={data.id}>
-                                <TableCell>{data.userName}</TableCell>
-                                <TableCell>${data.electricalBill.toFixed(2)}</TableCell>
-                                <TableCell>${data.waterBill.toFixed(2)}</TableCell>
-                                <TableCell>${data.totalBill.toFixed(2)}</TableCell>
-                                <TableCell>{data.noOfDependents}</TableCell>
-                                <TableCell>${data.avgBill.toFixed(2)}</TableCell>
-                                <TableCell>
-                                    {data.billPicture ? (
-                                        <Button isIconOnly variant="light" onPress={() => handleImageClick(`${config.serverAddress}/hbcform/billPicture/${data.id}`)}>
-                                            <ImageIcon />
-                                        </Button>
-                                    ) : (
-                                        <Button isIconOnly variant="light">
-                                            <ImageIcon />
-                                        </Button>
-                                    )}
-                                </TableCell>
+                <TableBody>
+                    {combinedData.map((data, index) => (
+                        <TableRow key={data.id}>
+                            <TableCell>{index + 1}</TableCell>
+                            <TableCell>{data.userName}</TableCell>
+                            <TableCell>${data.electricalBill.toFixed(2)}</TableCell>
+                            <TableCell>${data.waterBill.toFixed(2)}</TableCell>
+                            <TableCell>${data.totalBill.toFixed(2)}</TableCell>
+                            <TableCell>{data.noOfDependents}</TableCell>
+                            <TableCell>${data.avgBill.toFixed(2)}</TableCell>
+                            <TableCell>
+                                {data.billPicture ? (
+                                    <Button isIconOnly variant="light" onPress={() => handleImageClick(`${config.serverAddress}/hbcform/billPicture/${data.id}`)}>
+                                        <ImageIcon />
+                                    </Button>
+                                ) : (
+                                    <Button isIconOnly variant="light">
+                                        <ImageIcon />
+                                    </Button>
+                                )}
+                            </TableCell>
+                            <TableCell className="flex flex-row">
+                                <Button isIconOnly variant="light" className="text-blue-500" onClick={() => handleEmailClick(data.userEmail, data.userName)}><EmailIcon /></Button>
+                                <Button isIconOnly variant="light" color="danger" onClick={() => handleDeleteClick(data.id)}><TrashDeleteIcon /></Button>
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
 
-                                <TableCell className="flex flex-row">
-                                    <Button isIconOnly variant="light" className="text-blue-500" onClick={() => handleEmailClick(data.userEmail, data.userName)}><EmailIcon /></Button>
-                                    <Button isIconOnly variant="light" color="danger" onClick={() => handleDeleteClick(data.id)}><TrashDeleteIcon /></Button>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </div>
-            {/* Email Confirmation Modal */}
-            <Modal isOpen={isEmailModalOpen} onOpenChange={setIsEmailModalOpen} isDismissable={false} isKeyboardDismissDisabled={true}>
+            {/* Email Modal */}
+            <Modal isOpen={isEmailModalOpen} onClose={() => setIsEmailModalOpen(false)}>
                 <ModalContent>
-                    {(onClose) => (
-                        <>
-                            <ModalHeader className="flex flex-col gap-1">Send Email</ModalHeader>
-                            <ModalBody>
-                                <p>Are you sure you want to send an email to {selectedUser.name} ({selectedUser.email})?</p>
-                            </ModalBody>
-                            <ModalFooter>
-                                <Button color="danger" variant="light" onPress={onClose}>
-                                    Close
-                                </Button>
-                                <Button color="primary" onPress={() => { sendEmail(); onClose(); }}>
-                                    Send
-                                </Button>
-                            </ModalFooter>
-                        </>
-                    )}
+                    <ModalHeader>Send Email</ModalHeader>
+                    <ModalBody>
+                        <p>Are you sure you want to send an email to {selectedUser.name} ({selectedUser.email})?</p>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="primary" onClick={sendEmail}>Send</Button>
+                        <Button color="secondary" onClick={() => setIsEmailModalOpen(false)}>Cancel</Button>
+                    </ModalFooter>
                 </ModalContent>
             </Modal>
-            {/* Delete Confirmation Modal */}
-            <Modal isOpen={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen} isDismissable={false} isKeyboardDismissDisabled={true}>
+
+            {/* Delete Modal */}
+            <Modal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)}>
                 <ModalContent>
-                    {(onClose) => (
-                        <>
-                            <ModalHeader className="flex flex-col gap-1">Delete Entry</ModalHeader>
-                            <ModalBody>
-                                <p>Are you sure you want to delete this form entry?</p>
-                            </ModalBody>
-                            <ModalFooter>
-                                <Button color="danger" variant="light" onPress={onClose}>
-                                    Close
-                                </Button>
-                                <Button color="danger" onPress={() => { deleteForm(); onClose(); }}>
-                                    Delete
-                                </Button>
-                            </ModalFooter>
-                        </>
-                    )}
+                    <ModalHeader>Delete Entry</ModalHeader>
+                    <ModalBody>
+                        <p>Are you sure you want to delete this entry?</p>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="danger" onClick={deleteForm}>Delete</Button>
+                        <Button color="secondary" onClick={() => setIsDeleteModalOpen(false)}>Cancel</Button>
+                    </ModalFooter>
                 </ModalContent>
             </Modal>
-            {/* Open Image Modal */}
-            <Modal
-                isOpen={isImageModalOpen}
-                onOpenChange={setIsImageModalOpen}
-                isDismissable={true}
-            >
+
+            {/* Image Modal */}
+            <Modal isOpen={isImageModalOpen} onClose={() => setIsImageModalOpen(false)}>
                 <ModalContent>
                     <ModalBody>
-                        {modalImageUrl && (
-                            <img src={modalImageUrl} alt="Bill Picture" style={{ width: '100%', height: 'auto' }} />
-                        )}
+                        {modalImageUrl && <img src={modalImageUrl} alt="Bill Image" />}
                     </ModalBody>
                 </ModalContent>
             </Modal>
-        </div >
+        </div>
     );
 }

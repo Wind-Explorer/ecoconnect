@@ -50,5 +50,22 @@ router.get('/user/:userId', async (req, res) => {
     }
 });
 
+router.delete('/:id', async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        const userVoucher = await UserVoucher.findByPk(id);
+
+        if (!userVoucher) {
+            return res.status(404).json({ error: 'UserVoucher not found' });
+        }
+
+        await userVoucher.destroy();
+        res.status(204).send(); // No Content response
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to delete UserVoucher' });
+    }
+});
+
 
 module.exports = router;
