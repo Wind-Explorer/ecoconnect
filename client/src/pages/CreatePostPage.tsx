@@ -18,11 +18,10 @@ const validationSchema = Yup.object({
     .min(3, "Title must be at least 3 characters")
     .max(200, "Title must be at most 200 characters")
     .required("Title is required"),
-
   content: Yup.string()
     .trim()
     .min(3, "Content must be at least 3 characters")
-    .max(500, "Content must be at most 500 characters")
+    .max(3000, "Content must be at most 3000 characters")
     .required("Content is required"),
   postImage: Yup.mixed(),
 });

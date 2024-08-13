@@ -40,9 +40,9 @@ router.post(
     // Validate request body
     let validationSchema = yup.object({
       title: yup.string().trim().min(3).max(200).required(),
-      content: yup.string().trim().min(3).max(500).required(),
+      content: yup.string().trim().min(3).max(3000).required(),
       userId: yup.string().required(),
-      postImage: yup.string().trim().max(255),
+      postImage: yup.mixed(),
     });
     try {
       data = await validationSchema.validate(data, { abortEarly: false });
@@ -191,7 +191,7 @@ router.put(
     // Validate request body
     let validationSchema = yup.object({
       title: yup.string().trim().min(3).max(200).required(),
-      content: yup.string().trim().min(3).max(500).required(),
+      content: yup.string().trim().min(3).max(3000).required(),
       postImage: yup.mixed(),
     });
 

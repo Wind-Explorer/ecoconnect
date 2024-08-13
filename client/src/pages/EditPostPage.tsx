@@ -17,19 +17,11 @@ const validationSchema = Yup.object({
     .trim()
     .min(3, "Title must be at least 3 characters")
     .max(200, "Title must be at most 200 characters")
-    .matches(
-      /^[a-zA-Z0-9\s]+$/,
-      "Title can only contain letters, numbers, and spaces"
-    )
     .required("Title is required"),
   content: Yup.string()
     .trim()
     .min(3, "Content must be at least 3 characters")
-    .max(500, "Content must be at most 500 characters")
-    .matches(
-      /^[a-zA-Z0-9,\s!"'-]*$/,
-      "Only letters, numbers, commas, spaces, exclamation marks, quotations, and common symbols are allowed"
-    )
+    .max(3000, "Content must be at most 3000 characters")
     .required("Content is required"),
   postImage: Yup.mixed(),
 });

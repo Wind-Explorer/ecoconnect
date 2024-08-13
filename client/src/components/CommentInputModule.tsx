@@ -45,6 +45,7 @@ export default function CommentInputModule() {
         );
         console.log("Comment created succesfully", response.data);
         resetForm(); // Reset the form after successful submission
+        window.location.reload();
     };
 
     return (
