@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 export default function SiteFooter() {
   const navigate = useNavigate();
   return (
-    <div className="bg-black text-white p-8">
+    <div className="bg-black text-white p-8 border-t-1 border-t-neutral-300 dark:border-t-neutral-700">
       <div className="flex flex-col text-center *:mx-auto gap-16">
         <div className="flex flex-col gap-4 *:mx-auto">
           <p className="text-2xl font-bold">Have a question?</p>
