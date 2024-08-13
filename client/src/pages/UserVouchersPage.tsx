@@ -117,8 +117,14 @@ export default function UserVoucherPage() {
     };
 
     const handleConfirm = async () => {
-        if (selectedUserVoucherId) {
+        if (selectedUserVoucherId && selectedVoucher) {
             try {
+                // Copy the voucher code to the clipboard
+                await navigator.clipboard.writeText(selectedVoucher.code);
+
+                // Show an alert to the user
+                alert(`Voucher code "${selectedVoucher.code}" copied to clipboard!`);
+
                 // DELETE request to remove the voucher from the user-vouchers
                 await instance.delete(
                     `${config.serverAddress}/user-vouchers/${selectedUserVoucherId}`
@@ -132,8 +138,8 @@ export default function UserVoucherPage() {
                 setSelectedUserVoucherId(null);
                 setIsModalOpen(false);
             } catch (error) {
-                console.error("Failed to delete voucher", error);
-                setError("Failed to delete voucher");
+                console.error("Failed to delete voucher or copy code", error);
+                setError("Failed to delete voucher or copy code");
             }
         }
     };
@@ -216,7 +222,6 @@ export default function UserVoucherPage() {
                             {selectedVoucher && (
                                 <>
                                     <p className="font-semibold">Brand: {selectedVoucher.brand}</p>
-                                    <p className="font-semibold">Code: {selectedVoucher.code}</p>
                                 </>
                             )}
                         </div>
