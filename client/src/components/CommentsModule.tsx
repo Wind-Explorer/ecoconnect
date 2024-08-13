@@ -7,6 +7,7 @@ import { ChatBubbleOvalLeftEllipsisIcon, EllipsisHorizontalIcon, HandThumbsUpIco
 import * as Yup from "yup";
 import NextUIFormikTextarea from "./NextUIFormikTextarea";
 import { Form, Formik, FormikHelpers } from "formik";
+import { retrieveUserInformation } from "../security/users";
 
 interface Comment {
     id: string;
@@ -35,6 +36,7 @@ export default function CommentsModule() {
     const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [commentToDelete, setCommentToDelete] = useState<string | null>(null);
+    const [currentUserId, setCurrentUserId] = useState<string | null>(null); // State for current user ID
 
     let postId = id
 
@@ -42,6 +44,19 @@ export default function CommentsModule() {
     const getProfilePicture = (userId: string): string => {
         return `${config.serverAddress}/users/profile-image/${userId}`;
     };
+
+    // Fetch current user information to get user ID
+    useEffect(() => {
+        const getCurrentUserInformation = async () => {
+            try {
+                const user = await retrieveUserInformation(); // Get the user information
+                setCurrentUserId(user.id); // Store user ID
+            } catch (error) {
+                console.error(error);
+            }
+        };
+        getCurrentUserInformation();
+    }, []);
 
     const getComments = async () => {
         instance
@@ -114,13 +129,14 @@ export default function CommentsModule() {
                     {commentList.length > 0 ? (
                         commentList.map((comment) => {
                             const user = comment.user; // Get the user object from the comment
-
                             if (!user) {
                                 console.error("User object is undefined for comment:", comment);
                                 return null; // Skip rendering this comment if user is undefined
                             }
 
                             const profilePictureUrl = getProfilePicture(user.id); // Get the user's profile picture
+                            const canEditOrDelete = currentUserId === user.id;
+
                             return (
                                 <div className="flex flex-col w-full bg-primary-50 dark:bg-primary-950 rounded-xl mb-2 p-3 mx-auto"
                                     key={comment.id}>
@@ -162,37 +178,39 @@ export default function CommentsModule() {
                                             )}
                                         </div>
                                         <div className="flex-shrink-0 ml-10">
-                                            <div className="flex flex-row-reverse justify-center items-center size-7">
-                                                <Dropdown>
-                                                    <div>
-                                                        <DropdownTrigger
-                                                            className="justify-center items-center"
-                                                        >
-                                                            <Button isIconOnly variant="light">
-                                                                <EllipsisHorizontalIcon />
-                                                            </Button>
-                                                        </DropdownTrigger>
-                                                    </div>
-                                                    <DropdownMenu aria-label="Static Actions">
-                                                        <DropdownItem
-                                                            key="edit"
-                                                            textValue="Edit"
-                                                            onClick={() => handleEditClick(comment)}
-                                                        >
-                                                            Edit
-                                                        </DropdownItem>
-                                                        <DropdownItem
-                                                            key="delete"
-                                                            textValue="Delete"
-                                                            className="text-danger"
-                                                            color="danger"
-                                                            onClick={() => handleDeleteClick(comment.id)}
-                                                        >
-                                                            Delete
-                                                        </DropdownItem>
-                                                    </DropdownMenu>
-                                                </Dropdown>
-                                            </div>
+                                            {canEditOrDelete && (
+                                                <div className="flex flex-row-reverse justify-center items-center size-7">
+                                                    <Dropdown>
+                                                        <div>
+                                                            <DropdownTrigger
+                                                                className="justify-center items-center"
+                                                            >
+                                                                <Button isIconOnly variant="light">
+                                                                    <EllipsisHorizontalIcon />
+                                                                </Button>
+                                                            </DropdownTrigger>
+                                                        </div>
+                                                        <DropdownMenu aria-label="Static Actions">
+                                                            <DropdownItem
+                                                                key="edit"
+                                                                textValue="Edit"
+                                                                onClick={() => handleEditClick(comment)}
+                                                            >
+                                                                Edit
+                                                            </DropdownItem>
+                                                            <DropdownItem
+                                                                key="delete"
+                                                                textValue="Delete"
+                                                                className="text-danger"
+                                                                color="danger"
+                                                                onClick={() => handleDeleteClick(comment.id)}
+                                                            >
+                                                                Delete
+                                                            </DropdownItem>
+                                                        </DropdownMenu>
+                                                    </Dropdown>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                     <div className="flex flex-row ml-14 mt-2 gap-3 w-11/12">
