@@ -116,6 +116,7 @@ router.get("/", async (req, res) => {
   let list = await HBCform.findAll({
     where: condition,
     order: [["createdAt", "ASC"]],
+    attributes: { exclude: ["billPicture"] },
   });
   res.json(list);
 });
