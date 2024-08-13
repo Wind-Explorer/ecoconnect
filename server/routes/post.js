@@ -91,15 +91,6 @@ router.post(
   }
 );
 
-// // sequelize method findAll is used to generate a standard SELECT query which will retrieve all entries from the table
-// router.get("/", async (req, res) => {
-//     let list = await Tutorial.findAll({
-//     // order option takes an array of items. These items are themselves in the form of [column, direction]
-//     order: [['createdAt', 'DESC']]
-//     });
-//     res.json(list);
-// });
-
 router.get("/", async (req, res) => {
   let condition = {
     where: {},
@@ -281,7 +272,7 @@ router.post("/:id/comments", async (req, res) => {
 
   // Validate request body
   let validationSchema = yup.object({
-    content: yup.string().trim().min(3).max(500).required(),
+    content: yup.string().trim().min(3).max(3000).required(),
     userId: yup.string().required(),
     postId: yup.string().required(),
   });
@@ -307,7 +298,7 @@ router.put("/comments/:id", async (req, res) => {
 
   // Validate request body
   let validationSchema = yup.object({
-    content: yup.string().trim().min(3).max(500).required(),
+    content: yup.string().trim().min(3).max(3000).required(),
     userId: yup.string().required(),
     postId: yup.string().required(),
   });

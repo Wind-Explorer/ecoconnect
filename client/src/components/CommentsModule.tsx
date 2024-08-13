@@ -25,7 +25,7 @@ const validationSchema = Yup.object({
     content: Yup.string()
         .trim()
         .min(3, "Content must be at least 3 characters")
-        .max(500, "Content must be at most 500 characters")
+        .max(3000, "Content must be at most 3000 characters")
         .required("Content is required"),
 });
 
