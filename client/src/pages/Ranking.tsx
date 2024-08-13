@@ -27,7 +27,7 @@ interface User {
   townCouncil: string;
 }
 
-interface FormData {
+export interface FormData {
   id: string;
   electricalBill: number;
   waterBill: number;
@@ -59,6 +59,17 @@ interface UserVoucher {
   userId: string;
   voucherId: string;
 }
+
+// Sort form data based on descriptor
+export const sortFormData = (list: FormData[], descriptor: SortDescriptor) => {
+  const { column } = descriptor;
+
+  if (column === "avgBill") {
+    return [...list].sort((a, b) => a.avgBill - b.avgBill);
+  }
+
+  return list;
+};
 
 export default function Ranking() {
   const [originalFormData, setOriginalFormData] = useState<FormData[]>([]);
@@ -156,17 +167,6 @@ export default function Ranking() {
 
     setTop3Users(topUsersByTownCouncil);
   }, [filteredFormData, userData]);
-
-  // Sort form data based on descriptor
-  const sortFormData = (list: FormData[], descriptor: SortDescriptor) => {
-    const { column } = descriptor;
-
-    if (column === "avgBill") {
-      return [...list].sort((a, b) => a.avgBill - b.avgBill);
-    }
-
-    return list;
-  };
 
   const sortedFormData = sortFormData(filteredFormData, sortDescriptor);
 

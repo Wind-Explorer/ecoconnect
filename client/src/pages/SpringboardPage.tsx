@@ -1,23 +1,26 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Button, Card, Link } from "@nextui-org/react";
-import { PencilSquareIcon } from "../icons";
+import { Button, Card, Link, SortDescriptor } from "@nextui-org/react";
+import { ArrowTrendingUpIcon, PencilSquareIcon, VoucherIcon } from "../icons";
 import SpringboardButton from "../components/SpringboardButton";
 import { getTimeOfDay } from "../utilities";
 import { retrieveUserInformation } from "../security/users";
 import UserProfilePicture from "../components/UserProfilePicture";
 import instance from "../security/http";
 import config from "../config";
+import { FormData, sortFormData } from "./Ranking";
 
 export default function SpringboardPage() {
   const navigate = useNavigate();
-  let accessToken = localStorage.getItem("accessToken");
+  const accessToken = localStorage.getItem("accessToken");
   if (!accessToken) {
     navigate("/signin");
   }
   const [userInformation, setUserInformation] = useState<any>();
   const [events, setEvents] = useState<any[]>([]);
-  let timeOfDay = getTimeOfDay();
+  const [userVouchers, setUserVouchers] = useState<any>();
+  const [contestRanking, setContestRanking] = useState<number>(-1);
+  const timeOfDay = getTimeOfDay();
 
   let greeting = "";
   if (timeOfDay === 0) {
@@ -34,7 +37,27 @@ export default function SpringboardPage() {
         if (response.accountType == 2) {
           navigate("/admin");
         }
+        let tmpUserInfo = response;
         setUserInformation(response);
+        instance
+          .get("/user-vouchers/user/" + response.id)
+          .then((vouchersResponse) => {
+            setUserVouchers(vouchersResponse.data);
+          });
+        instance.get("/hbcform/").then((formResponse) => {
+          let rankings: FormData[] = formResponse.data;
+          rankings = sortFormData(rankings, {
+            column: "avgBill",
+            direction: "ascending",
+          });
+          for (let i = 0; i < rankings.length; i++) {
+            console.log("checking", rankings[i].userId, tmpUserInfo.id);
+            if (rankings[i].userId == tmpUserInfo.id) {
+              setContestRanking(i + 1);
+              break;
+            }
+          }
+        });
       })
       .catch((_) => {
         navigate("/account-inaccessible");
@@ -116,14 +139,11 @@ export default function SpringboardPage() {
             <div className="w-full  bg-primary-500 text-white">
               {events.length > 0 && (
                 <div className="p-10 flex flex-col gap-10">
-                  <p className="text-3xl font-bold">Registered events</p>
+                  <p className="text-3xl font-bold">Registered Events</p>
                   <div className="flex flex-col gap-4">
                     {events.map((event, index) => (
-                      <Card
-                        key={index}
-                        className="bg-primary-700 border-2 border-primary-400"
-                      >
-                        <div className="flex flex-row justify-between *:my-auto p-2 pr-8">
+                      <Card key={index}>
+                        <div className="flex flex-row justify-between *:my-auto p-3 pr-8">
                           <div className="flex flex-row gap-4 *:my-auto">
                             <img
                               className="w-20 h-20 object-cover rounded-xl"
@@ -165,6 +185,81 @@ export default function SpringboardPage() {
                   </div>
                 </div>
               )}
+            </div>
+            <div className="p-10">
+              <div className="flex flex-col gap-10">
+                <p className="text-3xl font-bold">Your Contest Statistics</p>
+                <div className="flex flex-row justify-evenly gap-40 py-20">
+                  <div className="flex flex-col gap-16 *:mx-auto">
+                    <div className="scale-[250%]">
+                      <div className="flex flex-col gap-4 *:mx-auto text-center">
+                        <div className="scale-150 text-primary-500 dark:text-primary-300">
+                          <VoucherIcon />
+                        </div>
+                        {userVouchers && (
+                          <p className="text-xs">
+                            <span className="text-primary-500 dark:text-primary-300">
+                              {userVouchers.userVouchers.length}
+                            </span>{" "}
+                            vouchers available
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <Button
+                      variant="light"
+                      color="primary"
+                      size="lg"
+                      className="text-2xl"
+                      onPress={() => {
+                        navigate("/user-voucher");
+                      }}
+                    >
+                      View
+                    </Button>
+                  </div>
+                  <div className="flex flex-col gap-16 *:mx-auto">
+                    <div className="scale-[250%]">
+                      <div className="flex flex-col gap-4 *:mx-auto text-center">
+                        <div className="scale-150 text-primary-500 dark:text-primary-300">
+                          <ArrowTrendingUpIcon />
+                        </div>
+                        <p className="text-xs">
+                          {!(contestRanking > 0) && (
+                            <span className="text-primary-500 dark:text-primary-300">
+                              No
+                            </span>
+                          )}
+                          {contestRanking > 0 && (
+                            <span className="text-primary-500 dark:text-primary-300">
+                              {contestRanking}
+                              {contestRanking == 1
+                                ? "st"
+                                : contestRanking == 2
+                                ? "nd"
+                                : contestRanking == 3
+                                ? "rd"
+                                : "th"}
+                            </span>
+                          )}{" "}
+                          place in the leaderboard
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      variant="light"
+                      color="primary"
+                      size="lg"
+                      className="text-2xl"
+                      onPress={() => {
+                        navigate("/home-bill-contest");
+                      }}
+                    >
+                      View
+                    </Button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         )}
