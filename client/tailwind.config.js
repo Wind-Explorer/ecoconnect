@@ -9,6 +9,7 @@ export default {
   ],
   darkMode: "class",
   plugins: [
+    require("@tailwindcss/typography"),
     nextui({
       themes: {
         "red-dark": {

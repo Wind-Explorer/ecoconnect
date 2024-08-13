@@ -28,6 +28,8 @@ import { retrieveUserInformationById } from "../security/usersbyid";
 import CommentInputModule from "../components/CommentInputModule";
 import CommentsModule from "../components/CommentsModule";
 import { retrieveUserInformation } from "../security/users";
+import remarkGfm from "remark-gfm";
+import Markdown from "react-markdown";
 
 interface Post {
   title: string;
@@ -55,14 +57,19 @@ const PostPage: React.FC = () => {
   const [post, setPost] = useState<Post | null>(null);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
-  const [userInformation, setUserInformation] = useState<Record<string, User>>({});
-  const [imageErrorFlags, setImageErrorFlags] = useState<Record<string, boolean>>({});
+  const [userInformation, setUserInformation] = useState<Record<string, User>>(
+    {}
+  );
+  const [imageErrorFlags, setImageErrorFlags] = useState<
+    Record<string, boolean>
+  >({});
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   useEffect(() => {
     if (id) {
       console.log("useEffect for fetching post called, id:", id);
-      instance.get(`${config.serverAddress}/post/${id}`)
+      instance
+        .get(`${config.serverAddress}/post/${id}`)
         .then((res) => {
           setPost(res.data);
           console.log("Post fetch successfully");
@@ -97,7 +104,7 @@ const PostPage: React.FC = () => {
     const getCurrentUserInformation = async () => {
       try {
         const user = await retrieveUserInformation(); // Get the user information
-        console.log(user)
+        console.log(user);
         setCurrentUserId(user.id); // Store user ID
       } catch (error) {
         console.error(error);
@@ -169,23 +176,22 @@ const PostPage: React.FC = () => {
                 key={post.id}
               >
                 <div>
-                  <Avatar
-                    src={profilePictureUrl}
-                    size="lg"
-                  />
+                  <Avatar src={profilePictureUrl} size="lg" />
                 </div>
                 <div className="flex flex-col gap-8 w-full">
                   <div className="h-full flex flex-col gap-4">
                     <div className="flex flex-row justify-between">
                       <div className="flex flex-col">
                         <p className="text-xl font-bold">{post.title}</p>
-                        <p className="text-md text-neutral-500">{userInformation[post.userId]?.firstName} {userInformation[post.userId]?.lastName}</p>
+                        <p className="text-md text-neutral-500">
+                          {userInformation[post.userId]?.firstName}{" "}
+                          {userInformation[post.userId]?.lastName}
+                        </p>
                       </div>
                       <div className="flex flex-row-reverse justify-center items-center">
                         {currentUserId === post.userId && ( // Check if the current user is the post author
                           <Dropdown>
-                            <DropdownTrigger
-                              className="justify-center items-center">
+                            <DropdownTrigger className="justify-center items-center">
                               <Button isIconOnly variant="light">
                                 <EllipsisHorizontalIcon />
                               </Button>
@@ -215,17 +221,22 @@ const PostPage: React.FC = () => {
                       </div>
                     </div>
                     <div>
-                      <p>{post.content}</p>
+                      <Markdown className="prose" remarkPlugins={[remarkGfm]}>
+                        {post.content}
+                      </Markdown>
                     </div>
-                    {!imageErrorFlags[post.id] && post.postImage && post.postImage !== null && (
-                      <div>
-                        <img
-                          src={`${config.serverAddress}/post/post-image/${post.id}`}
-                          alt="PostImage"
-                          className="w-[300px] h-auto rounded-lg object-cover"
-                          onError={() => handleImageError(post.id)} />
-                      </div>
-                    )}
+                    {!imageErrorFlags[post.id] &&
+                      post.postImage &&
+                      post.postImage !== null && (
+                        <div>
+                          <img
+                            src={`${config.serverAddress}/post/post-image/${post.id}`}
+                            alt="PostImage"
+                            className="w-[300px] h-auto rounded-lg object-cover"
+                            onError={() => handleImageError(post.id)}
+                          />
+                        </div>
+                      )}
                   </div>
                   <div className="flex flex-col gap-2">
                     <div className="flex flex-row gap-2">

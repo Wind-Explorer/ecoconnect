@@ -30,7 +30,8 @@ import {
 import { useNavigate } from "react-router-dom";
 import { retrieveUserInformationById } from "../security/usersbyid";
 import { retrieveUserInformation } from "../security/users";
-// import UserPostImage from "../components/UserPostImage";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface Post {
   title: string;
@@ -58,8 +59,12 @@ export default function CommunityPage() {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [communityList, setCommunityList] = useState<Post[]>([]);
   const [search, setSearch] = useState(""); // Search Function
-  const [userInformation, setUserInformation] = useState<Record<string, User>>({});
-  const [imageErrorFlags, setImageErrorFlags] = useState<Record<string, boolean>>({});
+  const [userInformation, setUserInformation] = useState<Record<string, User>>(
+    {}
+  );
+  const [imageErrorFlags, setImageErrorFlags] = useState<
+    Record<string, boolean>
+  >({});
   const [tags, setTags] = useState<Tag[]>([]);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
@@ -147,7 +152,7 @@ export default function CommunityPage() {
     const getCurrentUserInformation = async () => {
       try {
         const user = await retrieveUserInformation(); // Get the user information
-        console.log(user)
+        console.log(user);
         setCurrentUserId(user.id); // Store user ID
       } catch (error) {
         console.error(error);
@@ -291,14 +296,17 @@ export default function CommunityPage() {
                         </div>
                       </div>
                       <div>
-                        <p>{post.content}</p>
+                        <Markdown className="prose" remarkPlugins={[remarkGfm]}>
+                          {post.content}
+                        </Markdown>
                       </div>
                       {imageErrorFlags[post.id] ? null : (
                         <div>
                           <img
                             src={`${config.serverAddress}/post/post-image/${post.id}`}
                             className="w-[300px] h-auto rounded-lg object-cover"
-                            onError={() => handleImageError(post.id)} />
+                            onError={() => handleImageError(post.id)}
+                          />
                         </div>
                       )}
                     </div>
@@ -362,7 +370,9 @@ export default function CommunityPage() {
                 <Chip
                   key={tag.id}
                   onClick={() => handleTagClick(tag.tag)}
-                  className={selectedTag === tag.tag ? "bg-primary-500 text-white" : ""}
+                  className={
+                    selectedTag === tag.tag ? "bg-primary-500 text-white" : ""
+                  }
                 >
                   {tag.tag}
                 </Chip>
@@ -370,10 +380,7 @@ export default function CommunityPage() {
             </div>
             <div>
               {selectedTag && (
-                <Button
-                  className="mt-2"
-                  onPress={handleClearFilter}
-                >
+                <Button className="mt-2" onPress={handleClearFilter}>
                   Clear Filter
                 </Button>
               )}
