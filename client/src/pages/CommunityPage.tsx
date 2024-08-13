@@ -297,7 +297,7 @@ export default function CommunityPage() {
                       </div>
                       <div>
                         <Markdown
-                          className="prose *:text-white text-white"
+                          className="prose dark:*:text-white dark:text-white"
                           remarkPlugins={[remarkGfm]}
                         >
                           {post.content}
