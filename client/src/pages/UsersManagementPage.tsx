@@ -8,15 +8,23 @@ import {
   TableRow,
   Button,
   Tooltip,
+  Input,
 } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import instance from "../security/http";
 import config from "../config";
 import { popErrorToast, popToast } from "../utilities";
-import { ArchiveBoxIcon, ClipboardDocumentIcon, LifebuoyIcon } from "../icons";
+import {
+  ArchiveBoxIcon,
+  ClipboardDocumentIcon,
+  LifebuoyIcon,
+  MagnifyingGlassIcon,
+  XMarkIcon,
+} from "../icons";
 
 export default function UsersManagement() {
   const [userInformationlist, setUserInformationList] = useState<any>([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const columns = [
     {
       key: "firstName",
@@ -54,7 +62,11 @@ export default function UsersManagement() {
 
   const populateUserInformationList = () => {
     instance
-      .get(`${config.serverAddress}/users/all`)
+      .get(
+        `${config.serverAddress}/users/all${
+          searchQuery.length > 0 ? `?search=${searchQuery}` : ""
+        }`
+      )
       .then((response) => {
         setUserInformationList(response.data);
         console.log(userInformationlist);
@@ -67,6 +79,16 @@ export default function UsersManagement() {
   useEffect(() => {
     populateUserInformationList();
   }, []);
+
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      populateUserInformationList();
+    }, 500);
+
+    return () => {
+      clearTimeout(debounceTimer);
+    };
+  }, [searchQuery]);
 
   const handleCopyID = (userId: string, firstName: string) => {
     navigator.clipboard.writeText(userId);
@@ -81,7 +103,7 @@ export default function UsersManagement() {
         }/${userId}`
       )
       .then(() => {
-        window.location.reload();
+        populateUserInformationList();
       })
       .catch((error) => {
         popErrorToast(error);
@@ -92,7 +114,30 @@ export default function UsersManagement() {
     <div>
       {userInformationlist && (
         <div className="flex flex-col gap-8 p-8">
-          <p className="text-4xl font-bold">Users Onboard</p>
+          <div className="flex flex-row justify-between *:my-auto">
+            <p className="text-4xl font-bold">Users Onboard</p>
+            <Input
+              className="max-w-96"
+              placeholder="Search"
+              value={searchQuery}
+              onValueChange={setSearchQuery}
+              startContent={<MagnifyingGlassIcon />}
+              endContent={
+                searchQuery.length > 0 && (
+                  <Button
+                    size="sm"
+                    isIconOnly
+                    variant="light"
+                    onPress={() => {
+                      setSearchQuery("");
+                    }}
+                  >
+                    <XMarkIcon />
+                  </Button>
+                )
+              }
+            />
+          </div>
           <Table aria-label="User Information Table">
             <TableHeader columns={columns}>
               {(column) => (
@@ -182,6 +227,11 @@ export default function UsersManagement() {
               )}
             </TableBody>
           </Table>
+          {userInformationlist.length <= 0 && (
+            <div className="flex-grow w-full h-full text-center">
+              <p className="text-2xl opacity-70">No users to display.</p>
+            </div>
+          )}
         </div>
       )}
     </div>

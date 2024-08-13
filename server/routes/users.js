@@ -78,8 +78,12 @@ router.get("/all", async (req, res) => {
   let search = req.query.search;
   if (search) {
     condition[Op.or] = [
-      { title: { [Op.like]: `%${search}%` } },
-      { description: { [Op.like]: `%${search}%` } },
+      { id: { [Op.like]: `%${search}%` } },
+      { firstName: { [Op.like]: `%${search}%` } },
+      { lastName: { [Op.like]: `%${search}%` } },
+      { email: { [Op.like]: `%${search}%` } },
+      { phoneNumber: { [Op.like]: `%${search}%` } },
+      { townCouncil: { [Op.like]: `%${search}%` } },
     ];
   }
 
