@@ -221,7 +221,10 @@ const PostPage: React.FC = () => {
                       </div>
                     </div>
                     <div>
-                      <Markdown className="prose" remarkPlugins={[remarkGfm]}>
+                      <Markdown
+                        className="prose *:text-white text-white"
+                        remarkPlugins={[remarkGfm]}
+                      >
                         {post.content}
                       </Markdown>
                     </div>
