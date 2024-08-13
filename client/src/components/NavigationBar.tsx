@@ -172,7 +172,7 @@ export default function NavigationBar() {
                       title="Sign out"
                       onPress={() => {
                         localStorage.clear();
-                        window.location.reload();
+                        window.location.href = "/";
                       }}
                     />
                   </DropdownMenu>
