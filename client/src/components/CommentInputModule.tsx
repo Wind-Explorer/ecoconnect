@@ -9,7 +9,6 @@ import { retrieveUserInformation } from "../security/users";
 import { Button } from "@nextui-org/react";
 import { PaperAirplaneIcon } from "../icons";
 
-
 const validationSchema = Yup.object({
     content: Yup.string()
         .trim()

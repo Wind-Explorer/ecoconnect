@@ -301,6 +301,34 @@ router.post("/:id/comments", async (req, res) => {
   }
 });
 
+router.put("/comments/:id", async (req, res) => {
+  let { id } = req.params;
+  let data = req.body;
+
+  // Validate request body
+  let validationSchema = yup.object({
+    content: yup.string().trim().min(3).max(500).required(),
+    userId: yup.string().required(),
+    postId: yup.string().required(),
+  });
+  try {
+    console.log("Validating schema...");
+    data = await validationSchema.validate(data, { abortEarly: false });
+
+    // Ensure comment exists
+    let comment = await Comment.findByPk(id);
+    if (!comment) {
+      res.sendStatus(404); // Comment not found
+      return;
+    }
+
+    let result = await comment.update(data);
+    res.json({ message: "Comment updated successfully", comment });
+  } catch (err) {
+    res.status(400).json({ errors: err.errors });
+  }
+})
+
 router.get("/:id/getComments", async (req, res) => {
   let id = req.params.id;
 
