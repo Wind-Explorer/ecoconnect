@@ -64,12 +64,15 @@ export default function EcoconnectSearch() {
     "/": "Go home",
     "/springboard": "Go to the Dashboard",
     "/manage-account": "Manage your account",
+    "/forgot-password": "Reset your password",
     "/events": "Browse events",
     "/karang-guni-schedules": "Browse available Karang Guni",
     "/home-bill-contest": "Take part in the home bill contest",
     "/home-bill-contest/new-submission": "Submit your bill",
     "/community-posts": "Browse community posts",
     "/community-posts/create": "Create a post",
+    "/feedback": "Send feedbacks",
+    "/user-vouchers": "View your vouchers",
   };
 
   const getRouteDescription = (route: string) => {
@@ -152,7 +155,7 @@ export default function EcoconnectSearch() {
                               {aiResponseRouteDescription}
                             </p>
                             <p className="text-sm opacity-50">
-                              https://ecoconnect.gov{aiResponseRoute}
+                              https://ecoconnect.gov.sg{aiResponseRoute}
                             </p>
                           </div>
                           <Button

@@ -10,12 +10,15 @@ const nlsPrompt = `
 "/": home
 "/springboard": user dashboard
 "/manage-account": manage user account
+"/forgot-password": reset user password
 "/events": events
 "/karang-guni-schedules": browse karang guni slots
 "/home-bill-contest": participate in contest & earn vouchers
 "/home-bill-contest/new-submission": submit bill
 "/community-posts": show posts
 "/community-posts/create": create post
+"/feedback": send feedbacks / get in touch
+"/user-vouchers": view vouchers user have
 
 based on input, provide appropriate route closest to fulfilling user's needs
 If none matches user query, return empty route, however try your best not to.
