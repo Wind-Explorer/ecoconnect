@@ -209,6 +209,11 @@ router.post("/login", async (req, res) => {
     return;
   }
 
+  if (data.verify) {
+    res.status(200).json({ passedCheck: true });
+    return;
+  }
+
   let userInfo = {
     id: user.id,
     email: user.email,

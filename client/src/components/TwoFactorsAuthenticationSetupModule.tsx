@@ -2,7 +2,7 @@ import { retrieveUserInformation } from "../security/users";
 import { useEffect, useState } from "react";
 import { Button, Image, Input } from "@nextui-org/react";
 import instance from "../security/http";
-import { checkTwoFactorStatus } from "../utilities";
+import { checkTwoFactorStatus, popToast } from "../utilities";
 import TwoFactorAuthenticationModule from "./TwoFactorAuthenticationModule";
 
 export default function TwoFactorsAuthenticationSetupModule({
@@ -16,6 +16,7 @@ export default function TwoFactorsAuthenticationSetupModule({
   const [isTwoFactorEnabled, setIsTwoFactorEnabled] = useState(false);
   const [setupQRBase64, setSetupQRBase64] = useState("");
   const [setupBase32Secret, setSetupBase32Secret] = useState("");
+  const [userPassword, setUserPassword] = useState("");
 
   const disableTwoFactor = async () => {
     instance
@@ -23,7 +24,25 @@ export default function TwoFactorsAuthenticationSetupModule({
         id: userInformation.id,
       })
       .then(() => {
-        setDisable2FAStepperCount(1);
+        setDisable2FAStepperCount(2);
+      });
+  };
+
+  const verifyAccount = () => {
+    if (userPassword.length === 0) {
+      return;
+    }
+    instance
+      .post("/users/login", {
+        verify: true,
+        email: userInformation.email,
+        password: userPassword,
+      })
+      .then(() => {
+        disableTwoFactor();
+      })
+      .catch(() => {
+        popToast("Invalid password", 2);
       });
   };
 
@@ -36,8 +55,6 @@ export default function TwoFactorsAuthenticationSetupModule({
         setSetup2FAStepperCount(1);
       });
   };
-
-  const testTwoFactor = () => {};
 
   useEffect(() => {
     retrieveUserInformation().then((response) => {
@@ -76,7 +93,11 @@ export default function TwoFactorsAuthenticationSetupModule({
                     your choice.
                   </p>
                   {setupQRBase64 && (
-                    <Image src={setupQRBase64} alt="2FA SETUP QR" />
+                    <Image
+                      className="shadow-medium"
+                      src={setupQRBase64}
+                      alt="2FA SETUP QR"
+                    />
                   )}
                   <p>Or alternatively, manually enter the secret in the app:</p>
                   <Input value={setupBase32Secret} readOnly />
@@ -145,7 +166,7 @@ export default function TwoFactorsAuthenticationSetupModule({
                       variant="light"
                       color="danger"
                       onPress={() => {
-                        disableTwoFactor();
+                        setDisable2FAStepperCount(1);
                       }}
                     >
                       Confirm
@@ -157,6 +178,26 @@ export default function TwoFactorsAuthenticationSetupModule({
                 </div>
               )}
               {disable2FAStepperCount === 1 && (
+                <div className="flex flex-col gap-4 w-full">
+                  <p>Let's verify that it's you.</p>
+                  <Input
+                    type="password"
+                    label="Password"
+                    value={userPassword}
+                    onValueChange={setUserPassword}
+                  />
+                  <div className="w-full flex flex-row justify-end">
+                    <Button
+                      onPress={() => {
+                        verifyAccount();
+                      }}
+                    >
+                      Continue
+                    </Button>
+                  </div>
+                </div>
+              )}
+              {disable2FAStepperCount === 2 && (
                 <div className="flex flex-col gap-4 w-full">
                   <p>2FA has been disabled.</p>
                   <div className="w-full flex flex-row justify-end">
