@@ -546,6 +546,27 @@ router.post("/enable-2fa/:id", async (req, res) => {
   });
 });
 
+router.post("/disable-2fa/", async (req, res) => {
+  let id = req.body.id;
+  const user = User.findByPk(id);
+
+  if (!user) {
+    return res.status(404).send("User not found");
+  }
+
+  await User.update(
+    { secret: null },
+    {
+      where: { id: id },
+    }
+  );
+
+  return res.json({
+    status: "success",
+    message: "2FA disabled",
+  });
+});
+
 router.post("/has-2fa", async (req, res) => {
   let email = req.body.email;
   const user = await User.findOne({

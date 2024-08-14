@@ -18,15 +18,17 @@ import { Form, Formik } from "formik";
 import NextUIFormikInput from "./NextUIFormikInput";
 import { useNavigate } from "react-router-dom";
 import UserProfilePicture from "./UserProfilePicture";
-import { popErrorToast, popToast } from "../utilities";
+import { checkTwoFactorStatus, popErrorToast, popToast } from "../utilities";
 import instance from "../security/http";
 import axios from "axios";
 import NextUIFormikSelect from "./NextUIFormikSelect";
+import TwoFactorsAuthenticationSetupModule from "./TwoFactorsAuthenticationSetupModule";
 
 export default function UpdateAccountModule() {
   const navigate = useNavigate();
   const [userInformation, setUserInformation] = useState<any>();
   const [townCouncils, setTownCouncils] = useState<string[]>([]);
+  const [is2FAEnabled, setIs2FAEnabled] = useState(false);
 
   const {
     isOpen: isArchiveDialogOpen,
@@ -40,6 +42,12 @@ export default function UpdateAccountModule() {
     onOpenChange: onResetPasswordOpenChange,
   } = useDisclosure();
 
+  const {
+    isOpen: isTwoFactorsAuthenticationOpen,
+    onOpen: onTwoFactorsAuthenticationOpen,
+    onOpenChange: onTwoFactorsAuthenticationOpenChange,
+  } = useDisclosure();
+
   useEffect(() => {
     retrieveUserInformation()
       .then((response) => {
@@ -49,6 +57,9 @@ export default function UpdateAccountModule() {
           .then((values) => {
             setTownCouncils(JSON.parse(values.data).townCouncils);
           });
+        checkTwoFactorStatus(response.email).then((answer) => {
+          setIs2FAEnabled(answer);
+        });
       })
       .catch(() => {
         navigate("/signin");
@@ -266,7 +277,7 @@ export default function UpdateAccountModule() {
                   }
                   className="rounded-xl -m-2 *:px-4"
                 >
-                  <Card className="flex flex-row justify-between *:my-auto bg-primary-50 dark:bg-primary-950 p-4 my-2">
+                  <Card className="flex flex-col gap-4 justify-between *:my-auto bg-primary-50 dark:bg-primary-950 p-4 my-2">
                     <div className="flex flex-col">
                       <p className="text-lg">Danger zone</p>
                       <p className="opacity-50">
@@ -275,17 +286,16 @@ export default function UpdateAccountModule() {
                     </div>
                     <div className="flex flex-row gap-4">
                       <Button
-                        color="danger"
-                        variant="light"
-                        onPress={onResetPasswordOpen}
+                        color={is2FAEnabled ? "danger" : "secondary"}
+                        onPress={onTwoFactorsAuthenticationOpen}
                       >
+                        {is2FAEnabled ? "Disable" : "Enable"} Two-Factors
+                        Authentication
+                      </Button>
+                      <Button color="danger" onPress={onResetPasswordOpen}>
                         Reset your password
                       </Button>
-                      <Button
-                        color="danger"
-                        variant="flat"
-                        onPress={onArchiveDialogOpen}
-                      >
+                      <Button color="danger" onPress={onArchiveDialogOpen}>
                         Archive this account
                       </Button>
                     </div>
@@ -374,6 +384,40 @@ export default function UpdateAccountModule() {
                         Send email
                       </Button>
                     </ModalFooter>
+                  </>
+                );
+              }}
+            </ModalContent>
+          </Modal>
+
+          {/* Two-Factors Authorization Modal */}
+          <Modal
+            isOpen={isTwoFactorsAuthenticationOpen}
+            onOpenChange={onTwoFactorsAuthenticationOpenChange}
+            size="xl"
+          >
+            <ModalContent>
+              {(onClose) => {
+                return (
+                  <>
+                    <ModalHeader className="flex flex-col gap-1">
+                      Set up Two-Factors Authentication
+                    </ModalHeader>
+                    <ModalBody>
+                      <div className="w-full h-full pb-4">
+                        <TwoFactorsAuthenticationSetupModule
+                          onClose={() => {
+                            checkTwoFactorStatus(userInformation.email)
+                              .then((answer) => {
+                                setIs2FAEnabled(answer);
+                              })
+                              .finally(() => {
+                                onClose();
+                              });
+                          }}
+                        />
+                      </div>
+                    </ModalBody>
                   </>
                 );
               }}

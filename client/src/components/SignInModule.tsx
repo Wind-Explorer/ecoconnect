@@ -13,11 +13,11 @@ import config from "../config";
 import NextUIFormikInput from "./NextUIFormikInput";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeftIcon } from "../icons";
-import { popErrorToast, popToast } from "../utilities";
+import { checkTwoFactorStatus, popErrorToast, popToast } from "../utilities";
 import { retrieveUserInformation } from "../security/users";
 import instance from "../security/http";
-import { useEffect, useRef, useState } from "react";
-import AuthCode, { AuthCodeRef } from "react-auth-code-input";
+import { useState } from "react";
+import TwoFactorAuthenticationModule from "./TwoFactorAuthenticationModule";
 
 const validationSchema = Yup.object({
   email: Yup.string()
@@ -42,10 +42,6 @@ export default function SignInModule() {
 
   const [twoFactorModal, setTwoFactorModal] = useState(false);
   const [userLoginInformation, setUserLoginInformation] = useState<any>();
-  const [twoFactorToken, setTwoFactorToken] = useState("");
-  const [twoFactorVerifying, setTwoFactorVerifying] = useState(false);
-
-  const AuthInputRef = useRef<AuthCodeRef>(null);
 
   const initialValues = {
     email: "",
@@ -85,10 +81,9 @@ export default function SignInModule() {
 
   const handleSubmit = (values: any): void => {
     setUserLoginInformation(values);
-    instance
-      .post("/users/has-2fa", { email: values.email })
+    checkTwoFactorStatus(values.email)
       .then((answer) => {
-        if (answer.data.enabled) {
+        if (answer) {
           setTwoFactorModal(true);
         } else {
           proceedWithLogin(values);
@@ -98,32 +93,6 @@ export default function SignInModule() {
         popToast("User not found!", 2);
       });
   };
-
-  useEffect(() => {
-    if (!(twoFactorToken.length == 6 && !twoFactorVerifying)) {
-      return;
-    }
-
-    setTwoFactorVerifying(true);
-    instance
-      .post("/users/verify-2fa", {
-        email: userLoginInformation.email,
-        token: twoFactorToken,
-      })
-      .then(() => {
-        proceedWithLogin();
-      })
-      .catch((error) => {
-        popErrorToast(error);
-        AuthInputRef.current?.clear();
-        setTwoFactorToken("");
-      })
-      .finally(() => {
-        AuthInputRef.current?.clear();
-        setTwoFactorToken("");
-        setTwoFactorVerifying(false);
-      });
-  }, [twoFactorToken]);
 
   return (
     <div className="flex flex-col gap-16">
@@ -190,22 +159,12 @@ export default function SignInModule() {
         <ModalContent>
           <ModalHeader>Two-Factor Authentication</ModalHeader>
           <ModalBody>
-            <div className="text-center flex flex-col gap-4">
-              <AuthCode
-                containerClassName="flex flex-row gap-4 w-full justify-center"
-                inputClassName="w-16 h-16 text-4xl text-center rounded-lg my-2 bg-neutral-100 dark:bg-neutral-800 border-2 border-neutral-200 dark:border-neutral-700 "
-                length={6}
-                allowedCharacters="numeric"
-                ref={AuthInputRef}
-                disabled={twoFactorVerifying}
-                onChange={(value) => {
-                  setTwoFactorToken(value);
-                }}
+            {userLoginInformation && (
+              <TwoFactorAuthenticationModule
+                email={userLoginInformation.email}
+                onTwoFactorSuccess={proceedWithLogin}
               />
-              <p className="text-md opacity-50">
-                Please enter the 6 digits passcode from your authenticator app.
-              </p>
-            </div>
+            )}
           </ModalBody>
           <ModalFooter></ModalFooter>
         </ModalContent>
