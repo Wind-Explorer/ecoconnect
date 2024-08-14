@@ -1,5 +1,6 @@
 import { AxiosError } from "axios";
 import toast from "react-hot-toast";
+import exportFromJSON, { ExportType } from "export-from-json";
 
 export function getTimeOfDay(): number {
   const currentHour = new Date().getHours();
@@ -38,4 +39,12 @@ export const popErrorToast = (error: any) => {
   } catch {
     popToast("An unexpected error occured!\nPlease try again later.", 2);
   }
+};
+
+export const exportData = (
+  data: any,
+  fileName: string,
+  exportType: ExportType
+) => {
+  exportFromJSON({ data, fileName, exportType });
 };

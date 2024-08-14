@@ -9,18 +9,25 @@ import {
   Button,
   Tooltip,
   Input,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+  DropdownSection,
 } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import instance from "../security/http";
 import config from "../config";
-import { popErrorToast, popToast } from "../utilities";
+import { exportData, popErrorToast, popToast } from "../utilities";
 import {
   ArchiveBoxIcon,
+  ArrowDownTrayIcon,
   ClipboardDocumentIcon,
   LifebuoyIcon,
   MagnifyingGlassIcon,
   XMarkIcon,
 } from "../icons";
+import { ExportType } from "export-from-json";
 
 export default function UsersManagement() {
   const [userInformationlist, setUserInformationList] = useState<any>([]);
@@ -110,33 +117,83 @@ export default function UsersManagement() {
       });
   };
 
+  const handleExport = (exportType: ExportType) => {
+    exportData(
+      userInformationlist,
+      `ecoconnect-user-data-${new Date().toUTCString()}`,
+      exportType
+    );
+  };
+
   return (
     <div>
       {userInformationlist && (
         <div className="flex flex-col gap-8 p-8">
           <div className="flex flex-row justify-between *:my-auto">
             <p className="text-4xl font-bold">Users Onboard</p>
-            <Input
-              className="max-w-96"
-              placeholder="Search"
-              value={searchQuery}
-              onValueChange={setSearchQuery}
-              startContent={<MagnifyingGlassIcon />}
-              endContent={
-                searchQuery.length > 0 && (
-                  <Button
-                    size="sm"
-                    isIconOnly
-                    variant="light"
-                    onPress={() => {
-                      setSearchQuery("");
-                    }}
-                  >
-                    <XMarkIcon />
+            <div className="flex flex-row gap-2">
+              <Dropdown>
+                <DropdownTrigger>
+                  <Button>
+                    <div className="flex flex-row gap-2 *:my-auto px-4">
+                      <div className="scale-80 origin-center">
+                        <ArrowDownTrayIcon />
+                      </div>
+                      <p>Export</p>
+                    </div>
                   </Button>
-                )
-              }
-            />
+                </DropdownTrigger>
+                <DropdownMenu aria-label="Export file type">
+                  <DropdownSection title="SELECT A FILE TYPE">
+                    <DropdownItem
+                      key="json"
+                      onPress={() => {
+                        handleExport("json");
+                      }}
+                    >
+                      JavaScript Object Notation (JSON)
+                    </DropdownItem>
+                    <DropdownItem
+                      key="csv"
+                      onPress={() => {
+                        handleExport("csv");
+                      }}
+                    >
+                      Comma-Separated Values (CSV)
+                    </DropdownItem>
+                    <DropdownItem
+                      key="xls"
+                      onPress={() => {
+                        handleExport("xls");
+                      }}
+                    >
+                      Excel Workbook (XLS)
+                    </DropdownItem>
+                  </DropdownSection>
+                </DropdownMenu>
+              </Dropdown>
+              <Input
+                className="max-w-96"
+                placeholder="Search"
+                value={searchQuery}
+                onValueChange={setSearchQuery}
+                startContent={<MagnifyingGlassIcon />}
+                endContent={
+                  searchQuery.length > 0 && (
+                    <Button
+                      size="sm"
+                      isIconOnly
+                      variant="light"
+                      onPress={() => {
+                        setSearchQuery("");
+                      }}
+                    >
+                      <XMarkIcon />
+                    </Button>
+                  )
+                }
+              />
+            </div>
           </div>
           <Table aria-label="User Information Table">
             <TableHeader columns={columns}>

@@ -90,14 +90,30 @@ router.get("/all", async (req, res) => {
   let list = await User.findAll({
     where: condition,
     order: [["createdAt", "DESC"]],
-    attributes: { exclude: ["password", "profilePicture"] },
+    attributes: {
+      exclude: [
+        "password",
+        "profilePicture",
+        "resetPasswordToken",
+        "resetPasswordExpireTime",
+      ],
+    },
   });
   res.json(list);
 });
 
 router.get("/individual/:id", validateToken, async (req, res) => {
   let id = req.params.id;
-  let user = await User.findByPk(id);
+  let user = await User.findByPk(id, {
+    attributes: {
+      exclude: [
+        "password",
+        "profilePicture",
+        "resetPasswordToken",
+        "resetPasswordExpireTime",
+      ],
+    },
+  });
 
   if (!user) {
     res.sendStatus(404);
@@ -109,8 +125,6 @@ router.get("/individual/:id", validateToken, async (req, res) => {
       message: `ERR_ACC_IS_ARCHIVED`,
     });
   } else {
-    user.password = undefined;
-    user.profilePicture = undefined;
     res.json(user);
   }
 });
