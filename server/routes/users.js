@@ -10,6 +10,10 @@ const multer = require("multer");
 const sharp = require("sharp");
 const { sendPasswordResetEmail } = require("../connections/mailersend");
 const fs = require("fs");
+const OTPAuth = require("otpauth");
+const base32 = require("hi-base32");
+const QRCode = require("qrcode");
+const crypto = require("crypto");
 const {
   generatePasswordResetToken,
 } = require("../security/generatePasswordResetToken");
@@ -487,6 +491,93 @@ router.get("/town-councils-metadata", async (req, res) => {
     res.json(result);
   } catch {
     res.status(401);
+  }
+});
+
+const generateBase32Secret = () => {
+  const buffer = crypto.randomBytes(15);
+  const base32Secret = base32.encode(buffer).replace(/=/g, "").substring(0, 24);
+  return base32Secret;
+};
+
+router.post("/enable-2fa/:id", async (req, res) => {
+  let id = req.params.id;
+  const user = User.findByPk(id);
+
+  if (!user) {
+    return res.status(404).send("User not found");
+  }
+
+  const base32_secret = generateBase32Secret();
+  user.secret = base32_secret;
+  await User.update(
+    { secret: base32_secret },
+    {
+      where: { id: id },
+    }
+  );
+
+  let totp = new OTPAuth.TOTP({
+    issuer: "ecoconnect.gov.sg",
+    label: "ecoconnect",
+    algorithm: "SHA1",
+    digits: 6,
+    secret: base32_secret,
+  });
+
+  let otpauth_url = totp.toString();
+
+  QRCode.toDataURL(otpauth_url, (err, url) => {
+    if (err) {
+      return res.status(500).json({
+        status: "fail",
+        message: "Error while generating QR Code",
+      });
+    }
+    res.json({
+      status: "success",
+      data: {
+        qrCodeUrl: url,
+        secret: base32_secret,
+      },
+    });
+  });
+});
+
+router.post("/verify-2fa", async (req, res) => {
+  const { id, token } = req.body;
+
+  const user = await User.findByPk(id);
+
+  if (!user) {
+    console.log("User not found");
+    return res.status(404).send("User not found");
+  }
+
+  console.log(user.firstName);
+
+  // Verify the token
+  let totp = new OTPAuth.TOTP({
+    issuer: "ecoconnect.gov.sg",
+    label: "ecoconnect",
+    algorithm: "SHA1",
+    digits: 6,
+    secret: user.secret,
+  });
+
+  let delta = totp.validate({ token });
+  console.log("Delta: " + delta);
+
+  if (delta == 0) {
+    return res.json({
+      status: "success",
+      message: "Authentication successful",
+    });
+  } else {
+    return res.status(401).json({
+      status: "fail",
+      message: "Authentication failed",
+    });
   }
 });
 

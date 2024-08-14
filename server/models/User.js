@@ -62,6 +62,10 @@ module.exports = (sequelize) => {
         type: DataTypes.DATE,
         allowNull: true,
       },
+      secret: {
+        type: DataTypes.STRING(64),
+        allowNull: true,
+      },
     },
     {
       tableName: "users",
