@@ -544,10 +544,28 @@ router.post("/enable-2fa/:id", async (req, res) => {
   });
 });
 
-router.post("/verify-2fa", async (req, res) => {
-  const { id, token } = req.body;
+router.post("/has-2fa", async (req, res) => {
+  let email = req.body.email;
+  const user = await User.findOne({
+    where: { email: email },
+  });
 
-  const user = await User.findByPk(id);
+  if (!user) {
+    return res.status(404).send("User not found");
+  }
+
+  return res.json({
+    status: "success",
+    enabled: user.secret ? true : false,
+  });
+});
+
+router.post("/verify-2fa", async (req, res) => {
+  const { email, token } = req.body;
+
+  const user = await User.findOne({
+    where: { email: email },
+  });
 
   if (!user) {
     console.log("User not found");

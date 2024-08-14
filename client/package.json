@@ -20,6 +20,7 @@
     "framer-motion": "^11.2.10",
     "openai": "^4.53.2",
     "react": "^18.2.0",
+    "react-auth-code-input": "^3.2.1",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.4.1",

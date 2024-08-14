@@ -1,13 +1,23 @@
-import { Button, Link } from "@nextui-org/react";
+import {
+  Button,
+  Link,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+} from "@nextui-org/react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import config from "../config";
 import NextUIFormikInput from "./NextUIFormikInput";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeftIcon } from "../icons";
-import { popErrorToast } from "../utilities";
+import { popErrorToast, popToast } from "../utilities";
 import { retrieveUserInformation } from "../security/users";
 import instance from "../security/http";
+import { useEffect, useRef, useState } from "react";
+import AuthCode, { AuthCodeRef } from "react-auth-code-input";
 
 const validationSchema = Yup.object({
   email: Yup.string()
@@ -30,14 +40,28 @@ const validationSchema = Yup.object({
 export default function SignInModule() {
   const navigate = useNavigate();
 
+  const [twoFactorModal, setTwoFactorModal] = useState(false);
+  const [userLoginInformation, setUserLoginInformation] = useState<any>();
+  const [twoFactorToken, setTwoFactorToken] = useState("");
+  const [twoFactorVerifying, setTwoFactorVerifying] = useState(false);
+
+  const AuthInputRef = useRef<AuthCodeRef>(null);
+
   const initialValues = {
     email: "",
     password: "",
   };
 
-  const handleSubmit = (values: any): void => {
+  const proceedWithLogin = (values?: any) => {
+    if (!values) {
+      values = userLoginInformation;
+    }
+    console.log("proceeding with login: " + values.email);
     instance
-      .post(config.serverAddress + "/users/login", values)
+      .post(config.serverAddress + "/users/login", {
+        email: values.email,
+        password: values.password,
+      })
       .then((response) => {
         console.log("logging in");
         localStorage.setItem("accessToken", response.data.accessToken);
@@ -55,8 +79,51 @@ export default function SignInModule() {
       })
       .catch((error) => {
         popErrorToast(error);
+        setTwoFactorModal(false);
       });
   };
+
+  const handleSubmit = (values: any): void => {
+    setUserLoginInformation(values);
+    instance
+      .post("/users/has-2fa", { email: values.email })
+      .then((answer) => {
+        if (answer.data.enabled) {
+          setTwoFactorModal(true);
+        } else {
+          proceedWithLogin(values);
+        }
+      })
+      .catch(() => {
+        popToast("User not found!", 2);
+      });
+  };
+
+  useEffect(() => {
+    if (!(twoFactorToken.length == 6 && !twoFactorVerifying)) {
+      return;
+    }
+
+    setTwoFactorVerifying(true);
+    instance
+      .post("/users/verify-2fa", {
+        email: userLoginInformation.email,
+        token: twoFactorToken,
+      })
+      .then(() => {
+        proceedWithLogin();
+      })
+      .catch((error) => {
+        popErrorToast(error);
+        AuthInputRef.current?.clear();
+        setTwoFactorToken("");
+      })
+      .finally(() => {
+        AuthInputRef.current?.clear();
+        setTwoFactorToken("");
+        setTwoFactorVerifying(false);
+      });
+  }, [twoFactorToken]);
 
   return (
     <div className="flex flex-col gap-16">
@@ -119,6 +186,30 @@ export default function SignInModule() {
           Sign up
         </Link>
       </div>
+      <Modal size="xl" isOpen={twoFactorModal} onOpenChange={setTwoFactorModal}>
+        <ModalContent>
+          <ModalHeader>Two-Factor Authentication</ModalHeader>
+          <ModalBody>
+            <div className="text-center flex flex-col gap-4">
+              <AuthCode
+                containerClassName="flex flex-row gap-4 w-full justify-center"
+                inputClassName="w-16 h-16 text-4xl text-center rounded-lg my-2 bg-neutral-100 dark:bg-neutral-800 border-2 border-neutral-200 dark:border-neutral-700 "
+                length={6}
+                allowedCharacters="numeric"
+                ref={AuthInputRef}
+                disabled={twoFactorVerifying}
+                onChange={(value) => {
+                  setTwoFactorToken(value);
+                }}
+              />
+              <p className="text-md opacity-50">
+                Please enter the 6 digits passcode from your authenticator app.
+              </p>
+            </div>
+          </ModalBody>
+          <ModalFooter></ModalFooter>
+        </ModalContent>
+      </Modal>
     </div>
   );
 }
