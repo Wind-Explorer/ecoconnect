@@ -100,6 +100,7 @@ router.get("/all", async (req, res) => {
         "profilePicture",
         "resetPasswordToken",
         "resetPasswordExpireTime",
+        "secret",
       ],
     },
   });
@@ -115,6 +116,7 @@ router.get("/individual/:id", validateToken, async (req, res) => {
         "profilePicture",
         "resetPasswordToken",
         "resetPasswordExpireTime",
+        "secret",
       ],
     },
   });
