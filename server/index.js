@@ -14,7 +14,7 @@ let PORT = process.env.APP_PORT;
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: [process.env.CLIENT_URL, "http://localhost:5173"],
   })
 );
 
@@ -55,8 +55,8 @@ app.use("/user-vouchers", uservoucher);
 db.sequelize
   .sync({ alter: true })
   .then(() => {
-    app.listen(PORT, () => {
-      console.log(`ecoconnect server running at http://localhost:${PORT}/`);
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`ecoconnect server running at http://0.0.0.0:${PORT}/`);
     });
   })
   .catch((err) => {
